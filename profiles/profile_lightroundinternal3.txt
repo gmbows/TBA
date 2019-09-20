@@ -1,0 +1,483 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 11.33      0.57     0.57                             World::cartesianToIndex(float&, float&)
+ 10.54      1.10     0.53                             Game::updateGameObjects()
+ 10.04      1.61     0.51                             Character::move(std::tuple<int, int>)
+  6.96      1.96     0.35                             Character::update()
+  3.88      2.15     0.20                             MapScreen::drawMap()
+  3.48      2.33     0.17                             Character::setLocation(float, float)
+  2.98      2.48     0.15                             int& std::forward<int&>(std::remove_reference<int&>::type&)
+  2.68      2.61     0.14                             Window::update()
+  2.58      2.74     0.13                             World::getTileAt(float, float)
+  1.99      2.84     0.10                             std::vector<Tile*, std::allocator<Tile*> >::size() const
+  1.99      2.94     0.10                             float const& std::max<float>(float const&, float const&)
+  1.79      3.03     0.09                             std::less<int>::operator()(int const&, int const&) const
+  1.79      3.12     0.09                             std::vector<GameObject*, std::allocator<GameObject*> >::size() const
+  1.39      3.19     0.07                             std::vector<GameObject*, std::allocator<GameObject*> >::_M_range_check(unsigned long long) const
+  1.39      3.26     0.07                             std::_Head_base<1ull, int, false>::_M_head(std::_Head_base<1ull, int, false>&)
+  1.39      3.33     0.07                             std::_Head_base<1ull, int, false>::_Head_base<int&>(int&)
+  1.39      3.40     0.07                             std::_Tuple_impl<0ull, int, int>::operator=(std::_Tuple_impl<0ull, int, int>&&)
+  1.39      3.47     0.07                             std::_Tuple_impl<1ull, int>::_M_head(std::_Tuple_impl<1ull, int>&)
+  1.19      3.53     0.06                             World::locationIsValid(float, float)
+  1.19      3.59     0.06                             std::_Head_base<0ull, int, false>::_M_head(std::_Head_base<0ull, int, false>&)
+  0.99      3.64     0.05                             std::_Tuple_impl<0ull, int, int>::_M_head(std::_Tuple_impl<0ull, int, int>&)
+  0.99      3.69     0.05                             std::_Tuple_impl<1ull, int>::operator=(std::_Tuple_impl<1ull, int>&&)
+  0.99      3.74     0.05                             std::fabs(float)
+  0.99      3.79     0.05                             int&& std::forward<int>(std::remove_reference<int>::type&)
+  0.89      3.84     0.04                             Window::bringToFront(Screen*)
+  0.80      3.88     0.04                             Tile::occupyWith(Character*)
+  0.80      3.92     0.04                             std::vector<Tile*, std::allocator<Tile*> >::_M_range_check(unsigned long long) const
+  0.80      3.96     0.04                             std::_Head_base<0ull, int, false>::_Head_base<int&>(int&)
+  0.80      4.00     0.04                             std::_Tuple_impl<0ull, int, int>::_Tuple_impl<int&, int&, void>(int&, int&)
+  0.80      4.04     0.04                             std::_Tuple_impl<1ull, int>::_Tuple_impl<int&>(int&)
+  0.80      4.08     0.04                             std::_Rb_tree_iterator<std::pair<int const, fChar> >::_Rb_tree_iterator(std::_Rb_tree_node_base*)
+  0.80      4.12     0.04                             std::tuple<int, int>::tuple<int&, int&, true>(int&, int&)
+  0.80      4.16     0.04                             std::tuple<std::__decay_and_strip<int&>::__type, std::__decay_and_strip<int&>::__type> std::make_tuple<int&, int&>(int&, int&)
+  0.80      4.20     0.04                             std::remove_reference<std::tuple<int, int>&>::type&& std::move<std::tuple<int, int>&>(std::tuple<int, int>&)
+  0.60      4.22     0.03                             Screen::drawBorder()
+  0.60      4.25     0.03                             Character::resolveMove(float&, float&)
+  0.60      4.29     0.03                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr()
+  0.60      4.32     0.03                             std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const
+  0.60      4.34     0.03                             std::tuple<int, int>::operator=(std::tuple<int, int>&&)
+  0.60      4.38     0.03                             std::vector<GameObject*, std::allocator<GameObject*> >::at(unsigned long long)
+  0.60      4.41     0.03                             std::vector<Tile*, std::allocator<Tile*> >::at(unsigned long long)
+  0.60      4.43     0.03                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::at(unsigned long long)
+  0.60      4.46     0.03                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, fChar> >*, std::_Rb_tree_node_base*, int const&)
+  0.40      4.49     0.02                             SDL_main
+  0.40      4.50     0.02                             MapScreen::update()
+  0.40      4.53     0.02                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr()
+  0.40      4.54     0.02                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() const
+  0.40      4.57     0.02                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() const
+  0.40      4.59     0.02                             std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() const
+  0.40      4.61     0.02                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::_M_range_check(unsigned long long) const
+  0.40      4.63     0.02                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::size() const
+  0.40      4.64     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const
+  0.40      4.67     0.02                             std::_Tuple_impl<0ull, int, int>::_M_tail(std::_Tuple_impl<0ull, int, int>&)
+  0.40      4.68     0.02                             std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr()
+  0.40      4.71     0.02                             std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::at(int const&)
+  0.40      4.72     0.02                             std::vector<GameObject*, std::allocator<GameObject*> >::operator[](unsigned long long)
+  0.40      4.75     0.02                             std::vector<Tile*, std::allocator<Tile*> >::operator[](unsigned long long)
+  0.40      4.76     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_key(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+  0.40      4.79     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_begin()
+  0.40      4.80     0.02                             int& std::__get_helper<0ull, int, int>(std::_Tuple_impl<0ull, int, int>&)
+  0.40      4.83     0.02                             int& std::__get_helper<1ull, int>(std::_Tuple_impl<1ull, int>&)
+  0.40      4.84     0.02                             float const& std::min<float>(float const&, float const&)
+  0.40      4.87     0.02                             std::remove_reference<std::_Tuple_impl<1ull, int>&>::type&& std::move<std::_Tuple_impl<1ull, int>&>(std::_Tuple_impl<1ull, int>&)
+  0.20      4.88     0.01                             SDL_SetRenderDrawColor
+  0.20      4.88     0.01                             Game::update()
+  0.20      4.89     0.01                             std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator*() const
+  0.20      4.91     0.01                             std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator==(std::_Rb_tree_iterator<std::pair<int const, fChar> > const&) const
+  0.20      4.92     0.01                             std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_range_check(unsigned long long) const
+  0.20      4.92     0.01                             std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::size() const
+  0.20      4.93     0.01                             std::allocator<Tile*>::allocator()
+  0.20      4.95     0.01                             std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long long, unsigned long long, char const*, unsigned long long)
+  0.20      4.96     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end()
+  0.20      4.96     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::find(int const&)
+  0.20      4.97     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_end()
+  0.20      4.99     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_right(std::_Rb_tree_node_base*)
+  0.20      5.00     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+  0.20      5.00     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node_base const*)
+  0.20      5.01     0.01                             std::tuple_element<1ull, std::tuple<int, int> >::type& std::get<1ull, int, int>(std::tuple<int, int>&)
+  0.20      5.03     0.01                             int const& std::max<int>(int const&, int const&)
+  0.10      5.03     0.01                             TextBox::update()
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.20% of 5.03 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     11.3    0.57    0.00                 World::cartesianToIndex(float&, float&) [1]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]     10.5    0.53    0.00                 Game::updateGameObjects() [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]     10.0    0.51    0.00                 Character::move(std::tuple<int, int>) [3]
+-----------------------------------------------
+                                                 <spontaneous>
+[4]      7.0    0.35    0.00                 Character::update() [4]
+-----------------------------------------------
+                                                 <spontaneous>
+[5]      3.9    0.20    0.00                 MapScreen::drawMap() [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[6]      3.5    0.17    0.00                 Character::setLocation(float, float) [6]
+-----------------------------------------------
+                                                 <spontaneous>
+[7]      3.0    0.15    0.00                 int& std::forward<int&>(std::remove_reference<int&>::type&) [7]
+-----------------------------------------------
+                                                 <spontaneous>
+[8]      2.7    0.14    0.00                 Window::update() [8]
+-----------------------------------------------
+                                                 <spontaneous>
+[9]      2.6    0.13    0.00                 World::getTileAt(float, float) [9]
+-----------------------------------------------
+                                                 <spontaneous>
+[10]     2.0    0.10    0.00                 std::vector<Tile*, std::allocator<Tile*> >::size() const [10]
+-----------------------------------------------
+                                                 <spontaneous>
+[11]     2.0    0.10    0.00                 float const& std::max<float>(float const&, float const&) [11]
+-----------------------------------------------
+                                                 <spontaneous>
+[12]     1.8    0.09    0.00                 std::less<int>::operator()(int const&, int const&) const [12]
+-----------------------------------------------
+                                                 <spontaneous>
+[13]     1.8    0.09    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::size() const [13]
+-----------------------------------------------
+                                                 <spontaneous>
+[14]     1.4    0.07    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::_M_range_check(unsigned long long) const [14]
+-----------------------------------------------
+                                                 <spontaneous>
+[15]     1.4    0.07    0.00                 std::_Head_base<1ull, int, false>::_M_head(std::_Head_base<1ull, int, false>&) [15]
+-----------------------------------------------
+                                                 <spontaneous>
+[16]     1.4    0.07    0.00                 std::_Head_base<1ull, int, false>::_Head_base<int&>(int&) [16]
+-----------------------------------------------
+                                                 <spontaneous>
+[17]     1.4    0.07    0.00                 std::_Tuple_impl<0ull, int, int>::operator=(std::_Tuple_impl<0ull, int, int>&&) [17]
+-----------------------------------------------
+                                                 <spontaneous>
+[18]     1.4    0.07    0.00                 std::_Tuple_impl<1ull, int>::_M_head(std::_Tuple_impl<1ull, int>&) [18]
+-----------------------------------------------
+                                                 <spontaneous>
+[19]     1.2    0.06    0.00                 World::locationIsValid(float, float) [19]
+-----------------------------------------------
+                                                 <spontaneous>
+[20]     1.2    0.06    0.00                 std::_Head_base<0ull, int, false>::_M_head(std::_Head_base<0ull, int, false>&) [20]
+-----------------------------------------------
+                                                 <spontaneous>
+[21]     1.0    0.05    0.00                 std::_Tuple_impl<0ull, int, int>::_M_head(std::_Tuple_impl<0ull, int, int>&) [21]
+-----------------------------------------------
+                                                 <spontaneous>
+[22]     1.0    0.05    0.00                 std::_Tuple_impl<1ull, int>::operator=(std::_Tuple_impl<1ull, int>&&) [22]
+-----------------------------------------------
+                                                 <spontaneous>
+[23]     1.0    0.05    0.00                 std::fabs(float) [23]
+-----------------------------------------------
+                                                 <spontaneous>
+[24]     1.0    0.05    0.00                 int&& std::forward<int>(std::remove_reference<int>::type&) [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[25]     0.9    0.04    0.00                 Window::bringToFront(Screen*) [25]
+-----------------------------------------------
+                                                 <spontaneous>
+[26]     0.8    0.04    0.00                 Tile::occupyWith(Character*) [26]
+-----------------------------------------------
+                                                 <spontaneous>
+[27]     0.8    0.04    0.00                 std::vector<Tile*, std::allocator<Tile*> >::_M_range_check(unsigned long long) const [27]
+-----------------------------------------------
+                                                 <spontaneous>
+[28]     0.8    0.04    0.00                 std::_Head_base<0ull, int, false>::_Head_base<int&>(int&) [28]
+-----------------------------------------------
+                                                 <spontaneous>
+[29]     0.8    0.04    0.00                 std::_Tuple_impl<0ull, int, int>::_Tuple_impl<int&, int&, void>(int&, int&) [29]
+-----------------------------------------------
+                                                 <spontaneous>
+[30]     0.8    0.04    0.00                 std::_Tuple_impl<1ull, int>::_Tuple_impl<int&>(int&) [30]
+-----------------------------------------------
+                                                 <spontaneous>
+[31]     0.8    0.04    0.00                 std::_Rb_tree_iterator<std::pair<int const, fChar> >::_Rb_tree_iterator(std::_Rb_tree_node_base*) [31]
+-----------------------------------------------
+                                                 <spontaneous>
+[32]     0.8    0.04    0.00                 std::tuple<int, int>::tuple<int&, int&, true>(int&, int&) [32]
+-----------------------------------------------
+                                                 <spontaneous>
+[33]     0.8    0.04    0.00                 std::tuple<std::__decay_and_strip<int&>::__type, std::__decay_and_strip<int&>::__type> std::make_tuple<int&, int&>(int&, int&) [33]
+-----------------------------------------------
+                                                 <spontaneous>
+[34]     0.8    0.04    0.00                 std::remove_reference<std::tuple<int, int>&>::type&& std::move<std::tuple<int, int>&>(std::tuple<int, int>&) [34]
+-----------------------------------------------
+                                                 <spontaneous>
+[35]     0.6    0.03    0.00                 Screen::drawBorder() [35]
+-----------------------------------------------
+                                                 <spontaneous>
+[36]     0.6    0.03    0.00                 Character::resolveMove(float&, float&) [36]
+-----------------------------------------------
+                                                 <spontaneous>
+[37]     0.6    0.03    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() [37]
+-----------------------------------------------
+                                                 <spontaneous>
+[38]     0.6    0.03    0.00                 std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [38]
+-----------------------------------------------
+                                                 <spontaneous>
+[39]     0.6    0.03    0.00                 std::tuple<int, int>::operator=(std::tuple<int, int>&&) [39]
+-----------------------------------------------
+                                                 <spontaneous>
+[40]     0.6    0.03    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::at(unsigned long long) [40]
+-----------------------------------------------
+                                                 <spontaneous>
+[41]     0.6    0.03    0.00                 std::vector<Tile*, std::allocator<Tile*> >::at(unsigned long long) [41]
+-----------------------------------------------
+                                                 <spontaneous>
+[42]     0.6    0.03    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::at(unsigned long long) [42]
+-----------------------------------------------
+                                                 <spontaneous>
+[43]     0.6    0.03    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, fChar> >*, std::_Rb_tree_node_base*, int const&) [43]
+-----------------------------------------------
+                                                 <spontaneous>
+[44]     0.4    0.02    0.00                 SDL_main [44]
+-----------------------------------------------
+                                                 <spontaneous>
+[45]     0.4    0.02    0.00                 MapScreen::update() [45]
+-----------------------------------------------
+                                                 <spontaneous>
+[46]     0.4    0.02    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() [46]
+-----------------------------------------------
+                                                 <spontaneous>
+[47]     0.4    0.02    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() const [47]
+-----------------------------------------------
+                                                 <spontaneous>
+[48]     0.4    0.02    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() const [48]
+-----------------------------------------------
+                                                 <spontaneous>
+[49]     0.4    0.02    0.00                 std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() const [49]
+-----------------------------------------------
+                                                 <spontaneous>
+[50]     0.4    0.02    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::_M_range_check(unsigned long long) const [50]
+-----------------------------------------------
+                                                 <spontaneous>
+[51]     0.4    0.02    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::size() const [51]
+-----------------------------------------------
+                                                 <spontaneous>
+[52]     0.4    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [52]
+-----------------------------------------------
+                                                 <spontaneous>
+[53]     0.4    0.02    0.00                 std::_Tuple_impl<0ull, int, int>::_M_tail(std::_Tuple_impl<0ull, int, int>&) [53]
+-----------------------------------------------
+                                                 <spontaneous>
+[54]     0.4    0.02    0.00                 std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() [54]
+-----------------------------------------------
+                                                 <spontaneous>
+[55]     0.4    0.02    0.00                 std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::at(int const&) [55]
+-----------------------------------------------
+                                                 <spontaneous>
+[56]     0.4    0.02    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::operator[](unsigned long long) [56]
+-----------------------------------------------
+                                                 <spontaneous>
+[57]     0.4    0.02    0.00                 std::vector<Tile*, std::allocator<Tile*> >::operator[](unsigned long long) [57]
+-----------------------------------------------
+                                                 <spontaneous>
+[58]     0.4    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_key(std::_Rb_tree_node<std::pair<int const, fChar> > const*) [58]
+-----------------------------------------------
+                                                 <spontaneous>
+[59]     0.4    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_begin() [59]
+-----------------------------------------------
+                                                 <spontaneous>
+[60]     0.4    0.02    0.00                 int& std::__get_helper<0ull, int, int>(std::_Tuple_impl<0ull, int, int>&) [60]
+-----------------------------------------------
+                                                 <spontaneous>
+[61]     0.4    0.02    0.00                 int& std::__get_helper<1ull, int>(std::_Tuple_impl<1ull, int>&) [61]
+-----------------------------------------------
+                                                 <spontaneous>
+[62]     0.4    0.02    0.00                 float const& std::min<float>(float const&, float const&) [62]
+-----------------------------------------------
+                                                 <spontaneous>
+[63]     0.4    0.02    0.00                 std::remove_reference<std::_Tuple_impl<1ull, int>&>::type&& std::move<std::_Tuple_impl<1ull, int>&>(std::_Tuple_impl<1ull, int>&) [63]
+-----------------------------------------------
+                                                 <spontaneous>
+[64]     0.2    0.01    0.00                 SDL_SetRenderDrawColor [64]
+-----------------------------------------------
+                                                 <spontaneous>
+[65]     0.2    0.01    0.00                 Game::update() [65]
+-----------------------------------------------
+                                                 <spontaneous>
+[66]     0.2    0.01    0.00                 std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator*() const [66]
+-----------------------------------------------
+                                                 <spontaneous>
+[67]     0.2    0.01    0.00                 std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator==(std::_Rb_tree_iterator<std::pair<int const, fChar> > const&) const [67]
+-----------------------------------------------
+                                                 <spontaneous>
+[68]     0.2    0.01    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_range_check(unsigned long long) const [68]
+-----------------------------------------------
+                                                 <spontaneous>
+[69]     0.2    0.01    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::size() const [69]
+-----------------------------------------------
+                                                 <spontaneous>
+[70]     0.2    0.01    0.00                 std::allocator<Tile*>::allocator() [70]
+-----------------------------------------------
+                                                 <spontaneous>
+[71]     0.2    0.01    0.00                 std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long long, unsigned long long, char const*, unsigned long long) [71]
+-----------------------------------------------
+                                                 <spontaneous>
+[72]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end() [72]
+-----------------------------------------------
+                                                 <spontaneous>
+[73]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::find(int const&) [73]
+-----------------------------------------------
+                                                 <spontaneous>
+[74]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_end() [74]
+-----------------------------------------------
+                                                 <spontaneous>
+[75]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_right(std::_Rb_tree_node_base*) [75]
+-----------------------------------------------
+                                                 <spontaneous>
+[76]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node<std::pair<int const, fChar> > const*) [76]
+-----------------------------------------------
+                                                 <spontaneous>
+[77]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node_base const*) [77]
+-----------------------------------------------
+                                                 <spontaneous>
+[78]     0.2    0.01    0.00                 std::tuple_element<1ull, std::tuple<int, int> >::type& std::get<1ull, int, int>(std::tuple<int, int>&) [78]
+-----------------------------------------------
+                                                 <spontaneous>
+[79]     0.2    0.01    0.00                 int const& std::max<int>(int const&, int const&) [79]
+-----------------------------------------------
+                                                 <spontaneous>
+[80]     0.1    0.01    0.00                 TextBox::update() [80]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [64] SDL_SetRenderDrawColor [14] std::vector<GameObject*, std::allocator<GameObject*> >::_M_range_check(unsigned long long) const [56] std::vector<GameObject*, std::allocator<GameObject*> >::operator[](unsigned long long)
+  [44] SDL_main               [13] std::vector<GameObject*, std::allocator<GameObject*> >::size() const [41] std::vector<Tile*, std::allocator<Tile*> >::at(unsigned long long)
+   [2] Game::updateGameObjects() [27] std::vector<Tile*, std::allocator<Tile*> >::_M_range_check(unsigned long long) const [57] std::vector<Tile*, std::allocator<Tile*> >::operator[](unsigned long long)
+  [65] Game::update()         [10] std::vector<Tile*, std::allocator<Tile*> >::size() const [42] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::at(unsigned long long)
+  [26] Tile::occupyWith(Character*) [68] std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_range_check(unsigned long long) const [71] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_replace(unsigned long long, unsigned long long, char const*, unsigned long long)
+  [19] World::locationIsValid(float, float) [69] std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::size() const [43] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, fChar> >*, std::_Rb_tree_node_base*, int const&)
+   [1] World::cartesianToIndex(float&, float&) [50] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::_M_range_check(unsigned long long) const [72] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end()
+   [9] World::getTileAt(float, float) [51] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::size() const [73] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::find(int const&)
+  [35] Screen::drawBorder()   [52] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [74] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_end()
+  [25] Window::bringToFront(Screen*) [70] std::allocator<Tile*>::allocator() [58] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_key(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+   [8] Window::update()       [20] std::_Head_base<0ull, int, false>::_M_head(std::_Head_base<0ull, int, false>&) [59] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_begin()
+  [80] TextBox::update()      [28] std::_Head_base<0ull, int, false>::_Head_base<int&>(int&) [75] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_right(std::_Rb_tree_node_base*)
+  [36] Character::resolveMove(float&, float&) [15] std::_Head_base<1ull, int, false>::_M_head(std::_Head_base<1ull, int, false>&) [76] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+   [6] Character::setLocation(float, float) [16] std::_Head_base<1ull, int, false>::_Head_base<int&>(int&) [77] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node_base const*)
+   [3] Character::move(std::tuple<int, int>) [21] std::_Tuple_impl<0ull, int, int>::_M_head(std::_Tuple_impl<0ull, int, int>&) [33] std::tuple<std::__decay_and_strip<int&>::__type, std::__decay_and_strip<int&>::__type> std::make_tuple<int&, int&>(int&, int&)
+   [4] Character::update()    [53] std::_Tuple_impl<0ull, int, int>::_M_tail(std::_Tuple_impl<0ull, int, int>&) [60] int& std::__get_helper<0ull, int, int>(std::_Tuple_impl<0ull, int, int>&)
+  [45] MapScreen::update()    [29] std::_Tuple_impl<0ull, int, int>::_Tuple_impl<int&, int&, void>(int&, int&) [61] int& std::__get_helper<1ull, int>(std::_Tuple_impl<1ull, int>&)
+   [5] MapScreen::drawMap()   [17] std::_Tuple_impl<0ull, int, int>::operator=(std::_Tuple_impl<0ull, int, int>&&) [78] std::tuple_element<1ull, std::tuple<int, int> >::type& std::get<1ull, int, int>(std::tuple<int, int>&)
+  [37] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() [18] std::_Tuple_impl<1ull, int>::_M_head(std::_Tuple_impl<1ull, int>&) [11] float const& std::max<float>(float const&, float const&)
+  [46] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() [30] std::_Tuple_impl<1ull, int>::_Tuple_impl<int&>(int&) [79] int const& std::max<int>(int const&, int const&)
+  [47] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() const [22] std::_Tuple_impl<1ull, int>::operator=(std::_Tuple_impl<1ull, int>&&) [62] float const& std::min<float>(float const&, float const&)
+  [48] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() const [54] std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() [23] std::fabs(float)
+  [49] std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() const [31] std::_Rb_tree_iterator<std::pair<int const, fChar> >::_Rb_tree_iterator(std::_Rb_tree_node_base*) [63] std::remove_reference<std::_Tuple_impl<1ull, int>&>::type&& std::move<std::_Tuple_impl<1ull, int>&>(std::_Tuple_impl<1ull, int>&)
+  [66] std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator*() const [55] std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::at(int const&) [34] std::remove_reference<std::tuple<int, int>&>::type&& std::move<std::tuple<int, int>&>(std::tuple<int, int>&)
+  [67] std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator==(std::_Rb_tree_iterator<std::pair<int const, fChar> > const&) const [32] std::tuple<int, int>::tuple<int&, int&, true>(int&, int&) [7] int& std::forward<int&>(std::remove_reference<int&>::type&)
+  [38] std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [39] std::tuple<int, int>::operator=(std::tuple<int, int>&&) [24] int&& std::forward<int>(std::remove_reference<int>::type&)
+  [12] std::less<int>::operator()(int const&, int const&) const [40] std::vector<GameObject*, std::allocator<GameObject*> >::at(unsigned long long)

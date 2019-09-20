@@ -1,0 +1,10 @@
+Sep/20/2019(Fri)13:17:25 : Game.txt initialized
+Sep/20/2019(Fri)13:17:25 : Beginning game startup
+
+Sep/20/2019(Fri)13:17:25 : Creating window and screen objects...
+Sep/20/2019(Fri)13:17:25 : Screen objects initialized
+Sep/20/2019(Fri)13:17:25 : Window object initialized
+Sep/20/2019(Fri)13:17:25 : Window object fully initialized, generating font textures
+Sep/20/2019(Fri)13:17:25 : Font textures generated, game startup complete
+
+Sep/20/2019(Fri)13:17:25 : Entering game loop

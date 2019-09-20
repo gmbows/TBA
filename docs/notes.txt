@@ -1,0 +1,40 @@
+Debug:
+	-If runtime crash: You are referencing an object that is not fully constructed
+	-Undefined reference to x() = class or function has not been defined by the time this line is run
+	-Implement all template functions in header files or define all possible template types
+
+Screen:
+	DO NOT modify screen contents directly via "this->contents.at()"
+		-ONLY use this->setLastLine
+
+KeyFuncs:
+	DONE* Adding characters to command brings text screen to front?
+
+General:
+	 / "/22" = non-breaking space
+		-use for item/proper names with spaces
+	All GameObjects are added to GameObject vector automatically upon creation
+
+Command:
+	New command system:
+		-Commands have a name, aliases, primary function, and errorcheck function.
+		-When called with a string vector of arguments, if the command has an errorcheck function,
+			it will first send the arguments to its EC function. If the EC function returns false it will provide
+			a string explaining the error, otherwise it may provide auxiliary information to the command's aux string member variable
+
+Inventory:
+	Inventory System: 
+		-Items have a unit size and a weight
+		-Item weight determines encumbrance while carrying
+		-Item size determines storage space required to store/take
+		-Character attributes determine encumbrance effects but do not change storage capacity
+
+Character:
+	Behavior:
+		Setting status to idle while direction is nonzero means velocity will not decay
+		Setting status to idle must set direction to zero
+	DO NOT REFERENCE TARGET DIRECTLY
+		WILL CAUSE CRASH WHEN NULL
+
+LAST CHANGE:
+	Changed World::getTile(int,int) to (float,float)

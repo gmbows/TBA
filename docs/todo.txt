@@ -1,0 +1,152 @@
+========
+	IDEAS:
+========
+		Characters
+			Width? Right now a character is only one pixel
+				Width currently only matters when passing through the corner of two impassable blocks into a passable block and in detecting projectile collision
+				Projectiles use .35 (.7)
+			Behavior:
+				Swinging a weapon in a will cause surrounding characters in a general vicinity to target you
+				Standing between two characters in combat will cause you to get hit by their swings (maybe)
+		Commands:
+			Command aliases can have spaces in them
+		Screen:
+			Highlighting/Copying text?
+				Move window -> middle mouse probably
+			Movement via click with mouse2?
+			Movement via text must toggle rather than single usage
+		General:
+			Day/Night cycle:
+				SDL_SetTextureAlphaMod() for brightness
+				SDL_SetTextureColorMod() for color shift
+				Set and reset after drawing structure interior tiles to simulate lit interiors
+			User command aliasing
+			User button binding (bind b "execute command");
+
+====
+OOS:
+====
+
+	Screen:
+		Screen method for checking own update priority using (char*)screenObj == (char*)screenObj
+			-Update priority is set automatically when it is swapped
+		Scrollbar for content window offset?
+	Bugs:
+		Crossing axes cause microstutter
+			Cause:
+				Crossing an axes means character is moving between 1 -> 0 -> -1 
+				Because currently float values are simply truncrated rather than rounded there is twice as much space to travel before location is officially changed to another tile
+
+==========
+KNOWN BUGS:
+==========
+
+	Character:
+		Behavior:
+			If Character A dies while in combat with Character B from an attack that didn't come from
+			Character B, Character B will be stuck in combat indefinitely
+			*FIXED* NPCs will shift back and forth while attacking if it had to move to target
+				NPC shifts into attack mode while direction is nonzero and so friction is not applied 
+		Characters get stuck on the corner of impassable tiles if moving diagonally into it
+		Characters can spawn in the same space as the player
+			If characters spawn in the same location, last character to move will be erased from tile
+				-Occupier vector?
+	Screen:
+		*FIXED* Scrolling or clicking outside of Textbox/textScreen screens crashes the game
+		Line overflow prevents parsing of next newline character (textbox)
+	
+	*FIXED* Slight scroll jitter can be seen when moving slowly
+	*FIXED* Moving out of bounds causes crash
+
+========
+	TODO:
+========
+
+
+	Blocks/Construction/Tile heights
+	Item interactions
+	Crafting items
+	Character:
+		Limbs/Limb damage
+		Picking up other characters
+		Behavior:
+			Figure out what happens when you kill a character that you aren't targeting
+			Determine behavior for player character when attacking out of range target
+				"In combat" status?
+				Probably just do nothing
+				Used for target reaquisition after killing target or aquiring from targetlessness
+			Limit attack speed based on statistics
+		Begin Statistics
+	MapScreen:
+		
+	GameObject:
+		Move move() from Character to GameObject (All game objects should be physics enabled)
+		Leave setLocomotion in Character because it is a unique to characters
+	Commands:
+		Help
+
+========
+	DONE:	
+========
+	Awareness (x block radius around character)
+	Ranged attacks
+	Clean up FloatingText
+	Number damage popups
+	Movement:
+		SDL Tick based movement
+			Apply movement speed per tick for each tick that has passed since the last update
+			Nonzero direction increases velocity (position change per tick)
+		Movement through commands toggles movement in provided direction
+		Characters cannot slide off surfaces during contact because all movement is aborted instead of just movement in invalid direction
+		True locations should not be stored as ints
+		True locations are FLOATS and will be ROUNDED not truncated in order to display
+		NPC tile Icon drawn accurately in the same way as the player
+	Screen:
+		Game objects can be selected using the mouse
+			-Calculate selected tile based on player location and click location on map screen
+		Moving map screen shows map edges
+			-Potential solutions
+				-Disable movement for map screen and always draw first
+				-Include edge obscuring panel as part of map screen object
+		Smooth player movement across screen
+			-Although technically innacurate, player location should be drawn on map true to actual location in world
+			-Player must always be in the center of the screen as the world scrolls around it
+			-Offset other characters based on player world offset
+	Commands:
+		Autocomplete fills empty string with clear for some reason
+	Game:
+		Pause button
+		Sleep until next Logic/Graphics update because we know nothing is going to be happening until then
+		*Game input will be suspended while delaying
+		*Delays are at most 6ms and cpu util is decreased significantly (16% -> 3%)
+	Inventory:
+		Inventory class / command
+		Item interactions
+	Item:
+		Item manifest
+		Item class
+	Interp:
+		Interp function
+		Move
+	Art:
+		Game icon
+		Player icon
+	UI classes
+	General:
+		Onscreen indicator for pause status
+			Optimize MapScreen->drawMap charPass
+				-Charpass only necessary because character icons were drawn incorrectly
+			Examine closely the impacts of using smooth scrolling
+				-Innacurate placement on screen?
+		Smooth tile scrolling or one move per buttonpress
+		Tick based screen updates rather than SDL_Delay(1000/refreshrate)
+		Template classes for swap+debug functions
+	Screen:
+		Append string to line vector method
+		Newline character handling
+		Tab character handling	
+		Use character h/w from screen object not constants in Font.cpp
+	Keys:
+		Key input
+	KeyFuncs:
+		Adding characters to command brings text screen to front?

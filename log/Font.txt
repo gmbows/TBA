@@ -1,0 +1,19 @@
+Sep/20/2019(Fri)13:17:25 : Font.txt initialized
+Sep/20/2019(Fri)13:17:25 : Loading font map...
+Sep/20/2019(Fri)13:17:25 : Font map loaded.
+Sep/20/2019(Fri)13:17:25 : Opening front from path assets/font/map_tileset_0.tga
+Sep/20/2019(Fri)13:17:25 : Optimizing font surface...
+Sep/20/2019(Fri)13:17:25 : Font surface optimized
+Sep/20/2019(Fri)13:17:25 : Font texture generation complete
+Sep/20/2019(Fri)13:17:25 : Opening front from path assets/font/terminal_0.tga
+Sep/20/2019(Fri)13:17:25 : Optimizing font surface...
+Sep/20/2019(Fri)13:17:25 : Font surface optimized
+Sep/20/2019(Fri)13:17:25 : Font texture generation complete
+Sep/20/2019(Fri)13:17:25 : Opening front from path assets/font/terminal_0.tga
+Sep/20/2019(Fri)13:17:25 : Optimizing font surface...
+Sep/20/2019(Fri)13:17:25 : Font surface optimized
+Sep/20/2019(Fri)13:17:25 : Font texture generation complete
+Sep/20/2019(Fri)13:17:25 : Opening front from path assets/font/terminal_0.tga
+Sep/20/2019(Fri)13:17:25 : Optimizing font surface...
+Sep/20/2019(Fri)13:17:25 : Font surface optimized
+Sep/20/2019(Fri)13:17:25 : Font texture generation complete

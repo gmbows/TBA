@@ -1,0 +1,3 @@
+#include "Equipment.h"
+
+//Equipment

@@ -1,0 +1,2 @@
+Sep/20/2019(Fri)13:17:25 : Window.txt initialized
+Sep/20/2019(Fri)13:17:25 : New window initialized
