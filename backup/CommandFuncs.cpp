@@ -205,3 +205,12 @@ std::string takeFunc(Command* command, const std::vector<std::string> &args) {
 bool takeEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
+
+//Hurtme
+std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
+	TBAGame->playerChar->health -= std::stoi(args.at(0));
+	return "\tHurt player for "+args.at(0);
+}
+bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
+	return true;
+}

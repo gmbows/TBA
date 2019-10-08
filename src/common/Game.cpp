@@ -112,6 +112,7 @@ void Game::setupGame() {
 			new		Command("say",{},1,sayFunc,sayEC),
 			new		Command("take",{},1,takeFunc,takeEC),
 			new		Command("hurtme",{"hurt"},1,hurtmeFunc,hurtmeEC),
+			new		Command("exit",{"exit","quit"},0,exitFunc),
 			////
 		};
 	
@@ -132,7 +133,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character* newChar;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<1;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -143,7 +144,8 @@ void Game::setupGame() {
 	newChar = new Character(false,160,"Debug Looter",1,0);
 	//newChar->setTarget(new Character(false,160,"Lost Bladesman",1,0));
 	//newChar->equipment->primary = new Item(4);
-	//newChar->setStatus(COMBAT);
+	newChar->setTarget(playerChar);
+	newChar->setStatus(COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(COMBAT);
 

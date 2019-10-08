@@ -52,3 +52,7 @@
 	//Take
 	std::string takeFunc(Command*, const std::vector<std::string>&);
 	bool takeEC(Command*, const std::vector<std::string>&);
+
+	//Hurtme
+	std::string hurtmeFunc(Command*, const std::vector<std::string>&);
+	bool hurtmeEC(Command*, const std::vector<std::string>&);

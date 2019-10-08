@@ -6,10 +6,10 @@ gameSrcf.close()
 
 objectString = "\t\t\tnew\t\t"
 
-name = raw_input("Command name? \n->")
-aliases = raw_input("Comma separated alias list?\n->")
-argc = raw_input("Minimum argument count?\n->")
-hasEC = raw_input("Does this command have errorchecking? [y/n] \n->")
+name = input("Command name? \n->")
+aliases = input("Comma separated alias list?\n->")
+argc = input("Minimum argument count?\n->")
+hasEC = input("Does this command have errorchecking? [y/n] \n->")
 
 if not argc.isdigit():
 	argc = "0"
@@ -26,7 +26,7 @@ if hasEC.lower() == 'y':
 else:
 	hasEC = False
 if len(aliases) > 0:
-	aliasString = '{"'+aliases+'"}'
+	aliasString = '{"'+aliases.replace(',','","')+'"}'
 else:
 	aliasString = "{}"
 
@@ -40,25 +40,25 @@ if hasEC:
 	declaration += "\tbool {0}EC(Command*, const std::vector<std::string>&);\n".format(name)
 	definition += "bool {0}EC(Command* command, const std::vector<std::string> &args)".format(name)+" {\n\n}\n"
 
-print "==============="
-print "GOING IN Game.cpp"
-print "==============="
-print objectString
-print 
-print "===================="
-print "GOING IN CommandFuncs.h"
-print "===================="
-print declaration
-print
-print "======================"
-print "GOING IN CommandFuncs.cpp"
-print "======================"
-print definition
-print
+print("===============")
+print("GOING IN Game.cpp")
+print("===============")
+print(objectString)
+print()
+print("====================")
+print("GOING IN CommandFuncs.h")
+print("====================")
+print(declaration)
+print()
+print("======================")
+print("GOING IN CommandFuncs.cpp")
+print("======================")
+print(definition)
+print()
 
-correct = raw_input("Does this look correct? [y/n]\n->")
+correct = input("Does this look correct? [y/n]\n->")
 if correct.lower() != 'y':
-	print "Exiting";exit()
+	print( "Exiting");exit()
 
 
 #Backup file before writing

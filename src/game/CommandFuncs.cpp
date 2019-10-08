@@ -214,3 +214,9 @@ std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
 bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
+
+//Exit
+std::string exitFunc(Command* command, const std::vector<std::string> &args) {
+	TBAGame->gameRunning = false;
+	return "\nExiting";
+}

@@ -39,7 +39,7 @@ void Game::setupUI() {
 	int tScreenH = textH*40+6;
 
 	//+1 because border draws one pixel into the screen area
-	int quadSize = tileW-1;
+	int quadSize = tileW-1;			
 	int mapScreenS = (tileW*((quadSize*2)+1))+1;
 
 	tScreenH = mapScreenS+borderSize;
@@ -111,6 +111,7 @@ void Game::setupGame() {
 			new		Command("zoom",{"zm"},1,zoomFunc,zoomEC),
 			new		Command("say",{},1,sayFunc,sayEC),
 			new		Command("take",{},1,takeFunc,takeEC),
+			new		Command("hurtme",{"hurt"},1,hurtmeFunc,hurtmeEC),
 			////
 		};
 	
@@ -131,7 +132,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character* newChar;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<1;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -139,10 +140,11 @@ void Game::setupGame() {
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	//newChar = new Character(false,160,"Debug Looter",0,0);
+	newChar = new Character(false,160,"Debug Looter",1,0);
 	//newChar->setTarget(new Character(false,160,"Lost Bladesman",1,0));
 	//newChar->equipment->primary = new Item(4);
-	//newChar->setStatus(COMBAT);
+	newChar->setTarget(playerChar);
+	newChar->setStatus(COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(COMBAT);
 
