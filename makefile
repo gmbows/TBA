@@ -1,93 +1,93 @@
-TBA.exe: bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/StringFuncs.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Attributes.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Projectile.o bin/Statistics.o bin/Structure.o bin/World.o bin/Main.o
-	g++ -std=c++11 bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/StringFuncs.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Attributes.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Projectile.o bin/Statistics.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -O2 -o TBA.exe
+TBA: bin/Font.o bin/Screen.o bin/Window.o bin/ScreenUtils.o bin/Log.o bin/StringFuncs.o bin/Tile.o bin/KeyFuncs.o bin/Keys.o bin/Common.o bin/Game.o bin/Structure.o bin/Input.o bin/Statistics.o bin/Command.o bin/Block.o bin/Item.o bin/Container.o bin/GameObject.o bin/World.o bin/FloatingText.o bin/Projectile.o bin/Behavior.o bin/Inventory.o bin/ItemManifest.o bin/Character.o bin/Equipment.o bin/CommandFuncs.o bin/Attributes.o bin/Main.o
+	g++ -std=c++11 bin/Font.o bin/Screen.o bin/Window.o bin/ScreenUtils.o bin/Log.o bin/StringFuncs.o bin/Tile.o bin/KeyFuncs.o bin/Keys.o bin/Common.o bin/Game.o bin/Structure.o bin/Input.o bin/Statistics.o bin/Command.o bin/Block.o bin/Item.o bin/Container.o bin/GameObject.o bin/World.o bin/FloatingText.o bin/Projectile.o bin/Behavior.o bin/Inventory.o bin/ItemManifest.o bin/Character.o bin/Equipment.o bin/CommandFuncs.o bin/Attributes.o bin/Main.o `sdl2-config --libs --cflags` -o TBA
 
-bin/Font.o: src/ui/Font.cpp src/ui/Font.h src/tools/Log.h src/tools/Log.cpp src/tools/StringFuncs.h src/tools/StringFuncs.cpp  
-	g++ -std=c++11 -c src/ui/Font.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Font.o
+bin/Font.o: src/ui/Font.cpp src/ui/Font.h 
+	g++ -std=c++11 -c src/ui/Font.cpp `sdl2-config --libs --cflags` -o bin/Font.o
 
-bin/Screen.o: src/ui/Screen.cpp src/ui/Screen.h  src/ui/Font.h src/ui/Font.cpp src/common/Tile.h src/common/Tile.cpp src/game/GameObject.h src/game/GameObject.cpp  
-	g++ -std=c++11 -c src/ui/Screen.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Screen.o
+bin/Screen.o: src/ui/Screen.cpp src/ui/Screen.h 
+	g++ -std=c++11 -c src/ui/Screen.cpp `sdl2-config --libs --cflags` -o bin/Screen.o
+
+bin/Window.o: src/ui/Window.cpp src/ui/Window.h 
+	g++ -std=c++11 -c src/ui/Window.cpp `sdl2-config --libs --cflags` -o bin/Window.o
 
 bin/ScreenUtils.o: src/ui/ScreenUtils.cpp  
-	g++ -std=c++11 -c src/ui/ScreenUtils.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/ScreenUtils.o
+	g++ -std=c++11 -c src/ui/ScreenUtils.cpp `sdl2-config --libs --cflags` -o bin/ScreenUtils.o
 
-bin/Window.o: src/ui/Window.cpp src/ui/Window.h src/tools/Log.h src/tools/Log.cpp src/tools/StringFuncs.h src/tools/StringFuncs.cpp  src/ui/Screen.h src/ui/Screen.cpp  
-	g++ -std=c++11 -c src/ui/Window.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Window.o
+bin/Log.o: src/tools/Log.cpp src/tools/Log.h 
+	g++ -std=c++11 -c src/tools/Log.cpp `sdl2-config --libs --cflags` -o bin/Log.o
 
-bin/Log.o: src/tools/Log.cpp src/tools/Log.h  
-	g++ -std=c++11 -c src/tools/Log.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Log.o
+bin/StringFuncs.o: src/tools/StringFuncs.cpp src/tools/StringFuncs.h 
+	g++ -std=c++11 -c src/tools/StringFuncs.cpp `sdl2-config --libs --cflags` -o bin/StringFuncs.o
 
-bin/StringFuncs.o: src/tools/StringFuncs.cpp src/tools/StringFuncs.h  
-	g++ -std=c++11 -c src/tools/StringFuncs.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/StringFuncs.o
+bin/Tile.o: src/common/Tile.cpp src/common/Tile.h 
+	g++ -std=c++11 -c src/common/Tile.cpp `sdl2-config --libs --cflags` -o bin/Tile.o
 
-bin/Common.o: src/common/Common.cpp src/common/Common.h  src/common/Game.h src/common/Game.cpp  
-	g++ -std=c++11 -c src/common/Common.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Common.o
-
-bin/Game.o: src/common/Game.cpp src/common/Game.h src/ui/Window.h src/ui/Window.cpp src/tools/Log.h src/tools/Log.cpp src/game/GameObject.h src/game/GameObject.cpp src/game/World.h src/game/World.cpp src/game/Character.h src/game/Character.cpp src/game/Command.h src/game/Command.cpp  
-	g++ -std=c++11 -c src/common/Game.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Game.o
-
-bin/KeyFuncs.o: src/common/KeyFuncs.cpp src/common/KeyFuncs.h  
-	g++ -std=c++11 -c src/common/KeyFuncs.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/KeyFuncs.o
+bin/KeyFuncs.o: src/common/KeyFuncs.cpp src/common/KeyFuncs.h 
+	g++ -std=c++11 -c src/common/KeyFuncs.cpp `sdl2-config --libs --cflags` -o bin/KeyFuncs.o
 
 bin/Keys.o: src/common/Keys.cpp  
-	g++ -std=c++11 -c src/common/Keys.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Keys.o
+	g++ -std=c++11 -c src/common/Keys.cpp `sdl2-config --libs --cflags` -o bin/Keys.o
 
-bin/Tile.o: src/common/Tile.cpp src/common/Tile.h src/game/Character.h src/game/Character.cpp src/game/Block.h src/game/Block.cpp  
-	g++ -std=c++11 -c src/common/Tile.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Tile.o
+bin/Common.o: src/common/Common.cpp src/common/Common.h 
+	g++ -std=c++11 -c src/common/Common.cpp `sdl2-config --libs --cflags` -o bin/Common.o
 
-bin/Attributes.o: src/game/Attributes.cpp src/game/Attributes.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  
-	g++ -std=c++11 -c src/game/Attributes.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Attributes.o
+bin/Game.o: src/common/Game.cpp src/common/Game.h 
+	g++ -std=c++11 -c src/common/Game.cpp `sdl2-config --libs --cflags` -o bin/Game.o
 
-bin/Behavior.o: src/game/Behavior.cpp src/game/Behavior.h  
-	g++ -std=c++11 -c src/game/Behavior.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Behavior.o
+bin/Structure.o: src/game/Structure.cpp src/game/Structure.h 
+	g++ -std=c++11 -c src/game/Structure.cpp `sdl2-config --libs --cflags` -o bin/Structure.o
 
-bin/Block.o: src/game/Block.cpp src/game/Block.h  src/game/GameObject.h src/game/GameObject.cpp  
-	g++ -std=c++11 -c src/game/Block.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Block.o
+bin/Input.o: src/game/Input.cpp src/game/Input.h 
+	g++ -std=c++11 -c src/game/Input.cpp `sdl2-config --libs --cflags` -o bin/Input.o
 
-bin/Character.o: src/game/Character.cpp src/game/Character.h src/common/Tile.h src/common/Tile.cpp  src/game/Behavior.h src/game/Behavior.cpp  src/game/Inventory.h src/game/Inventory.cpp  src/game/Equipment.h src/game/Equipment.cpp  
-	g++ -std=c++11 -c src/game/Character.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Character.o
+bin/Statistics.o: src/game/Statistics.cpp src/game/Statistics.h 
+	g++ -std=c++11 -c src/game/Statistics.cpp `sdl2-config --libs --cflags` -o bin/Statistics.o
 
-bin/Command.o: src/game/Command.cpp src/game/Command.h  
-	g++ -std=c++11 -c src/game/Command.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Command.o
+bin/Command.o: src/game/Command.cpp src/game/Command.h 
+	g++ -std=c++11 -c src/game/Command.cpp `sdl2-config --libs --cflags` -o bin/Command.o
 
-bin/CommandFuncs.o: src/game/CommandFuncs.cpp src/game/CommandFuncs.h  src/game/Command.h src/game/Command.cpp  
-	g++ -std=c++11 -c src/game/CommandFuncs.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/CommandFuncs.o
+bin/Block.o: src/game/Block.cpp src/game/Block.h 
+	g++ -std=c++11 -c src/game/Block.cpp `sdl2-config --libs --cflags` -o bin/Block.o
 
-bin/Container.o: src/game/Container.cpp src/game/Container.h  src/game/GameObject.h src/game/GameObject.cpp  src/game/Inventory.h src/game/Inventory.cpp src/common/Tile.h src/common/Tile.cpp src/common/Common.h src/common/Common.cpp src/tools/StringFuncs.h src/tools/StringFuncs.cpp  
-	g++ -std=c++11 -c src/game/Container.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Container.o
+bin/Item.o: src/game/Item.cpp src/game/Item.h 
+	g++ -std=c++11 -c src/game/Item.cpp `sdl2-config --libs --cflags` -o bin/Item.o
 
-bin/Equipment.o: src/game/Equipment.cpp src/game/Equipment.h  src/game/Item.h src/game/Item.cpp  src/game/ItemManifest.h src/game/ItemManifest.cpp  
-	g++ -std=c++11 -c src/game/Equipment.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Equipment.o
+bin/Container.o: src/game/Container.cpp src/game/Container.h 
+	g++ -std=c++11 -c src/game/Container.cpp `sdl2-config --libs --cflags` -o bin/Container.o
 
-bin/FloatingText.o: src/game/FloatingText.cpp src/game/FloatingText.h src/common/Common.h src/common/Common.cpp src/ui/Screen.h src/ui/Screen.cpp  src/game/GameObject.h src/game/GameObject.cpp src/tools/StringFuncs.h src/tools/StringFuncs.cpp  
-	g++ -std=c++11 -c src/game/FloatingText.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/FloatingText.o
+bin/GameObject.o: src/game/GameObject.cpp src/game/GameObject.h 
+	g++ -std=c++11 -c src/game/GameObject.cpp `sdl2-config --libs --cflags` -o bin/GameObject.o
 
-bin/GameObject.o: src/game/GameObject.cpp src/game/GameObject.h src/tools/StringFuncs.h src/tools/StringFuncs.cpp  
-	g++ -std=c++11 -c src/game/GameObject.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/GameObject.o
+bin/World.o: src/game/World.cpp src/game/World.h 
+	g++ -std=c++11 -c src/game/World.cpp `sdl2-config --libs --cflags` -o bin/World.o
 
-bin/Input.o: src/game/Input.cpp src/game/Input.h  
-	g++ -std=c++11 -c src/game/Input.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Input.o
+bin/FloatingText.o: src/game/FloatingText.cpp src/game/FloatingText.h 
+	g++ -std=c++11 -c src/game/FloatingText.cpp `sdl2-config --libs --cflags` -o bin/FloatingText.o
 
-bin/Inventory.o: src/game/Inventory.cpp src/game/Inventory.h  src/game/Item.h src/game/Item.cpp src/tools/StringFuncs.h src/tools/StringFuncs.cpp  
-	g++ -std=c++11 -c src/game/Inventory.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Inventory.o
+bin/Projectile.o: src/game/Projectile.cpp src/game/Projectile.h 
+	g++ -std=c++11 -c src/game/Projectile.cpp `sdl2-config --libs --cflags` -o bin/Projectile.o
 
-bin/Item.o: src/game/Item.cpp src/game/Item.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  src/game/Attributes.h src/game/Attributes.cpp  
-	g++ -std=c++11 -c src/game/Item.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Item.o
+bin/Behavior.o: src/game/Behavior.cpp src/game/Behavior.h 
+	g++ -std=c++11 -c src/game/Behavior.cpp `sdl2-config --libs --cflags` -o bin/Behavior.o
 
-bin/ItemManifest.o: src/game/ItemManifest.cpp src/game/ItemManifest.h  
-	g++ -std=c++11 -c src/game/ItemManifest.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/ItemManifest.o
+bin/Inventory.o: src/game/Inventory.cpp src/game/Inventory.h 
+	g++ -std=c++11 -c src/game/Inventory.cpp `sdl2-config --libs --cflags` -o bin/Inventory.o
 
-bin/Projectile.o: src/game/Projectile.cpp src/game/Projectile.h  src/game/GameObject.h src/game/GameObject.cpp src/common/Tile.h src/common/Tile.cpp src/common/Common.h src/common/Common.cpp  
-	g++ -std=c++11 -c src/game/Projectile.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Projectile.o
+bin/ItemManifest.o: src/game/ItemManifest.cpp src/game/ItemManifest.h 
+	g++ -std=c++11 -c src/game/ItemManifest.cpp `sdl2-config --libs --cflags` -o bin/ItemManifest.o
 
-bin/Statistics.o: src/game/Statistics.cpp src/game/Statistics.h  
-	g++ -std=c++11 -c src/game/Statistics.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Statistics.o
+bin/Character.o: src/game/Character.cpp src/game/Character.h 
+	g++ -std=c++11 -c src/game/Character.cpp `sdl2-config --libs --cflags` -o bin/Character.o
 
-bin/Structure.o: src/game/Structure.cpp src/game/Structure.h  
-	g++ -std=c++11 -c src/game/Structure.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Structure.o
+bin/Equipment.o: src/game/Equipment.cpp src/game/Equipment.h 
+	g++ -std=c++11 -c src/game/Equipment.cpp `sdl2-config --libs --cflags` -o bin/Equipment.o
 
-bin/World.o: src/game/World.cpp src/game/World.h  src/game/Character.h src/game/Character.cpp src/common/Tile.h src/common/Tile.cpp  src/game/Structure.h src/game/Structure.cpp  
-	g++ -std=c++11 -c src/game/World.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/World.o
+bin/CommandFuncs.o: src/game/CommandFuncs.cpp src/game/CommandFuncs.h 
+	g++ -std=c++11 -c src/game/CommandFuncs.cpp `sdl2-config --libs --cflags` -o bin/CommandFuncs.o
+
+bin/Attributes.o: src/game/Attributes.cpp src/game/Attributes.h 
+	g++ -std=c++11 -c src/game/Attributes.cpp `sdl2-config --libs --cflags` -o bin/Attributes.o
 
 bin/Main.o: src/Main.cpp  
-	g++ -std=c++11 -c src/Main.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/Main.o
+	g++ -std=c++11 -c src/Main.cpp `sdl2-config --libs --cflags` -o bin/Main.o
 
