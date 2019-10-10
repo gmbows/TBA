@@ -34,7 +34,6 @@ struct FloatingText: public GameObject {
 	//Damage numbers
 	FloatingText(int _duration,const std::vector<std::string>& _message,std::tuple<float,float> _location,SDL_Colour _color = {200,200,200,255}):
 		duration(_duration), message(_message), location(_location), color(_color), GameObject(UI_FLOATINGTEXT) {
-		//srand(time(NULL));
 		this->dialogOffset = 5;
 		this->offsetXMult = rand()%16;
 		this->offsetXsign = ((rand()%2) == 0)? -1 : 1;

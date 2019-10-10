@@ -2,7 +2,8 @@ import os
 
 execname = "TBA.exe"
 
-basedir = "D:\Downloads\projects\TBA\NEWEST\\"
+#basedir = "D:\Downloads\projects\TBA\NEWEST\\"
+basedir = os.path.dirname(os.path.realpath(__file__))+"/../../"
 
 makefile = open(basedir+"makefile","w+")
 

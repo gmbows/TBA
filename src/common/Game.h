@@ -35,9 +35,15 @@ struct Game {
 	}
 
 	//=======================
-	//			GAME OBJECTS
+	//     GAME OBJECTS
 	//=======================
-		
+	
+	//The object that is displayed on the textscreen 
+	//	when the player targets a character or object 
+	
+	GameObject* displayTarget = nullptr;
+	bool inline hasDisplayTarget() { return !(this->displayTarget == nullptr);}
+
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> gameUIObjects;
 	void updateGameObjects();
@@ -52,7 +58,7 @@ struct Game {
 	int objectTotal = 0;
 	
 	//====================
-	//		  UPDATE LOGIC
+	//	 UPDATE LOGIC
 	//====================
 
 	Uint32 lastUpdate = SDL_GetTicks();
@@ -64,7 +70,7 @@ struct Game {
 	int timeToNextGraphicsUpdate;
 
 	//Amount of times game game window updates per second
-	int graphicsTickRate = 60;
+	int graphicsTickRate = 30;
 
 	//Amount of times game OBJECTS (NPC's, general game state) update per second
 	int logicTickRate = 50;
@@ -74,14 +80,14 @@ struct Game {
 	int graphicsTicks;
 
 	//==========
-	//	COMMANDS
+	// COMMANDS
 	//==========
 
 	std::vector<Command*> commandList;
 	std::vector<std::string> commandStrings;	
 
 	//====================
-	//	UPDATE / FOUNDATION
+	// UPDATE / FOUNDATION
 	//====================
 
 	Game() {}
@@ -90,7 +96,6 @@ struct Game {
 		delete this->gameWindow;
 		this->gameObjects.clear();
 		std::vector<GameObject*>().swap(this->gameObjects);
-
 	}
 
 	void setupUI();

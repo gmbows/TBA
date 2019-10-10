@@ -347,10 +347,15 @@ void TextBox::prepareContent() {
 		"Inventory:"+TBAGame->playerChar->inventory->contentString;
 		//"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo();
 
-		if(TBAGame->playerChar->hasTarget()) {
+		//Draw display target info
+		/*if(TBAGame->playerChar->hasTarget()) {
 			newContent += TBAGame->playerChar->getTargetInfo();
 			
-		}
+		}*/
+
+		if(TBAGame->hasDisplayTarget()) {
+            newContent += TBAGame->displayTarget->getInfo();
+        }
 
 	this->setContent(newContent);
 

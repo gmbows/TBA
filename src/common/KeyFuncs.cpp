@@ -101,13 +101,13 @@ void click(SDL_MouseButtonEvent& event) {
 
 		if(thisTile->isOccupied()) {
 			testTarget = thisTile->occupiers.at(0);
-			if((char*)TBAGame->playerChar->target == (char*)testTarget) {
+			if((char*)TBAGame->displayTarget == (char*)testTarget) {
 				testTarget = static_cast<GameObject*>(thisTile->getNextOccupant(static_cast<Character*>(testTarget)));
 			}
 		} else if(thisTile->hasObjects()) {
 			testTarget = thisTile->objects.at(0);
 		}
-		TBAGame->playerChar->setTarget(testTarget);
+		TBAGame->displayTarget = testTarget;
 	}
 
 }

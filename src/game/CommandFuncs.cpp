@@ -114,7 +114,7 @@ bool helpEC(Command* command, const std::vector<std::string> &args) {
 std::string targetFunc(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) {
 		TBAGame->playerChar->getNearestTarget();
-		return "\nTargeting nearest character";
+		return "\nTargeting "+TBAGame->playerChar->getTargetName();
 	}
 
 	TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	

@@ -142,9 +142,9 @@ void Game::setupGame() {
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
 	newChar = new Character(false,160,"Debug Looter",1,0);
-	//newChar->setTarget(new Character(false,160,"Lost Bladesman",1,0));
+	newChar->setTarget(new Character(false,160,"Lost Bladesman",0,3));
 	//newChar->equipment->primary = new Item(4);
-	newChar->setTarget(playerChar);
+	//newChar->setTarget(playerChar);
 	newChar->setStatus(COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(COMBAT);

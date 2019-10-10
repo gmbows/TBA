@@ -66,7 +66,9 @@ void FloatingText::update() {
 		return;
 	}
 
-	if(std::abs(this->defaultX) > std::abs(TBAGame->playerChar->x)+TBAGame->gameWindow->mapScreen->screenCharWidth or std::abs(this->defaultY) > std::abs(TBAGame->playerChar->y)+TBAGame->gameWindow->mapScreen->screenCharHeight) {
+	//Check if floating text was created outside of screen view
+	//if(std::abs(this->defaultX) > std::abs(TBAGame->playerChar->x)+TBAGame->gameWindow->mapScreen->screenCharWidth or std::abs(this->defaultY) > std::abs(TBAGame->playerChar->y)+TBAGame->gameWindow->mapScreen->screenCharHeight) {
+	if(false) {
 			TBAGame->removeUIObject(this);
 			this->trackSubject = nullptr;
 			delete this;
@@ -75,10 +77,9 @@ void FloatingText::update() {
 
 	// Percent of duration completed
 	this->completion = (SDL_GetTicks()-this->created)/(this->duration*1000.0);
-
 	//Dialog tracks characters and doesn't bubble
 	if(this->tracking) {
-		this->location = this->trackSubject->getApproximateLocation();
+		this->location = this->trackSubject->getAbsoluteLocation();
 	} else {
 		//Damage numbers stay in location where they were created and bubble
 		//Dialog is always white with alpha 255
@@ -90,7 +91,6 @@ void FloatingText::update() {
 			TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y - this->defaultY))
 		};
 	}
-
 	//SDL_SetTextureAlphaMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,200);
 	this->drawContent();
 	//Reset text screen font to default

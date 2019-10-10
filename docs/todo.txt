@@ -1,5 +1,5 @@
 ========
-	IDEAS:
+IDEAS:
 ========
 		Characters
 			Width? Right now a character is only one pixel
@@ -11,6 +11,7 @@
 		Commands:
 			Command aliases can have spaces in them
 		Screen:
+			Tile under mouse cursor is highlighted
 			Highlighting/Copying text?
 				Move window -> middle mouse probably
 			Movement via click with mouse2?
@@ -42,6 +43,7 @@ KNOWN BUGS:
 ==========
 
 	Character:
+		Presently characters are invisible between creation and entering a new tile (started happening when recompiled for linux)
 		Behavior:
 			If Character A dies while in combat with Character B from an attack that didn't come from
 			Character B, Character B will be stuck in combat indefinitely
@@ -52,6 +54,7 @@ KNOWN BUGS:
 			If characters spawn in the same location, last character to move will be erased from tile
 				-Occupier vector?
 	Screen:
+		Clicking on map screen is finicky, should check 3x3 around cursor click area if clicked tile was empty
 		*FIXED* Scrolling or clicking outside of Textbox/textScreen screens crashes the game
 		Line overflow prevents parsing of next newline character (textbox)
 	
@@ -59,7 +62,7 @@ KNOWN BUGS:
 	*FIXED* Moving out of bounds causes crash
 
 ========
-	TODO:
+TODO:
 ========
 
 
@@ -86,7 +89,7 @@ KNOWN BUGS:
 		Help
 
 ========
-	DONE:	
+DONE:	
 ========
 	Awareness (x block radius around character)
 	Ranged attacks

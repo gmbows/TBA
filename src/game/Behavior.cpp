@@ -140,7 +140,8 @@ bool Character::combatRetarget() {
 				// Valid target conditions: 
 				//	Target is alive
 				//	Target is targeting you 
-				// Target is attacking, in combat with, or in pursuit of you
+				//  Target is attacking, in combat with, or in pursuit of you
+				//  If multiple targets meet these criteria, choose the closest
 
 				if(occupant->isAlive() and
 					occupant->hasTarget() and
@@ -149,6 +150,7 @@ bool Character::combatRetarget() {
 						if(!this->hasTarget()) {
 							this->setTarget(occupant);
 						} else {
+							//Check if this target is closer than current target
 							if(dist(this->getLocation(),occupant->getLocation()) < dist(this->getLocation(),this->getCharTarget()->getLocation())) {
 								this->setTarget(occupant);
 							}
@@ -167,15 +169,25 @@ void Character::moveTo(std::tuple<float,float> location) {
 	this->direction = {x,y};
 }
 
+void Character::moveAway(std::tuple<float,float> location) {
+    int x = (this->x > this->getCharTarget()->x)? 1 : -1;
+    int y = (this->y > this->getCharTarget()->y)? -1 : 1;
+    this->direction = {x,y};
+}
+
 //==========
-//		MOVE
+//	 MOVE
 //==========
 
 void Character::setLocomotion() {
 
 	if(!this->isPlayer) {
 		if(this->hasTarget()) {
-			this->moveTo({this->getCharTarget()->x,this->getCharTarget()->y});
+			if(this->getStatus() == PURSUE) {
+				this->moveTo({this->getCharTarget()->x,this->getCharTarget()->y});
+			} else if(this->getStatus() == ESCAPE) {
+				this->moveAway({this->getCharTarget()->x,this->getCharTarget()->y});
+			}
 		}
 	}
 
@@ -191,7 +203,7 @@ void Character::setLocomotion() {
 }
 
 //==========
-//	  COMBAT
+//  COMBAT
 //==========
 
 void Character::combat() {
@@ -301,7 +313,6 @@ void Character::sendAttack(GameObject *target) {
 			decompose(this->getLocation(),x,y);
 			float tx,ty;
 			decompose(this->target->getLocation(),tx,ty);
-
 			// DEBUG:: Replace rand range with accuracy deviation and projectile speed
 			new Projectile(this,this->getLocation(),(-15+rand()%31)-atan2(ty-y,tx-x)/(3.1415/180),.02);
 			break;
@@ -363,7 +374,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	}
 
 	//====================
-	//	  REACT POST ATTACK
+	// REACT POST ATTACK
 	//====================
 
 	if(this->health <= 0) {
@@ -379,7 +390,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		//Should check if targets in awareness range are targeting and attacking
 
 		if(!static_cast<Character*>(attacker)->combatRetarget()) {
-			static_cast<Character*>(attacker)->setStatus(IDLE);
+			//static_cast<Character*>(attacker)->setStatus(IDLE);
 		}
 
 	}
@@ -403,6 +414,7 @@ void Character::update() {
 		case DEAD:
 			break;
 		case IDLE:
+			//Contemplate
 			//this->decideOnNewAction()
 			break;
 		case COMBAT:
@@ -422,7 +434,7 @@ void Character::update() {
 			break;
 	}
 
-	//"Physics"
+	//Physics
 	this->move(this->direction);
 
 }

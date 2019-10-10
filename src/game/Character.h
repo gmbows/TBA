@@ -108,6 +108,7 @@ class Character: public GameObject {
 		void move(std::tuple<int,int>);
 		bool resolveMove(float&, float&);
 		void moveTo(std::tuple<float,float>);
+		void moveAway(std::tuple<float,float>);
 
 		//========
 		//BEHAVIOR

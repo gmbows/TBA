@@ -2,7 +2,8 @@ import os
 
 execname = "TBA.exe"
 
-basedir = "D:\Downloads\projects\TBA\NEWEST\\"
+#basedir = "D:\Downloads\projects\TBA\NEWEST\\"
+basedir = os.path.dirname(os.path.realpath(__file__))+"/../../"
 
 makefile = open(basedir+"makefile","w+")
 
@@ -19,13 +20,13 @@ makestr = ""
 
 binlist = ["bin"+src[src.rfind('/'):]+".o" for src in srcs]
 
-makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" -I /include/SDL2 -L /usr/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -o "+execname+"\n\n"
+makestr += execname+": "+" ".join(binlist)+"\n\tx86_64-w64-mingw32-g++ -std=c++11 -I/usr/include/SDL2 -L/lib "+" ".join(binlist)+" -o "+execname+" -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 \n\n"
 
 for src in srcs:
 	head=""
 	if src in heads:
 		head = src+".h"
-	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp -I /include/SDL2 -L /usr/x86_64-w64-mingw32/lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head)
-
+	makestr += "bin/{1}.o: {0}.cpp {2} \n\tx86_64-w64-mingw32-g++ -std=c++11 -I/usr/include/SDL2 -L/lib -c {0}.cpp -o bin/{1}.o -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2\n\n".format(src,src[src.rfind('/')+1:],head)
+	
 makefile.write(makestr)
 makefile.close()
