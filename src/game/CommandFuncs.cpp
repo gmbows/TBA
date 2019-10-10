@@ -112,13 +112,16 @@ bool helpEC(Command* command, const std::vector<std::string> &args) {
 
 //Target
 std::string targetFunc(Command* command, const std::vector<std::string> &args) {
+	//if no arguments were provided, find nearest character within 
+	//player char's awareness radius
 	if(args.size() == 0) {
-		TBAGame->playerChar->getNearestTarget();
-		return "\nTargeting "+TBAGame->playerChar->getTargetName();
+		if(!TBAGame->playerChar->getNearestTarget()) return "\nNo valid targets found";
+		return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
 	}
 
+	//Otherwise, target object specified by aux string set in EC function
 	TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	
-	return "\nTargeting "+TBAGame->playerChar->getTargetName();
+	return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
 }
 bool targetEC(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) {
@@ -131,8 +134,10 @@ bool targetEC(Command* command, const std::vector<std::string> &args) {
 		command->error = "Target not found";
 		return false;
 	}
+
 	command->aux = targetName;
 	return true;
+
 }
 
 //Attack

@@ -113,7 +113,7 @@ bool Character::getNearestTarget() {
 			}
 		}
 	}
-	if(bestTarget->isPlayer) {
+	if(bestTarget == nullptr or (char*)bestTarget == (char*)this) {
 		return false;
 	} else {
 		this->setTarget(bestTarget);
