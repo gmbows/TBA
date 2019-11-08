@@ -6,7 +6,7 @@
 struct Command {
 
 	//Primary string identifier
-	const std::string name;
+	//const std::string name;
 
 	//Alternative ID strings
 	const std::vector<std::string> aliases;
@@ -31,7 +31,6 @@ struct Command {
 
 	//Command(const std::string&,const std::vector<std::string>&,int,std::string (*_function)(const std::vector<std::string>&));
 	Command(
-		const std::string&,
 		const std::vector<std::string>&,
 		int,
 		std::string (*_function)(Command*, const std::vector<std::string>&),

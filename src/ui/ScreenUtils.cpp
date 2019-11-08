@@ -73,7 +73,7 @@ void TextScreen::addContent(const std::string& str) {
 							thisLine += ' ';
 							cursorX = thisLine.size();
 						}
-					} else if(cursorX > tabStop) {
+					} else if(cursorX >= tabStop) {
 						this->content.push_back(thisLine);
 						thisLine = " ";
 						indexOfLastSpace = -1;

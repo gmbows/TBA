@@ -39,18 +39,12 @@ std::string processCommand(const std::string& s) {
 		//Check known commands against input command
 		testCommand = TBAGame->commandList.at(i);
 
-		if(testCommand->name == commandString) {
-			//If input command matches, call command with arguments
-			return testCommand->call(args);
-
-		} else {
-			//Otherwise, check against known command aliases
+			//Check against command aliases
 			for(int j=0;j<testCommand->aliases.size();j++) {
 				if(testCommand->aliases.at(j) == commandString) {
 					return testCommand->call(args);
 				}
 			}
-		}
 	}
 
 	//If input command doesn't match any known commands or aliases, return error string

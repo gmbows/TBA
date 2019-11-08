@@ -5,13 +5,13 @@
 #include <vector>
 #include <string>
 
-Command::Command(const std::string& _name,const std::vector<std::string>& _alias,int _argCount,
+Command::Command(const std::vector<std::string>& _alias,int _argCount,
 
 		//Primary and EC functions
 		std::string (*_function)(Command* , const std::vector<std::string>&),
 		bool (*_ECfunction)(Command*, const std::vector<std::string>&)):
 		
-	name(_name), aliases(_alias), argCount(_argCount), function(_function), ECfunction(_ECfunction) {}
+	aliases(_alias), argCount(_argCount), function(_function), ECfunction(_ECfunction) {}
 
 std::string Command::call(const std::vector<std::string>& args) {
 

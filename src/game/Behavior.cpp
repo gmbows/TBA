@@ -278,17 +278,17 @@ void Character::combat() {
 }
 
 void Character::resetCombatTimer() {
-	this->lastAttack = SDL_GetTicks();
+	this->lastAttack = TBAGame->logicTicks;
 }
 
 attackStatus Character::getAttackStatus() {
 	
-	if(SDL_GetTicks() >= this->lastAttack + this->attackRate + this->defaultAttackSpeed) {
+	if(TBAGame->logicTicks >= this->lastAttack + this->attackRate + this->defaultAttackSpeed) {
 		return ATK_COMPLETE;
-	} else if(SDL_GetTicks() >= this->lastAttack + this->attackRate) {
+	} else if(TBAGame->logicTicks >= this->lastAttack + this->attackRate) {
 		return ATK_ATTACKING;
 	}
-	return ATK_NOT_READY;//(SDL_GetTicks() >= this->lastAttack + this->attackRate);
+	return ATK_NOT_READY;//(TBAGame->logicTicks >= this->lastAttack + this->attackRate);
 }
 
 itemType Character::getAttackType() {
@@ -314,7 +314,7 @@ void Character::sendAttack(GameObject *target) {
 			float tx,ty;
 			decompose(this->target->getLocation(),tx,ty);
 			// DEBUG:: Replace rand range with accuracy deviation and projectile speed
-			new Projectile(this,this->getLocation(),(-15+rand()%31)-atan2(ty-y,tx-x)/(3.1415/180),.02);
+			new Projectile(this,this->getLocation(),(-1+rand()%1)-atan2(ty-y,tx-x)/(3.1415/180),.5);
 			break;
 		case MELEE:
 			// Send to target to be changed based on damage resistance
@@ -323,7 +323,7 @@ void Character::sendAttack(GameObject *target) {
 	}
 
 	// At this point the attack is complete
-	this->lastAttack = SDL_GetTicks();
+	this->lastAttack = TBAGame->logicTicks;
 
 }
 

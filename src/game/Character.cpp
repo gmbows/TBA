@@ -18,7 +18,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 	this->stats = new StatSet();
 	this->equipment = new Equipment();
 
-	this->attackRate = this->defaultAttackRate + (-500+rand()%1000);
+	this->init_stats();
 
 	this->setStatus(IDLE);
 	this->target = nullptr;
@@ -26,14 +26,14 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 	if(player) {
 		this->equipment->primary = new Item(4);
 		this->maxHealth = 40;
-		this->attackRate -= 1000;
+		this->attackRate -= 20;
 		TBAGame->playerChar = this;
-		this->maxMoveSpeed = 15; 
+		this->maxMoveSpeed = 4; 
 		this->displayID=3;
 		this->traction = 1;
 	} else {
 		//Random movespeeds
-		this->maxMoveSpeed = 10+((rand()%2)-1); //10+-5
+		this->maxMoveSpeed = 3+((rand()%2)-1); //10+-5
 		this->displayID=6;
 		this->traction = 1;
 	}
@@ -83,8 +83,8 @@ void Character::setLocation(float newX,float newY) {
 }
 
 void Character::move(std::tuple<int,int> direction) {
-	float newX = this->x+((float)this->velocityX*(SDL_GetTicks() - this->lastMove)*TBAGame->moveSpeedUnit);
-	float newY = this->y-((float)this->velocityY*(SDL_GetTicks() - this->lastMove)*TBAGame->moveSpeedUnit);
+	float newX = this->x+((float)this->velocityX*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
+	float newY = this->y-((float)this->velocityY*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
 
 	int dx = std::get<0>(direction);
 	int dy = std::get<1>(direction);
@@ -121,7 +121,7 @@ void Character::move(std::tuple<int,int> direction) {
 		this->velocityY *= 1-(this->location->roughness);
 	}
 
-	this->lastMove = SDL_GetTicks();
+	this->lastMove = TBAGame->logicTicks;
 
 	//if(this->velocityX == 0) {this->setStatus(IDLE);}
 	//if(this->velocityY == 0) {this->setStatus(IDLE);}

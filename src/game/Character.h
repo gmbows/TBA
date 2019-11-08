@@ -16,17 +16,17 @@ struct Tile;
 #include <map>
 
 enum statusIndicator: int {
-	IDLE,
-	MOVE,
-	ATTACK,
-	COMBAT,
-	PURSUE,
-	STUN,
-	ESCAPE,
-	PATROL,
-	DYING,
-	CRIPPLED,
-	DEAD,
+	IDLE = 1,
+	MOVE = 2,
+	ATTACK = 4,
+	COMBAT = 8,
+	PURSUE = 16,
+	STUN = 32,
+	ESCAPE = 64,
+	PATROL = 128,
+	DYING = 256,
+	CRIPPLED = 512,
+	DEAD = 1024,
 };
 
 enum attackStatus: int {
@@ -67,29 +67,30 @@ class Character: public GameObject {
 
 		StatSet *stats;
 
-		//Rates in format ms per action
-		const int defaultAttackRate = 5000;
+		void init_stats();
+
+		unsigned int defaultAttackRate;
 
 		//Unarmed damage
-		const int defaultAttackDamage = 3;
+		int defaultAttackDamage;
 
 		//Unarmed striking speed
-		const int defaultAttackSpeed = 1000;
+		unsigned int defaultAttackSpeed;
 
-		int maxHealth = 10;
+		int maxHealth;
 		int health;
 
 		//In format 
-		const float defaultAttackRange = 1*.5;
-		const int defaultMoveSpeed = 1000 / 10;
+		float defaultAttackRange;
+		int defaultMoveSpeed;
 
-		int attackRate;
+		unsigned int attackRate;
 		bool isUnarmed();
 		int getAttackDamage();
 		float getAttackRange();
 
-		Uint32 lastAttack = 0;
-		Uint32 lastMove = 0;
+		int lastAttack = 0;
+		int lastMove = 0;
 
 		//========
 		//MOVEMENT

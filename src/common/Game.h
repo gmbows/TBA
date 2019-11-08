@@ -7,6 +7,7 @@
 #include "../game/World.h"
 #include "../game/Character.h"
 #include "../game/Command.h"
+#include "Clock.h"
 
 #include <thread>
 #include <vector>
@@ -23,12 +24,13 @@ struct Game {
 
 	Window *gameWindow;
 	Log *gameLog;
+	Clock *clock = new Clock();
 
 	World* gameWorld;
 	Character* playerChar;
 
 	//Global movespeed scale to translate from int movespeeds to floats
-	const float moveSpeedUnit = .00005;
+	const float moveSpeedUnit = .005;
 
 	void displayText(const std::string &s) { 
 		this->gameWindow->textScreen->addContent(s);
@@ -61,7 +63,7 @@ struct Game {
 	//	 UPDATE LOGIC
 	//====================
 
-	Uint32 lastUpdate = SDL_GetTicks();
+	//Uint32 lastUpdate = SDL_GetTicks();
 	Uint32 lastGraphicsUpdate;
 	Uint32 lastLogicUpdate;
 	int timeToNextUpdate;
@@ -73,11 +75,13 @@ struct Game {
 	int graphicsTickRate = 30;
 
 	//Amount of times game OBJECTS (NPC's, general game state) update per second
-	int logicTickRate = 50;
+	int logicTickRate = 30;
 	
 	//Total ticks
-	int logicTicks;
-	int graphicsTicks;
+	unsigned int logicTicks;
+	unsigned int graphicsTicks;
+	
+	unsigned int inline convert(unsigned int ms) { return ms/this->logicTickRate;} 
 
 	//==========
 	// COMMANDS

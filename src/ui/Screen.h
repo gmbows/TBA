@@ -124,7 +124,7 @@ class DynamicTextBox: public TextBox {
 
 			std::string fallbackText;
 
-			Uint32 stopTick;
+			int stopTick;
 
 			int borderSize = 4;
 			int maxWidth = 60;

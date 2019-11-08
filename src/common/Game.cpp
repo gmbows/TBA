@@ -99,26 +99,28 @@ void Game::setupGame() {
 						
 	this->commandList = {
 			//							name,alias,argc,commandFunc,ECfunc=nullptr
-			new		Command("help",{"?"},0,helpFunc,helpEC),
-			new 		Command("clear",{"clr"},0,clearFunc),
-			new 		Command("inventory",{},0,inventoryFunc),
-			new		Command("move",{"mv"},1,moveFunc,moveEC),
-			new		Command("pause",{},0,pauseFunc),
-			new		Command("stop",{},0,stopFunc),
-			new		Command("unpause",{},0,unpauseFunc),
-			new		Command("target",{},1,targetFunc,targetEC),
-			new		Command("attack",{"atk"},1,attackFunc,attackEC),
-			new		Command("zoom",{"zm"},1,zoomFunc,zoomEC),
-			new		Command("say",{},1,sayFunc,sayEC),
-			new		Command("take",{},1,takeFunc,takeEC),
-			new		Command("hurtme",{"hurt"},1,hurtmeFunc,hurtmeEC),
-			new		Command("exit",{"exit","quit"},0,exitFunc),
+			new		Command({"help","?"},0,helpFunc,helpEC),
+			new 	Command({"clear","clr"},0,clearFunc),
+			new 	Command({"inventory"},0,inventoryFunc),
+			new		Command({"move","mv"},1,moveFunc,moveEC),
+			new		Command({"pause"},0,pauseFunc),
+			new		Command({"stop"},0,stopFunc),
+			new		Command({"unpause"},0,unpauseFunc),
+			new		Command({"target"},1,targetFunc,targetEC),
+			new		Command({"attack","atk"},1,attackFunc,attackEC),
+			new		Command({"zoom","zm"},1,zoomFunc,zoomEC),
+			new		Command({"say"},1,sayFunc,sayEC),
+			new		Command({"take"},1,takeFunc,takeEC),
+			new		Command({"hurtme","hurt"},1,hurtmeFunc,hurtmeEC),
+			new		Command({"exit","quit"},0,exitFunc),
 			////
 		};
 	
 	//Populate string command list with command names for autocomplete
 	for(int i=0;i<this->commandList.size();i++) {
-		this->commandStrings.push_back(this->commandList.at(i)->name);
+		for(int j=0;j<this->commandList.at(i)->aliases.size();j++) {
+			this->commandStrings.push_back(this->commandList.at(i)->aliases.at(j));
+		}
 	}
 
 	//Length of one edge of map square
@@ -142,11 +144,11 @@ void Game::setupGame() {
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	//newChar = new Character(false,160,"Debug Looter",1,0);
-	//newChar->setTarget(new Character(false,160,"Lost Bladesman",0,3));
+	newChar = new Character(false,160,"Debug Looter",-4,0);
+	newChar->setTarget(new Character(false,160,"Lost Bladesman",0,3));
 	//newChar->equipment->primary = new Item(4);
 	//newChar->setTarget(playerChar);
-	//newChar->setStatus(COMBAT);
+	newChar->setStatus(COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(COMBAT);
 
@@ -256,14 +258,12 @@ void Game::update() {
 
 	this->timeToNextUpdate = std::min(this->timeToNextGraphicsUpdate,this->timeToNextLogicUpdate);
 
-	if(this->timeToNextUpdate < 0) {
+	if(this->timeToNextUpdate <= 0) {
 		if(!this->paused) {
 			debug("Falling behind!");
 		}
+	} else {
+		SDL_Delay(this->timeToNextUpdate);
 	}
-
-	//std::cout << (std::to_string(this->timeToNextUpdate)+"\r");
-
-	SDL_Delay(std::max(0,this->timeToNextUpdate));
 
 }

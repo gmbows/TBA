@@ -11,7 +11,7 @@
 
 struct FloatingText: public GameObject {
 
-	Uint32 created;
+	unsigned int created;
 	const std::vector<std::string> message;
 	int duration;
 	float completion = 0;
@@ -37,7 +37,7 @@ struct FloatingText: public GameObject {
 		this->dialogOffset = 5;
 		this->offsetXMult = rand()%16;
 		this->offsetXsign = ((rand()%2) == 0)? -1 : 1;
-		this->created = SDL_GetTicks();
+		this->created = TBAGame->logicTicks;
 		decompose(this->location,this->defaultX,this->defaultY);
 
 	}
@@ -47,11 +47,11 @@ struct FloatingText: public GameObject {
 		this->dialogOffset = 24;
 		decompose(this->location,this->defaultX,this->defaultY);
 		this->tracking = true;
-		this->created = SDL_GetTicks();
+		this->created = TBAGame->logicTicks;
 	}
 
 	bool hasExpired() {
-		return SDL_GetTicks() >= this->created + (this->duration*1000);
+		return TBAGame->logicTicks >= this->created + (TBAGame->convert(this->duration*1000));
 	}
 
 	void drawContent();

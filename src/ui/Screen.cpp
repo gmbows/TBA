@@ -280,14 +280,14 @@ void DynamicTextBox::addMessage(int duration, const std::string& message) {
 	this->messageQueue.push_back(std::make_tuple(message,duration));
 	if(this->messageQueue.size() == 1) {
 		this->setContent(message);
-		this->stopTick = SDL_GetTicks()+duration;
+		this->stopTick = TBAGame->logicTicks+duration;
 	}
 
 }
 
 void DynamicTextBox::update() {
 
-	if(this->enabled and SDL_GetTicks() >= this->stopTick) {
+	if(this->enabled and TBAGame->logicTicks >= this->stopTick) {
 		this->messageQueue.erase(this->messageQueue.begin());
 		if(this->messageQueue.size() == 0) {
 			this->enabled = false;
@@ -296,7 +296,7 @@ void DynamicTextBox::update() {
 			}
 		} else {
 			this->setContent(std::get<0>(this->messageQueue.at(0)));
-			this->stopTick = SDL_GetTicks()+std::get<1>(this->messageQueue.at(0));
+			this->stopTick = TBAGame->logicTicks+std::get<1>(this->messageQueue.at(0));
 		}
 	}
 

@@ -76,7 +76,7 @@ void FloatingText::update() {
 		}
 
 	// Percent of duration completed
-	this->completion = (SDL_GetTicks()-this->created)/(this->duration*1000.0);
+	this->completion = (TBAGame->logicTicks-this->created)/(this->duration*(float)TBAGame->convert(1000.0));
 	//Dialog tracks characters and doesn't bubble
 	if(this->tracking) {
 		this->location = this->trackSubject->getAbsoluteLocation();

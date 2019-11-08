@@ -1,17 +1,21 @@
 #pragma once
 
-#include <SDL2/SDL2.h>
+#include <SDL2/SDL.h>
 
 struct Clock {
 
-	uint32_t ticks;
-	uint32_t inline getTicks() {return ticks;}
+	unsigned int ticks;
+	unsigned int inline getTicks() {return ticks;}
 
-	void setTime(uint32_t time) {
+	void setTime(unsigned int time) {
 		this->ticks = time;
 	}
 
-	Clock() {
-		this->ticks = SDL_GetTicks();
+	void advance(unsigned int time) {
+		this->ticks += time;
 	}
-}
+
+	Clock() {
+		this->ticks = 0;
+	}
+};

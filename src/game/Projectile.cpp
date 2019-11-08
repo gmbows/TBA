@@ -17,8 +17,8 @@ Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,flo
 	this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
 	this->location->addObject(this);
 
-	this->lastUpdate = SDL_GetTicks();
-	this->destroyTime = SDL_GetTicks() + this->maxAge;
+	this->lastUpdate = TBAGame->logicTicks;
+	this->destroyTime = TBAGame->logicTicks + this->maxAge;
 
 	this->active = true;
 }
@@ -38,9 +38,9 @@ void Projectile::update() {
 		this->location->objects.push_back(this);
 	}
 
-	this->lastUpdate = SDL_GetTicks();
+	this->lastUpdate = TBAGame->logicTicks;
 
-	if(SDL_GetTicks() >= this->destroyTime) {
+	if(TBAGame->logicTicks >= this->destroyTime) {
 		this->cleanup();
 	}
 
@@ -55,7 +55,7 @@ void Projectile::relocate() {
 	Character* occupant;
 
 	//Interpolate between old and new locations to check collision
-	for(int j=0;j<SDL_GetTicks()-this->lastUpdate;j++) {
+	for(int j=0;j<TBAGame->logicTicks-this->lastUpdate;j++) {
 		// Check collision with impassable block or tile
 		// Embed a bit into surface
 		if(!thisTile->isPassable()) {
@@ -75,10 +75,11 @@ void Projectile::relocate() {
 				if(!occupant->isAlive()) continue;
 
 				if(dist(occupant->getLocation(),{testX,testY}) < this->collisionSize) {
-
+					//Arrow damage
 					occupant->receiveAttack(1,this->owner);
-					this->x = testX + 2*(this->velocity*std::cos(this->angle));
-					this->y = testY + 2*(this->velocity*std::sin(this->angle));
+					//Do not embed arrows into characters
+					this->x = testX;// + 2*(this->velocity*std::cos(this->angle));
+					this->y = testY;// + 2*(this->velocity*std::sin(this->angle));
 					this->trackSubject = occupant;
 					this->active = false;
 					return;

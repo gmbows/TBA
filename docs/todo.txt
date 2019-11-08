@@ -43,6 +43,7 @@ KNOWN BUGS:
 ==========
 
 	Character:
+		Targeting in the absence of other characters causes a crash
 		Presently characters are invisible between creation and entering a new tile (started happening when recompiled for linux)
 		Behavior:
 			If Character A dies while in combat with Character B from an attack that didn't come from
@@ -65,14 +66,14 @@ KNOWN BUGS:
 TODO:
 ========
 
-
+	Autocomplete targeting function
+		Relies on awareness range
 	Blocks/Construction/Tile heights
-	Item interactions
-	Crafting items
 	Character:
 		Limbs/Limb damage
 		Picking up other characters
 		Behavior:
+			Determine behavior for receiving an attack while in combat with a different character
 			Figure out what happens when you kill a character that you aren't targeting
 			Determine behavior for player character when attacking out of range target
 				"In combat" status?
@@ -80,14 +81,13 @@ TODO:
 				Used for target reaquisition after killing target or aquiring from targetlessness
 			Limit attack speed based on statistics
 		Begin Statistics
-	MapScreen:
-		
 	GameObject:
 		Move move() from Character to GameObject (All game objects should be physics enabled)
 		Leave setLocomotion in Character because it is a unique to characters
 	Commands:
+		Make aliases and command name in the same vector
 		Help
-
+		Item interactions
 ========
 DONE:	
 ========

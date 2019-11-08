@@ -14,7 +14,7 @@ class Projectile: public GameObject {
 		bool active;
 		int displaySize = 10;
 		float collisionSize = .35; //.35 Meters in any direction
-		int maxAge = 5*1000;	//Projectiles decay after 5 seconds
+		int maxAge = 1000;	//Projectiles decay after 5 seconds
 
 		int getDisplayID() {return 7;}
 
@@ -25,8 +25,8 @@ class Projectile: public GameObject {
 
 		Projectile(GameObject*, std::tuple<float,float>,float,float);
 
-		Uint32 lastUpdate;
-		Uint32 destroyTime;
+		unsigned int lastUpdate;
+		unsigned int destroyTime;
 
 		void update();
 
