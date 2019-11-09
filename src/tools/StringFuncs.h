@@ -37,7 +37,17 @@ std::vector<std::string> rsplit(char, const std::string&);
 
 //extend
 //extends lines from second vector to end of first
-std::vector<std::string> extend(const std::vector<std::string>&, const std::vector<std::string>&);
+template <class T>
+std::vector<T> extend(const std::vector<T>& v1, const std::vector<T>& v2) {
+
+	std::vector<T> v3 = v1;
+
+	for(int i=0;i<v2.size();i++) {
+		v3.push_back(v2.at(i));
+	}
+	return v3;
+}
+
 
 //swap
 //swaps 2 entries in a vector

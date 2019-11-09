@@ -146,40 +146,50 @@ bool Character::findTargetInRadius(const std::string& _name) {
 	return false;
 }
 
+std::vector<Character*> Character::getCharactersInRadius() {
+	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
+	Tile* thisTile;
+
+	std::vector<Character*> targets;
+
+	for(int i=0;i<surroundingTiles.size();i++) {
+		thisTile = surroundingTiles.at(i);
+		if(thisTile->isOccupied()) extend(targets,thisTile->occupiers);
+		//if(thisTile->hasObjects()) extend(objects,thisTile->objects);
+	}
+	return targets;
+}
+
 bool Character::combatRetarget() {
 
 	//Target highest priority target in awareness range (placeholder 10)
-	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10);
+	std::vector<Character*> targets = this->getCharactersInRadius();
 	Tile* thisTile;
 
 	Character* occupant;
 
-	for(int i=0;i<surroundingTiles.size();i++) {
-		thisTile = surroundingTiles.at(i);
-		if(thisTile->isOccupied()) {
-			for(int j=0;j<thisTile->occupiers.size();j++) {
-	
-				occupant = thisTile->occupiers.at(j);
+	for(int i=0;i<targets.size();i++) {
+		occupant = targets.at(i)	
+			occupant = thisTile->occupiers.at(j);
 
-				// Valid target conditions: 
-				//	Target is alive
-				//	Target is targeting you 
-				//  Target is attacking, in combat with, or in pursuit of you
-				//  If multiple targets meet these criteria, choose the closest
+			// Valid target conditions: 
+			//	Target is alive
+			//	Target is targeting you 
+			//  Target is attacking, in combat with, or in pursuit of you
+			//  If multiple targets meet these criteria, choose the closest
 
-				if(occupant->isAlive() and
-					occupant->hasTarget() and
-					(char*)occupant->getCharTarget() == (char*)this and
-					(occupant->hasStatus(STATUS_COMBAT) or occupant->hasStatus(STATUS_PURSUE) or occupant->hasStatus(STATUS_ATTACK))) {
-						if(!this->hasTarget()) {
+			if(occupant->isAlive() and
+				occupant->hasTarget() and
+				(char*)occupant->getCharTarget() == (char*)this and
+				(occupant->hasStatus(STATUS_COMBAT) or occupant->hasStatus(STATUS_PURSUE) or occupant->hasStatus(STATUS_ATTACK))) {
+					if(!this->hasTarget()) {
+						this->setTarget(occupant);
+					} else {
+						//Check if this target is closer than current target
+						if(dist(this->getLocation(),occupant->getLocation()) < dist(this->getLocation(),this->getCharTarget()->getLocation())) {
 							this->setTarget(occupant);
-						} else {
-							//Check if this target is closer than current target
-							if(dist(this->getLocation(),occupant->getLocation()) < dist(this->getLocation(),this->getCharTarget()->getLocation())) {
-								this->setTarget(occupant);
-							}
 						}
-				}
+					}
 			}
 		}
 	}
