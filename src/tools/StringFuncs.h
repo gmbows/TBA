@@ -28,6 +28,8 @@ std::vector<std::string> split(char, const std::string&);
 
 //join
 std::string join(char, const std::vector<std::string>&);
+std::string join(const std::string &c, const std::vector<std::string>& v);
+
 
 //rsplit
 //split by token but retain token

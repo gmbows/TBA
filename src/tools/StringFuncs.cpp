@@ -131,6 +131,21 @@ std::string join(char c, const std::vector<std::string>& v) {
 
 }
 
+std::string join(const std::string &c, const std::vector<std::string>& v) {
+
+	std::string newString = v.at(0);
+	if(v.size() == 0) {
+		return "";
+	}
+
+	for(int i=1;i<v.size();i++) {
+		newString += c + v.at(i);
+	}
+
+	return newString;
+
+}
+
 float dist(point p1, point p2) {
 	float x1 = std::get<0>(p1);
 	float y1 = std::get<1>(p1);

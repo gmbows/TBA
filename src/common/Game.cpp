@@ -140,7 +140,7 @@ void Game::setupGame() {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
-		newChar->setStatus(COMBAT);
+		newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
@@ -148,9 +148,9 @@ void Game::setupGame() {
 	newChar->setTarget(new Character(false,160,"Lost Bladesman",0,3));
 	//newChar->equipment->primary = new Item(4);
 	//newChar->setTarget(playerChar);
-	newChar->setStatus(COMBAT);
+	newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
-	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(COMBAT);
+	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 
 	this->gameWorld->createStructure({0,0}, house, 4);
 	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,0,1,2,1,2,1,2,1,2,1});

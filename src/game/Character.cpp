@@ -8,6 +8,7 @@
 #include "Statistics.h"
 #include "../common/Tile.h"
 
+#include <cmath>
 #include <tuple>
 #include <random>
 
@@ -20,7 +21,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 
 	this->init_stats();
 
-	this->setStatus(IDLE);
+	this->setStatus(STATUS_IDLE);
 	this->target = nullptr;
 
 	if(player) {
@@ -43,7 +44,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 }
 
 //==========
-//	MOVEMENT
+//	STATUS_MOVEMENT
 //==========
 
 bool Character::resolveMove(float &newX, float &newY) {
@@ -123,8 +124,8 @@ void Character::move(std::tuple<int,int> direction) {
 
 	this->lastMove = TBAGame->logicTicks;
 
-	//if(this->velocityX == 0) {this->setStatus(IDLE);}
-	//if(this->velocityY == 0) {this->setStatus(IDLE);}
+	//if(this->velocityX == 0) {this->setStatus(STATUS_IDLE);}
+	//if(this->velocityY == 0) {this->setStatus(STATUS_IDLE);}
 	
 
 	//this->velocityX = (std::fabs(this->velocityX) < TBAGame->moveSpeedUnit)? 0 : this->velocityX;
@@ -176,11 +177,29 @@ std::tuple<float,float> Character::getAbsoluteLocation() {
 
 }
 
+std::string Character::getStatusString() {
+	//std::string statusString;
+	std::vector<std::string> statuses;
+	//return statusString;
+	flag statFlag;
+	for(int i=0;i<log2((flag)STATUS_END);i++) {
+		statFlag = 1 << i;
+		if(this->hasStatus((statusIndicator)statFlag)) {
+			statuses.push_back(statusMap.at((statusIndicator)statFlag));
+		}
+	}
+	if(statuses.size() == 0) {
+		return "";
+	}
+	return "\t"+join("\n\t\t\t\t",statuses);
+	//return statusString;
+}
+
 
 std::string Character::getInfo() {
 
 	return " \n\n Name:\t"+this->name + "\n" +
-				"\tStatus:\t"+statusMap.at(this->status) + "\n" +
+				"\tStatus:"+this->getStatusString() + "\n" +
 				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n" +
 				"\tTarget:\t"+this->getTargetName() + "\n" +
 				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
@@ -192,8 +211,9 @@ std::string Character::getInfo() {
 void Character::kill() {
 	if(this->health > 0) { this->health = 0;}
 	this->direction = {0,0};
-	this->target = nullptr;
-	this->setStatus(DEAD);
+	//a warrior's death
+	//this->target = nullptr;
+	this->setStatus(STATUS_DEAD);
 }
 
 void Character::cleanup() {

@@ -7,17 +7,17 @@
 #include <tuple>
 
 std::map<statusIndicator,const std::string> statusMap = {
-	{IDLE,"Idle"},
-	{ATTACK,"Swinging weapon"},
-	{COMBAT,"In combat"},
-	{PURSUE,"Pursuing target"},
-	{MOVE,"Traveling"},
-	{ESCAPE,"Escaping"},
-	{PATROL,"Patrolling"},
-	{STUN,"Stunned"},
-	{CRIPPLED,"Crippled"},
-	{DYING,"Dying"},
-	{DEAD,"Dead"},
+	{STATUS_IDLE,"Idle"},
+	{STATUS_ATTACK,"Swinging weapon"},
+	{STATUS_COMBAT,"In combat"},
+	{STATUS_PURSUE,"Pursuing target"},
+	{STATUS_MOVE,"Traveling"},
+	{STATUS_ESCAPE,"Escaping"},
+	{STATUS_PATROL,"Patrolling"},
+	{STATUS_STUN,"Stunned"},
+	{STATUS_CRIPPLED,"Crippled"},
+	{STATUS_DYING,"Dying"},
+	{STATUS_DEAD,"Dead"},
 };
 
 //==========
@@ -50,23 +50,28 @@ GameObject* Character::getTarget()  {
 	return this->target;
 }
 
+void Character::addStatus(statusIndicator newStatus) {
+	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
+		// Character must be stationary to enter combat
+		this->direction = {0,0};
+		this->removeStatus(STATUS_MOVE);
+		this->resetCombatTimer();
+	}
+	this->status = (this->status | newStatus);
+	if(newStatus != STATUS_IDLE) this->removeStatus(STATUS_IDLE);
+}
 
 void Character::setStatus(statusIndicator newStatus) {
-	if(this->getStatus() == DEAD) {
-		return;
-	}
-	if(newStatus == IDLE) {
+	//remove all other statuses and replace with newStatus
+	// really only used for death
+	if(newStatus == STATUS_IDLE) {
 		this->direction = {0,0};
-	} else if(newStatus == COMBAT and this->status != COMBAT) {
+	} else if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
 		// Character must be stationary to enter combat
 		this->direction = {0,0};
 		this->resetCombatTimer();// - (this->attackRate/2);
 	}
 	this->status = newStatus;
-}
-
-statusIndicator Character::getStatus()  {
-	return this->status;
 }
 
 bool Character::targetInRange() {
@@ -122,6 +127,25 @@ bool Character::getNearestTarget() {
 
 }
 
+bool Character::findTargetInRadius(const std::string& _name) {
+	//Find a target with provided partial or complete name
+	//If multiple matching targets are found cycle through them
+	std::vector<Tile*> tileSet = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder until awareness stat
+	GameObject* testObj;
+	for(int i=0;i<tileSet.size();i++) {
+		if(tileSet.at(i)->isOccupied()) {
+			for(int j=0;j<tileSet.at(i)->occupiers.size();j++) {
+				testObj = tileSet.at(i)->occupiers.at(j);
+				if(startsWith(toLower(testObj->getName()),toLower(_name))) {
+					this->setTarget(testObj);
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
 bool Character::combatRetarget() {
 
 	//Target highest priority target in awareness range (placeholder 10)
@@ -146,7 +170,7 @@ bool Character::combatRetarget() {
 				if(occupant->isAlive() and
 					occupant->hasTarget() and
 					(char*)occupant->getCharTarget() == (char*)this and
-					(occupant->getStatus() == COMBAT or occupant->getStatus() == PURSUE or occupant->getStatus() == ATTACK)) {
+					(occupant->hasStatus(STATUS_COMBAT) or occupant->hasStatus(STATUS_PURSUE) or occupant->hasStatus(STATUS_ATTACK))) {
 						if(!this->hasTarget()) {
 							this->setTarget(occupant);
 						} else {
@@ -176,16 +200,16 @@ void Character::moveAway(std::tuple<float,float> location) {
 }
 
 //==========
-//	 MOVE
+//	 STATUS_MOVE
 //==========
 
 void Character::setLocomotion() {
 
 	if(!this->isPlayer) {
 		if(this->hasTarget()) {
-			if(this->getStatus() == PURSUE) {
+			if(this->hasStatus(STATUS_PURSUE)) {
 				this->moveTo({this->getCharTarget()->x,this->getCharTarget()->y});
-			} else if(this->getStatus() == ESCAPE) {
+			} else if(this->hasStatus(STATUS_ESCAPE)) {
 				this->moveAway({this->getCharTarget()->x,this->getCharTarget()->y});
 			}
 		}
@@ -195,7 +219,7 @@ void Character::setLocomotion() {
 	this->velocityY = std::max(-this->maxMoveSpeed,std::min(this->maxMoveSpeed,this->velocityY+std::get<1>(this->direction)));
 
 	if(this->velocityX == 0 and this->velocityY == 0) {
-		this->setStatus(IDLE);
+		this->removeStatus(STATUS_MOVE);
 		return;
 	}
 
@@ -203,7 +227,7 @@ void Character::setLocomotion() {
 }
 
 //==========
-//  COMBAT
+//  STATUS_COMBAT
 //==========
 
 void Character::combat() {
@@ -214,12 +238,12 @@ void Character::combat() {
 
 	if(this->getCharTarget() == nullptr) {
 		this->combatRetarget();
-		this->setStatus(IDLE);
+		//this->Status(STATUS_IDLE);
 		return;
 	}
 
 	//============================
-	//		PREPARE ATTACK CONDITIONS
+	//		PREPARE STATUS_ATTACK CONDITIONS
 	//============================
 
 	if(!this->targetInRange()) {
@@ -231,7 +255,7 @@ void Character::combat() {
 			TBAGame->popupText(.5,"Distance from target: "+std::to_string(2*dist(this->getLocation(),this->getCharTarget()->getLocation()))+"m");
 		} else {
 			// If NPC's target is out of its range, move towards it 
-			this->setStatus(PURSUE);
+			this->addStatus(STATUS_PURSUE);
 		}
 		return;
 	}
@@ -245,7 +269,7 @@ void Character::combat() {
 		return;
 	}
 	//====================
-	//		PREPARE ATTACK
+	//		PREPARE STATUS_ATTACK
 	//====================
 	
 	//Stop moving to prepare attack
@@ -256,21 +280,22 @@ void Character::combat() {
 	switch(this->getAttackStatus()) {
 		//Character is in combat but not ready to attack
 		case ATK_NOT_READY:
-			this->setStatus(COMBAT);
+			this->addStatus(STATUS_COMBAT);
 			return;
 		//Character is currently attacking with weapon
 		//Wait for attack to connect
-		case ATK_ATTACKING:
-			this->setStatus(ATTACK);
+		case ATK_STATUS_ATTACKING:
+			this->addStatus(STATUS_ATTACK);
 			return;
 		//Swing makes contact, send attack and calculate damage
 		case ATK_COMPLETE:
+			this->removeStatus(STATUS_ATTACK);
 			break;
 	}
 
 
 	//====================
-	//		SEND ATTACK
+	//		SEND STATUS_ATTACK
 	//====================
 
 	this->sendAttack(this->target);
@@ -286,7 +311,7 @@ attackStatus Character::getAttackStatus() {
 	if(TBAGame->logicTicks >= this->lastAttack + this->attackRate + this->defaultAttackSpeed) {
 		return ATK_COMPLETE;
 	} else if(TBAGame->logicTicks >= this->lastAttack + this->attackRate) {
-		return ATK_ATTACKING;
+		return ATK_STATUS_ATTACKING;
 	}
 	return ATK_NOT_READY;//(TBAGame->logicTicks >= this->lastAttack + this->attackRate);
 }
@@ -332,15 +357,21 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	//Takes attack type and specifics
 	//Performs resistance calculation, returns damage dealt
 
+	//If target is not in combat, put in combat
+	if(!this->hasStatus(STATUS_COMBAT | STATUS_PURSUE | STATUS_ATTACK)) {
+		this->addStatus(STATUS_COMBAT);
+	}
+	/*
 	switch(this->getStatus()) {
-		case COMBAT:
-		case PURSUE:
-		case ATTACK:
+		case STATUS_COMBAT:
+		case STATUS_PURSUE:
+		case STATUS_ATTACK:
 			break;
 		default:
-			this->setStatus(COMBAT);
+			this->setStatus(STATUS_COMBAT);
 	}
-
+	*/
+	
 	// Swap target to attacker if attacker is a higher priority than current target
 	// Swap conditions: 
 	//	You have no target
@@ -374,7 +405,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	}
 
 	//====================
-	// REACT POST ATTACK
+	// REACT POST STATUS_ATTACK
 	//====================
 
 	if(this->health <= 0) {
@@ -390,7 +421,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		//Should check if targets in awareness range are targeting and attacking
 
 		if(!static_cast<Character*>(attacker)->combatRetarget()) {
-			//static_cast<Character*>(attacker)->setStatus(IDLE);
+			//static_cast<Character*>(attacker)->setStatus(STATUS_IDLE);
 		}
 
 	}
@@ -407,33 +438,49 @@ void Character::say(const std::string& message) {
 
 void Character::update() {
 
-	if(!this->isAlive() and this->getStatus() != DEAD) {
+	if(!this->isAlive() and !this->hasStatus(STATUS_DEAD)) {
 		this->kill();
 	}
+
+	//Perform status-based action
+	if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_MOVE | STATUS_PURSUE)) {
+		this->combat();
+	}
+	if(this->hasStatus(STATUS_PURSUE)) {
+		if(this->targetInRange()) {
+			this->addStatus(STATUS_COMBAT);
+			this->removeStatus(STATUS_PURSUE);
+		}
+		this->setLocomotion();
+	}
+	if(this->hasStatus(STATUS_MOVE)) {
+		this->setLocomotion();
+	}
+	/*
 	switch(this->getStatus()) {
-		case DEAD:
+		case STATUS_DEAD:
 			break;
-		case IDLE:
+		case STATUS_IDLE:
 			//Contemplate
 			//this->decideOnNewAction()
 			break;
-		case COMBAT:
-		case ATTACK:
+		case STATUS_COMBAT:
+		case STATUS_ATTACK:
 			this->combat();
 			break;
-		case PURSUE:
+		case STATUS_PURSUE:
 			if(this->targetInRange()) {
-				this->setStatus(COMBAT);
+				this->addStatus(STATUS_COMBAT);
 			}
 			this->setLocomotion();
 			break;
-		case MOVE:
+		case STATUS_MOVE:
 			this->setLocomotion();
 			break;
-		case ESCAPE:
+		case STATUS_ESCAPE:
 			break;
 	}
-
+	*/
 	//Physics
 	this->move(this->direction);
 

@@ -66,8 +66,6 @@ KNOWN BUGS:
 TODO:
 ========
 
-	Autocomplete targeting function
-		Relies on awareness range
 	Blocks/Construction/Tile heights
 	Character:
 		Limbs/Limb damage
@@ -85,12 +83,15 @@ TODO:
 		Move move() from Character to GameObject (All game objects should be physics enabled)
 		Leave setLocomotion in Character because it is a unique to characters
 	Commands:
-		Make aliases and command name in the same vector
 		Help
 		Item interactions
 ========
 DONE:	
 ========
+	Characters can have multiple status flags e.g. In combat + Swinging weapon
+	Make aliases and command name in the same vector
+	Autocomplete targeting function
+		Relies on awareness range
 	Awareness (x block radius around character)
 	Ranged attacks
 	Clean up FloatingText

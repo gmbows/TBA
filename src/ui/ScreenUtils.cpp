@@ -182,6 +182,10 @@ void MapScreen::generateMapTexture() {
 
 			tileID = thisTile->getDisplayID();
 
+			if(thisTile->isOccupied()) {
+				SDL_SetTextureAlphaMod(this->screenFont->fontTexture,220);
+			}
+
 			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
 				debug("ERROR: Missing charMap entry for tile "+tileID);
 				exit(0);
@@ -199,6 +203,10 @@ void MapScreen::generateMapTexture() {
 				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
 			} else {
 				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+			}
+
+			if(thisTile->isOccupied()) {
+				SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
 			}
 
 			//Advance cursor for next character

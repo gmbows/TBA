@@ -15,23 +15,40 @@ struct Tile;
 #include <tuple>
 #include <map>
 
-enum statusIndicator: int {
-	IDLE = 1,
-	MOVE = 2,
-	ATTACK = 4,
-	COMBAT = 8,
-	PURSUE = 16,
-	STUN = 32,
-	ESCAPE = 64,
-	PATROL = 128,
-	DYING = 256,
-	CRIPPLED = 512,
-	DEAD = 1024,
+typedef unsigned int flag;
+
+enum statusIndicator: flag {
+	STATUS_IDLE = 		1 << 0,
+	STATUS_MOVE = 		1 << 1,
+	STATUS_ATTACK = 	1 << 2,
+	STATUS_COMBAT =		1 << 3,
+	STATUS_PURSUE = 	1 << 4,
+	STATUS_STUN = 		1 << 5,
+	STATUS_ESCAPE = 	1 << 6,
+	STATUS_PATROL = 	1 << 7,
+	STATUS_DYING = 		1 << 8,
+	STATUS_CRIPPLED = 	1 << 9,
+	STATUS_DEAD = 		1 << 10,
+	STATUS_END = 		1 << 11,
 };
+
+inline statusIndicator operator|(statusIndicator f1,statusIndicator f2) {
+	return (statusIndicator)((flag)f1 | (flag)f2);
+}
+inline statusIndicator operator&(statusIndicator f1,statusIndicator f2) {
+	return (statusIndicator)((flag)f1 & (flag)f2);
+}
+inline bool operator==(statusIndicator f1,statusIndicator f2) {
+	return (f1 ^ f2) == 0;
+}
+inline bool operator!=(statusIndicator f1,statusIndicator f2) {
+	return (f1 ^ f2) > 0;
+}
+
 
 enum attackStatus: int {
 	ATK_NOT_READY,
-	ATK_ATTACKING,
+	ATK_STATUS_ATTACKING,
 	ATK_COMPLETE,
 };
 
@@ -93,7 +110,7 @@ class Character: public GameObject {
 		int lastMove = 0;
 
 		//========
-		//MOVEMENT
+		//STATUS_MOVEMENT
 		//========
 
 		//In format units per ms
@@ -116,7 +133,9 @@ class Character: public GameObject {
 		//========
 
 		GameObject *target;
-		statusIndicator status;
+
+		//swapped to flags instead of single status int
+		flag status = 1;
 		
 		//Target
 		bool inline hasTarget() {return !(this->target == nullptr);}
@@ -128,11 +147,21 @@ class Character: public GameObject {
 		bool targetInRange();
 		bool combatRetarget();
 		bool getNearestTarget();
+		bool findTargetInRadius(const std::string &name);
 
 		//Status
 		void setStatus(statusIndicator);
-		statusIndicator getStatus();
+		void addStatus(statusIndicator);
+
+		inline void removeStatus(statusIndicator _s) {
+			this->status = (this->status & ~_s);
+			if(this->status == 0) this->addStatus(STATUS_IDLE);
+		}
+
+		inline flag getStatus() { return this->status; }
+		inline bool hasStatus(statusIndicator _s) { return (this->status & _s) > 0;}
 		bool inline isAlive() {return (this->health > 0);}
+		std::string getStatusString();
 
 		//Combat
 		attackStatus getAttackStatus();

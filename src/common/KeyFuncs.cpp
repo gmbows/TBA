@@ -166,7 +166,7 @@ void resetAllScreens() {
 }
 
 //====================
-//		PLAYER MOVEMENT
+//		PLAYER STATUS_MOVEMENT
 //====================
 
 void move(bool m_up,bool m_down,bool m_left, bool m_right) {
@@ -190,7 +190,7 @@ void move(bool m_up,bool m_down,bool m_left, bool m_right) {
 		}
 
 	if(x ^ y) {
-		TBAGame->playerChar->setStatus(MOVE);
+		TBAGame->playerChar->addStatus(STATUS_MOVE);
 	}
 
 	if(TBAGame->playerChar->isAlive()) {
@@ -216,7 +216,7 @@ void debugKey() {
 	//TBAGame->popupText(1,"Building is too close to existing settlement");
 
 
-	//TBAGame->playerChar->setStatus(ATTACK);
+	//TBAGame->playerChar->setStatus(STATUS_ATTACK);
 
 	//Check zoom
 	//TBAGame->gameWindow->mapScreen->charW-=2;

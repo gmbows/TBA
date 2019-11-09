@@ -53,7 +53,7 @@ std::string inventoryFunc(Command* command,const std::vector<std::string>& args)
 std::string moveFunc(Command* command, const std::vector<std::string> &args) {
 
 	TBAGame->playerChar->direction = std::get<1>(dirMap.at(args.at(0)));
-	TBAGame->playerChar->setStatus(MOVE);
+	TBAGame->playerChar->setStatus(STATUS_MOVE);
 	return "\nMoving "+command->aux;
 
 }
@@ -120,7 +120,8 @@ std::string targetFunc(Command* command, const std::vector<std::string> &args) {
 	}
 
 	//Otherwise, target object specified by aux string set in EC function
-	TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	
+	//TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	
+	TBAGame->playerChar->findTargetInRadius(command->aux);
 	return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
 }
 bool targetEC(Command* command, const std::vector<std::string> &args) {
@@ -130,7 +131,7 @@ bool targetEC(Command* command, const std::vector<std::string> &args) {
 	}
 
 	std::string targetName = join(' ',args);
-	if(TBAGame->findObject(targetName) == nullptr) {
+	if(!TBAGame->playerChar->findTargetInRadius(targetName)) {
 		command->error = "Target not found";
 		return false;
 	}
@@ -142,7 +143,7 @@ bool targetEC(Command* command, const std::vector<std::string> &args) {
 
 //Attack
 std::string attackFunc(Command* command, const std::vector<std::string> &args) {
-	TBAGame->playerChar->setStatus(COMBAT);
+	TBAGame->playerChar->setStatus(STATUS_COMBAT);
 	return "\nAttacking "+TBAGame->playerChar->getTargetName();
 }
 bool attackEC(Command* command, const std::vector<std::string> &args) {
