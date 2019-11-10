@@ -6,6 +6,7 @@ A multiplatform text based rpg written in c++
 `->help` or `?` for a list of commands
 #### Keyboard input
 
+Autocomplete command: `->partial-command [tab]`<br>
 Move: `ctrl + [arrow key]`<br>
 Select: `Right click`<br>
 Place block:  `Left click` <br>
