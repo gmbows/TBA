@@ -4,7 +4,7 @@ A multiplatform text based rpg written in c++
 ## Basic controls
 #### Commands
 `->help` or `?` for a list of commands
-#### Keyboard input
+#### Keyboard shortcuts
 
 Move: `ctrl + [arrow key]`<br>
 Place block:  `Left click` <br>
