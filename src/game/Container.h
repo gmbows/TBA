@@ -4,7 +4,7 @@
 #include "../common/Tile.h"
 
 #include "../common/Common.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <tuple>
 

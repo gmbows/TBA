@@ -56,3 +56,6 @@
 	//Hurtme
 	std::string hurtmeFunc(Command*, const std::vector<std::string>&);
 	bool hurtmeEC(Command*, const std::vector<std::string>&);
+
+	//Exit
+	std::string exitFunc(Command*, const std::vector<std::string>&);

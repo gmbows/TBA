@@ -1,6 +1,6 @@
 #include "Input.h"
 
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "../common/Common.h"
 #include "Command.h"
 

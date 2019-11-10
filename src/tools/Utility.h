@@ -23,6 +23,14 @@ void dumpVec(const std::vector<T>& v) {
 
 }
 
+//isdigit
+bool isdigit(const std::string& s);
+
+//common
+//returns first n characters that strings have in common
+std::string common(const std::string &s1, const std::string &s2);
+
+
 //split
 std::vector<std::string> split(char, const std::string&);
 
@@ -123,7 +131,7 @@ bool startsWith(const std::string&, const std::string&);
 template <class T>
 int find(T o,const std::vector<T> v) {
 	for(int i=0;i<v.size();i++) {
-		if((char*)o == (char*)v.at(i)) {
+		if(o == v.at(i)) {
 			return i;
 		}
 	}
@@ -151,4 +159,22 @@ void inline debug(T s) { std::cout << s << std::endl; }
 template <class T>
 void inline debug(const std::vector<T>& s) {dumpVec(s);}
 
-float dist(point 	, point);
+float dist(point, point);
+
+///////////////
+//CONDITION SET
+///////////////
+
+struct ConditionSet {
+	std::vector<bool> conds;
+
+	inline bool valid() {
+		return !contains(conds,false);
+	}
+
+	ConditionSet(){}
+
+	ConditionSet(const std::vector<bool> &c): conds(c) {
+		
+	}
+};

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../tools/Log.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "Screen.h"
 
 #include <iostream>

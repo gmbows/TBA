@@ -1,6 +1,6 @@
 #include "Attributes.h"
 
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 AttributeSet::AttributeSet(const std::vector<itemAttribute> &attribEnums, const std::vector<float> &attribValues) {
 
@@ -20,6 +20,7 @@ bool AttributeSet::hasAttribute(itemAttribute attrib) {
 }
 
 float AttributeSet::getValue(itemAttribute attrib) {
+	debug("1");
 	if(this->hasAttribute(attrib)) {
 		return this->attributeValues.at(attrib);
 	}

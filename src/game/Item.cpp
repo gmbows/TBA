@@ -1,6 +1,6 @@
 #include "Item.h"
 #include "ItemManifest.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <map>
 #include <tuple>
@@ -8,7 +8,7 @@
 
 Item::Item(int _id): id(_id) {
 
-	if(itemManifest.find(id) == itemManifest.end()) {
+	if(id >= itemManifest.size()) {
 		debug("ERROR: Adding invalid item with id "+std::to_string(id)+", using invalid item");
 	}
 
@@ -18,8 +18,8 @@ Item::Item(int _id): id(_id) {
 	this->weight = std::get<1>(itemInfo);
 	this->size = std::get<2>(itemInfo);
 	this->types = std::get<3>(itemInfo);
-	this->primaryType = this->types.at(0);
-	this->attributes = new AttributeSet(attributeLookup.at(this->primaryType),std::get<4>(itemInfo));
+	this->primaryType = this->getPrimaryType();
+	this->createAttributeSet(this->getAttributes(),std::get<4>(itemInfo));
 
 	/*std::vector<itemAttribute> attribEnums = attributeLookup.at(this->primaryType);
 	std::vector<int> attribValues = std::get<4>(itemInfo);
@@ -32,31 +32,57 @@ Item::Item(int _id): id(_id) {
 	this->created = std::time(NULL);
 
 }
- 
+
+std::vector<itemAttribute> Item::getAttributes() {
+	//Returns vector of attributes that this item needs values for
+	if(attributeLookup.find(this->primaryType) != attributeLookup.end()) {
+		return attributeLookup.at(this->primaryType);
+	} else {
+		return {};
+	}
+}
+
+itemType Item::getPrimaryType() {
+	//Returns type that appears first in the itemType enum
+	flag testFlag;
+	for(int i=0;i<log2((flag)I_END);i++) {
+		testFlag = 1 << i;
+		if(this->hasType((itemType)testFlag)) return (itemType)testFlag;
+	}
+	//Should never return I_END
+	// item should have received a type
+	return I_END;
+}
+
+void Item::createAttributeSet(const std::vector<itemAttribute> &attribs,const std::vector<float> &attribValues) {
+
+	// If list of attribute values received from item manifest
+	// is longer than list of attributes from attribute lookup map,
+	// trailing attributes and values will be ignored
+
+	int attribCount = std::min(attribs.size(),attribValues.size());
+
+	for(int i=0;i<attribCount;i++) {
+		this->attributes.insert({attribs.at(i),attribValues.at(i)});
+	}
+}
+
+
 bool Item::hasAttribute(itemAttribute attrib) {
 	//return (this->attributeValues.find(attrib) != this->attributeValues.end());
-	return this->attributes->hasAttribute(attrib);
+	return (this->attributes.find(attrib) != this->attributes.end());
 }
 
 float Item::getAttribute(itemAttribute attrib) {
 
-	// Check that at least one of this item's types has
-	// attribute attrib, then return value at attribute index
-	//	in this item's attribute value vector
-
-	/*if(this->hasAttribute(attrib)) {
-		return this->attributeValues.at(attrib);
+	if(this->hasAttribute(attrib)) {
+		return this->attributes.at(attrib);
 	}
-	return -1;*/
-	return this->attributes->getValue(attrib);
+	return -1;
 
 }
 
 std::string Item::getName() {
 	//For advanced item types with names that may be different than default
 	return this->name;
-}
-
-bool Item::hasType(itemType type) {
-	return contains(this->types,type);
 }

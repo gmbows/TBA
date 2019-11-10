@@ -149,6 +149,11 @@ class Character: public GameObject {
 		bool getNearestTarget();
 		bool findTargetInRadius(const std::string &name);
 		std::vector<Character*> getCharactersInRadius();
+		std::vector<GameObject*> getObjectsInRadius(objType);
+		inline Character* closer(Character* c1,Character* c2) {
+			return (dist(this->getLocation(),c1->getLocation()) < dist(this->getLocation(),c2->getLocation()))? c1 : c2;
+
+		}
 
 		//Status
 		void setStatus(statusIndicator);

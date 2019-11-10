@@ -2,7 +2,7 @@
 #include "Character.h"
 #include "../common/Tile.h"
 #include "Structure.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <vector>
 #include <random>

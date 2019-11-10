@@ -53,7 +53,7 @@ std::string inventoryFunc(Command* command,const std::vector<std::string>& args)
 std::string moveFunc(Command* command, const std::vector<std::string> &args) {
 
 	TBAGame->playerChar->direction = std::get<1>(dirMap.at(args.at(0)));
-	TBAGame->playerChar->setStatus(MOVE);
+	TBAGame->playerChar->setStatus(STATUS_MOVE);
 	return "\nMoving "+command->aux;
 
 }
@@ -112,13 +112,17 @@ bool helpEC(Command* command, const std::vector<std::string> &args) {
 
 //Target
 std::string targetFunc(Command* command, const std::vector<std::string> &args) {
+	//if no arguments were provided, find nearest character within 
+	//player char's awareness radius
 	if(args.size() == 0) {
-		TBAGame->playerChar->getNearestTarget();
-		return "\nTargeting nearest character";
+		if(!TBAGame->playerChar->getNearestTarget()) return "\nNo valid targets found";
+		return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
 	}
 
-	TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	
-	return "\nTargeting "+TBAGame->playerChar->getTargetName();
+	//Otherwise, target object specified by aux string set in EC function
+	//TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	
+	TBAGame->playerChar->findTargetInRadius(command->aux);
+	return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
 }
 bool targetEC(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) {
@@ -127,17 +131,19 @@ bool targetEC(Command* command, const std::vector<std::string> &args) {
 	}
 
 	std::string targetName = join(' ',args);
-	if(TBAGame->findObject(targetName) == nullptr) {
+	if(!TBAGame->playerChar->findTargetInRadius(targetName)) {
 		command->error = "Target not found";
 		return false;
 	}
+
 	command->aux = targetName;
 	return true;
+
 }
 
 //Attack
 std::string attackFunc(Command* command, const std::vector<std::string> &args) {
-	TBAGame->playerChar->setStatus(COMBAT);
+	TBAGame->playerChar->setStatus(STATUS_COMBAT);
 	return "\nAttacking "+TBAGame->playerChar->getTargetName();
 }
 bool attackEC(Command* command, const std::vector<std::string> &args) {
@@ -209,8 +215,14 @@ bool takeEC(Command* command, const std::vector<std::string> &args) {
 //Hurtme
 std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
 	TBAGame->playerChar->health -= std::stoi(args.at(0));
-	return "\tHurt player for "+args.at(0);
+	return "\nHurt player for "+args.at(0);
 }
 bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
 	return true;
+}
+
+//Exit
+std::string exitFunc(Command* command, const std::vector<std::string> &args) {
+	TBAGame->gameRunning = false;
+	return "\nExiting";
 }

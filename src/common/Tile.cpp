@@ -1,6 +1,6 @@
 #include "Tile.h"
 
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "../game/Character.h"
 
 #include <iostream>

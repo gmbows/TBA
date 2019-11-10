@@ -21,6 +21,11 @@ Command:
 		-When called with a string vector of arguments, if the command has an errorcheck function,
 			it will first send the arguments to its EC function. If the EC function returns false it will provide
 			a string explaining the error, otherwise it may provide auxiliary information to the command's aux string member variable
+Item interactions:
+	Player specifies item name
+		If selected (info on textbox) object is not a container
+		Item will be searched for in all containers in a small area around the player
+		And take the first it finds
 
 Inventory:
 	Inventory System: 

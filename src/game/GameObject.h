@@ -1,5 +1,6 @@
 #pragma once
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
+#include "Inventory.h"
 
 #include <string>
 #include <utility>

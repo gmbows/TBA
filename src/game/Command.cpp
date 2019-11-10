@@ -1,17 +1,17 @@
 #include "Command.h"
 
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <vector>
 #include <string>
 
-Command::Command(const std::vector<std::string>& _alias,int _argCount,
+Command::Command(const std::vector<std::string>& _alias,
 
 		//Primary and EC functions
 		std::string (*_function)(Command* , const std::vector<std::string>&),
 		bool (*_ECfunction)(Command*, const std::vector<std::string>&)):
 		
-	aliases(_alias), argCount(_argCount), function(_function), ECfunction(_ECfunction) {}
+	aliases(_alias), function(_function), ECfunction(_ECfunction) {}
 
 std::string Command::call(const std::vector<std::string>& args) {
 

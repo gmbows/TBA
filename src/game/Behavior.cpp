@@ -1,7 +1,7 @@
 #include "Character.h"
 #include "../common/Common.h"
 #include "GameObject.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "FloatingText.h"
 #include "Projectile.h"
 #include <tuple>
@@ -33,12 +33,13 @@ std::string Character::getTargetInfo() {
 
 std::string Character::getTargetName() {
 
-	if(this->target == nullptr) {return "None";}
+	if(!this->hasTarget()) {return "None";}
 
 	return this->target->getName();
 }
 
 void Character::setTarget(GameObject *o) {
+	this->resetCombatTimer();
 	this->target = o;
 }
 
@@ -154,10 +155,38 @@ std::vector<Character*> Character::getCharactersInRadius() {
 
 	for(int i=0;i<surroundingTiles.size();i++) {
 		thisTile = surroundingTiles.at(i);
-		if(thisTile->isOccupied()) extend(targets,thisTile->occupiers);
+		if(thisTile->isOccupied()) {
+			//extend(targets,thisTile->occupiers);
+			for(int j=0;j<thisTile->occupiers.size();j++) {
+				if((char*)this != (char*)thisTile->occupiers.at(j)) targets.push_back(thisTile->occupiers.at(j));
+			}
+		}
 		//if(thisTile->hasObjects()) extend(objects,thisTile->objects);
 	}
 	return targets;
+}
+
+std::vector<GameObject*> Character::getObjectsInRadius(objType type = OBJ_GENERIC) {
+	//Find and return all objects with type "type" (or all objects if empty)
+	// within small radius of caller (2)
+	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,2); //placeholder
+	Tile* thisTile;
+
+	bool noFilter = (type == OBJ_GENERIC);
+
+	std::vector<GameObject*> objects;
+
+	for(int i=0;i<surroundingTiles.size();i++) {
+		thisTile = surroundingTiles.at(i);
+		if(thisTile->hasObjects()) {
+			//extend(objects,thisTile->occupiers);
+			for(int j=0;j<thisTile->objects.size();j++) {
+				if(noFilter or thisTile->objects.at(j)->type == type) objects.push_back(thisTile->objects.at(j));
+			}
+		}
+		//if(thisTile->hasObjects()) extend(objects,thisTile->objects);
+	}
+	return objects;
 }
 
 bool Character::combatRetarget() {
@@ -169,32 +198,32 @@ bool Character::combatRetarget() {
 	Character* occupant;
 
 	for(int i=0;i<targets.size();i++) {
-		occupant = targets.at(i)	
-			occupant = thisTile->occupiers.at(j);
+		occupant = targets.at(i);
 
-			// Valid target conditions: 
-			//	Target is alive
-			//	Target is targeting you 
-			//  Target is attacking, in combat with, or in pursuit of you
-			//  If multiple targets meet these criteria, choose the closest
+		// Valid target conditions: 
+		//	Target is alive
+		//	Target is targeting you 
+		//  Target is attacking, in combat with, or in pursuit of you
+		//  If multiple targets meet these criteria, choose the closest
 
-			if(occupant->isAlive() and
-				occupant->hasTarget() and
-				(char*)occupant->getCharTarget() == (char*)this and
-				(occupant->hasStatus(STATUS_COMBAT) or occupant->hasStatus(STATUS_PURSUE) or occupant->hasStatus(STATUS_ATTACK))) {
-					if(!this->hasTarget()) {
-						this->setTarget(occupant);
-					} else {
-						//Check if this target is closer than current target
-						if(dist(this->getLocation(),occupant->getLocation()) < dist(this->getLocation(),this->getCharTarget()->getLocation())) {
-							this->setTarget(occupant);
-						}
-					}
+		ConditionSet target_valid = ConditionSet({
+			occupant->isAlive(),
+			occupant->hasTarget(),
+			(char*)occupant->getCharTarget() == (char*)this,
+			occupant->hasStatus(STATUS_COMBAT),
+		});
+		
+		if(target_valid.valid()) {
+			if(!this->hasTarget()) {
+				this->setTarget(occupant);
+			} else {
+				//Check if this target is closer than current target
+				this->setTarget(closer(this->getCharTarget(),occupant));
 			}
 		}
 	}
 	//ALWAYS RETURNS FALSE!!
-	return false;
+	return this->hasTarget();
 }
 
 void Character::moveTo(std::tuple<float,float> location) {
@@ -246,10 +275,12 @@ void Character::combat() {
 	//		ACQUIRE TARGET
 	//====================
 
-	if(this->getCharTarget() == nullptr) {
-		this->combatRetarget();
+	if(!this->hasTarget()) {
+		if(!this->combatRetarget()) {
+			this->removeStatus(STATUS_COMBAT);
+			return;
+		}
 		//this->Status(STATUS_IDLE);
-		return;
 	}
 
 	//============================
@@ -259,10 +290,9 @@ void Character::combat() {
 	if(!this->targetInRange()) {
 		if(this->isPlayer) {
 			//If target is out of range, treat as if character is not in combat
-			this->resetCombatTimer();
-			
+			//this->resetCombatTimer();
 			//TBAGame->displayText("\nTarget out of range");
-			TBAGame->popupText(.5,"Distance from target: "+std::to_string(2*dist(this->getLocation(),this->getCharTarget()->getLocation()))+"m");
+			//TBAGame->popupText(.5,"Distance from target: "+std::to_string(2*dist(this->getLocation(),this->getCharTarget()->getLocation()))+"m");
 		} else {
 			// If NPC's target is out of its range, move towards it 
 			this->addStatus(STATUS_PURSUE);
@@ -276,6 +306,7 @@ void Character::combat() {
 		} else {
 			//Placeholder for behavior when in combat with dead target
 		}
+		this->removeStatus(STATUS_COMBAT);
 		return;
 	}
 	//====================
@@ -305,7 +336,7 @@ void Character::combat() {
 
 
 	//====================
-	//		SEND STATUS_ATTACK
+	//		SEND ATTACK
 	//====================
 
 	this->sendAttack(this->target);
@@ -328,10 +359,10 @@ attackStatus Character::getAttackStatus() {
 
 itemType Character::getAttackType() {
 	if(this->equipment->primary == nullptr) {
-		return MELEE;
+		return I_MELEE;
 	}
-	if(this->equipment->primary->hasType(MELEE)) return MELEE;
-	return RANGED;
+	if(this->equipment->primary->hasType(I_MELEE)) return I_MELEE;
+	return I_RANGED;
 }
 
 void Character::sendAttack(GameObject *target) {
@@ -343,7 +374,7 @@ void Character::sendAttack(GameObject *target) {
 	int damage = this->getAttackDamage();
 
 	switch(this->getAttackType()) {
-		case RANGED:
+		case I_RANGED:
 			float x,y;
 			decompose(this->getLocation(),x,y);
 			float tx,ty;
@@ -351,7 +382,7 @@ void Character::sendAttack(GameObject *target) {
 			// DEBUG:: Replace rand range with accuracy deviation and projectile speed
 			new Projectile(this,this->getLocation(),(-1+rand()%1)-atan2(ty-y,tx-x)/(3.1415/180),.5);
 			break;
-		case MELEE:
+		case I_MELEE:
 			// Send to target to be changed based on damage resistance
 			static_cast<Character*>(target)->receiveAttack(damage,this);
 			break;
@@ -368,7 +399,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	//Performs resistance calculation, returns damage dealt
 
 	//If target is not in combat, put in combat
-	if(!this->hasStatus(STATUS_COMBAT | STATUS_PURSUE | STATUS_ATTACK)) {
+	if(!this->hasStatus(STATUS_COMBAT)) {
 		this->addStatus(STATUS_COMBAT);
 	}
 	/*
@@ -422,7 +453,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		if(static_cast<Character*>(attacker)->isPlayer) TBAGame->displayText("\nKilled "+this->getName());
 		this->kill();
 
-		static_cast<Character*>(attacker)->target = nullptr;
+		static_cast<Character*>(attacker)->setTarget(nullptr);
 		static_cast<Character*>(attacker)->say("It's a shame, really");
 
 		//If target is killled
@@ -448,8 +479,11 @@ void Character::say(const std::string& message) {
 
 void Character::update() {
 
-	if(!this->isAlive() and !this->hasStatus(STATUS_DEAD)) {
-		this->kill();
+	if(!this->isAlive()) {
+		if(!this->hasStatus(STATUS_DEAD)) {
+			this->kill();
+		}
+		return;
 	}
 
 	//Perform status-based action
@@ -458,7 +492,7 @@ void Character::update() {
 	}
 	if(this->hasStatus(STATUS_PURSUE)) {
 		if(this->targetInRange()) {
-			this->addStatus(STATUS_COMBAT);
+			//this->addStatus(STATUS_COMBAT);
 			this->removeStatus(STATUS_PURSUE);
 		}
 		this->setLocomotion();

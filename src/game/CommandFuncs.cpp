@@ -2,7 +2,9 @@
 #include "../common/Common.h"
 #include "Character.h"
 #include "Command.h"
+#include "Container.h"
 #include "FloatingText.h"
+#include "CommandUtils.h"
 
 #include "World.h"
 
@@ -204,18 +206,10 @@ bool sayEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
 
-//Take
-std::string takeFunc(Command* command, const std::vector<std::string> &args) {
-	return "\nTook Black";
-}
-bool takeEC(Command* command, const std::vector<std::string> &args) {
-	return true;
-}
-
 //Hurtme
 std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
 	TBAGame->playerChar->health -= std::stoi(args.at(0));
-	return "\tHurt player for "+args.at(0);
+	return "\nHurt player for "+args.at(0);
 }
 bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
 	return true;
@@ -225,4 +219,18 @@ bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
 std::string exitFunc(Command* command, const std::vector<std::string> &args) {
 	TBAGame->gameRunning = false;
 	return "\nExiting";
+}
+
+//Take
+std::string takeFunc(Command* command, const std::vector<std::string> &args) {
+	
+	return parseInteraction(command,args);
+
+}
+bool takeEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
 }

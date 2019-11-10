@@ -1,4 +1,6 @@
-#include "StringFuncs.h"
+#include "Utility.h"
+#include "../common/Common.h"
+
 #include <iostream>
 
 #include <string>
@@ -13,6 +15,18 @@ int rfind(char c, const std::string& s) {
 
 }
 
+std::string common(const std::string &s1, const std::string &s2) {
+	std::string c = "";
+	int range = std::min(s1.size(),s2.size());
+	for(int i=0;i<range;i++) {
+		if(s1[i] == s2[i]) {
+			c += s1[i];
+		} else {
+			return c;
+		}
+	}
+}
+
 //s is passed by reference 
 bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
 
@@ -20,12 +34,32 @@ bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
 		return false;
 	}
 
-	std::string testString = toLower(s);
+	std::string testWord;
+	std::string searchString = toLower(s);
+	std::string matchlist;
+	bool hasMultipleMatches = false;
 
 	for(int i=0;i<wordList.size();i++) {
-		if(startsWith(wordList.at(i),testString)) {
+		testWord = toLower(wordList.at(i));
+		if(startsWith(testWord,searchString)) {
 			s = wordList.at(i);
-			return true;
+			matchlist = s;
+			for(int j=0;j<wordList.size();j++) {
+				testWord = toLower(wordList.at(j));
+				if(startsWith(testWord,searchString) and wordList.at(j) != s) {
+					if(common(s,wordList.at(j)) != "") {
+						s = common(s,wordList.at(j));
+						matchlist += " | "+wordList.at(j);	
+						hasMultipleMatches = true;
+					}
+				}
+			}
+			if(hasMultipleMatches) {
+				TBAGame->displayText("\n"+matchlist);
+				return false;
+			} else {
+				return true;
+			}
 		}
 	}
 	return false;
@@ -133,6 +167,16 @@ std::string join(const std::string &c, const std::vector<std::string>& v) {
 
 	return newString;
 
+}
+
+bool isdigit(const std::string& s) {
+    std::vector<char> digits = {'0','1','2','3','4','5','6','7','8','9'};
+    for(int i=0;i<s.size();i++) {
+        if(find(s[i], digits) == -1) {
+            return false;
+        }
+    }
+    return true;
 }
 
 float dist(point p1, point p2) {

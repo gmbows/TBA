@@ -1,7 +1,7 @@
 #include "Screen.h"
 #include "Font.h"
 #include "../common/Common.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "../common/Tile.h"
 
 #include <SDL2/SDL.h>

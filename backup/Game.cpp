@@ -5,7 +5,7 @@
 #include "../ui/Window.h"
 #include "../ui/Screen.h"
 
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include "../game/GameObject.h"
 #include "../game/World.h"
@@ -98,26 +98,31 @@ void Game::setupGame() {
 	//this->minWaitTime = 1000/std::min(this->logicTickRate,this->graphicsTickRate);
 						
 	this->commandList = {
-			//							name,alias,argc,commandFunc,ECfunc=nullptr
-			new		Command("help",{"?"},0,helpFunc,helpEC),
-			new 		Command("clear",{"clr"},0,clearFunc),
-			new 		Command("inventory",{},0,inventoryFunc),
-			new		Command("move",{"mv"},1,moveFunc,moveEC),
-			new		Command("pause",{},0,pauseFunc),
-			new		Command("stop",{},0,stopFunc),
-			new		Command("unpause",{},0,unpauseFunc),
-			new		Command("target",{},1,targetFunc,targetEC),
-			new		Command("attack",{"atk"},1,attackFunc,attackEC),
-			new		Command("zoom",{"zm"},1,zoomFunc,zoomEC),
-			new		Command("say",{},1,sayFunc,sayEC),
-			new		Command("take",{},1,takeFunc,takeEC),
-			new		Command("hurtme",{"hurt"},1,hurtmeFunc,hurtmeEC),
+			//				first alias is primary command name
+			//				name,alias,argc,commandFunc,ECfunc=nullptr
+			//COMMANDSTART
+			new		Command({"help","?"},0,helpFunc,helpEC),
+			new 	Command({"clear","clr"},0,clearFunc),
+			new 	Command({"inventory"},0,inventoryFunc),
+			new		Command({"move","mv"},1,moveFunc,moveEC),
+			new		Command({"pause"},0,pauseFunc),
+			new		Command({"stop"},0,stopFunc),
+			new		Command({"unpause"},0,unpauseFunc),
+			new		Command({"target"},1,targetFunc,targetEC),
+			new		Command({"attack","atk"},1,attackFunc,attackEC),
+			new		Command({"zoom","zm"},1,zoomFunc,zoomEC),
+			new		Command({"say"},1,sayFunc,sayEC),
+			new		Command({"take"},1,takeFunc,takeEC),
+			new		Command({"hurtme","hurt"},1,hurtmeFunc,hurtmeEC),
+			new		Command({"exit","quit"},0,exitFunc),
 			////
 		};
 	
 	//Populate string command list with command names for autocomplete
 	for(int i=0;i<this->commandList.size();i++) {
-		this->commandStrings.push_back(this->commandList.at(i)->name);
+		//for(int j=0;j<this->commandList.at(i)->aliases.size();j++) {
+		this->commandStrings.push_back(this->commandList.at(i)->aliases.at(0));
+		//}
 	}
 
 	//Length of one edge of map square
@@ -129,25 +134,30 @@ void Game::setupGame() {
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
 	this->playerChar->inventory->add({0,1,0,1,0,1,0,1,0,1,0,1,0,1,3,3,3,3,3,3,3,3,3,3,0,1,0,1,0,1,0,1,0,1,2,2,2,2,2,2,2,2,2,2,2});
+	this->displayTarget = this->playerChar;
 
 	//New characters are added to gameObjects automatically
-	Character* newChar;
-	for(int i=0;i<1;i++) {
+	Character *newChar,*LB,*Dog;
+	for(int i=0;i<0;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
-		newChar->setStatus(COMBAT);
+		newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	newChar = new Character(false,160,"Debug Looter",1,0);
-	//newChar->setTarget(new Character(false,160,"Lost Bladesman",1,0));
+	newChar = new Character(false,160,"Debug Looter",-1,3);
+	LB = new Character(false,160,"Lost Bladesman",0,3);
+	Dog = new Character(false,160,"Wolf",5,3);
+	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
+	newChar->setTarget(LB);
+	Dog->setTarget(LB);
+	Dog->setStatus(STATUS_COMBAT);
 	//newChar->equipment->primary = new Item(4);
-	newChar->setTarget(playerChar);
-	newChar->setStatus(COMBAT);
+	//newChar->setTarget(playerChar);
+	//newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
-	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(COMBAT);
-
+	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 	this->gameWorld->createStructure({0,0}, house, 4);
 	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,0,1,2,1,2,1,2,1,2,1});
 }
@@ -254,14 +264,12 @@ void Game::update() {
 
 	this->timeToNextUpdate = std::min(this->timeToNextGraphicsUpdate,this->timeToNextLogicUpdate);
 
-	if(this->timeToNextUpdate < 0) {
+	if(this->timeToNextUpdate <= 0) {
 		if(!this->paused) {
 			debug("Falling behind!");
 		}
+	} else {
+		SDL_Delay(this->timeToNextUpdate);
 	}
-
-	//std::cout << (std::to_string(this->timeToNextUpdate)+"\r");
-
-	SDL_Delay(std::max(0,this->timeToNextUpdate));
 
 }

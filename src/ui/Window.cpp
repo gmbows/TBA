@@ -1,6 +1,6 @@
 #include "Window.h"
 #include "../common/Common.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <iostream>
 #include <SDL2/SDL.h>

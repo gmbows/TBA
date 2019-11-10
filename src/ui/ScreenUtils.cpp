@@ -37,7 +37,6 @@ void TextScreen::addContent(const std::string& str) {
 				this->content.push_back(thisLine);
 				thisLine = "";
 				indexOfLastSpace = -1;
-
 			} else if(indexOfLastSpace < 0) {
 				//If the line has no spaces, break word
 				this->content.push_back(thisLine);
@@ -48,7 +47,8 @@ void TextScreen::addContent(const std::string& str) {
 				//Break line on the last space
 				thisLine += s[i];
 				this->content.push_back(thisLine.substr(0,indexOfLastSpace));
-				thisLine = thisLine.substr(indexOfLastSpace+1,thisLine.size());
+				//thisLine = thisLine.substr(indexOfLastSpace+1,thisLine.size());
+				thisLine = thisLine.substr(indexOfLastSpace,thisLine.size());
 			}
 		} else {
 			if(s[i] == ' ') {
@@ -68,15 +68,17 @@ void TextScreen::addContent(const std::string& str) {
 					//Move "cursor" to next tabstop
 					if(cursorX  <= 1) {
 						thisLine += ' ';
+						indexOfLastSpace = thisLine.size()-1;
 					} else if(cursorX < tabStop) {
 						while(cursorX != tabStop) {
 							thisLine += ' ';
+							indexOfLastSpace = thisLine.size()-1;
 							cursorX = thisLine.size();
 						}
 					} else if(cursorX >= tabStop) {
 						this->content.push_back(thisLine);
 						thisLine = " ";
-						indexOfLastSpace = -1;
+						indexOfLastSpace = 0;
 				}
 			} else {
 				//Character is a traditional character, add to line

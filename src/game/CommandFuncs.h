@@ -49,13 +49,13 @@
 	std::string sayFunc(Command*, const std::vector<std::string>&);
 	bool sayEC(Command*, const std::vector<std::string>&);
 
-	//Take
-	std::string takeFunc(Command*, const std::vector<std::string>&);
-	bool takeEC(Command*, const std::vector<std::string>&);
-
 	//Hurtme
 	std::string hurtmeFunc(Command*, const std::vector<std::string>&);
 	bool hurtmeEC(Command*, const std::vector<std::string>&);
 
 	//Exit
 	std::string exitFunc(Command*, const std::vector<std::string>&);
+
+	//Take
+	std::string takeFunc(Command*, const std::vector<std::string>&);
+	bool takeEC(Command*, const std::vector<std::string>&);

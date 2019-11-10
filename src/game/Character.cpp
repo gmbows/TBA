@@ -1,6 +1,6 @@
 #include "Character.h"
 #include "../common/Common.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "GameObject.h"
 #include "Inventory.h"
 #include "Behavior.h"
@@ -25,7 +25,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 	this->target = nullptr;
 
 	if(player) {
-		this->equipment->primary = new Item(4);
+		//this->equipment->primary = new Item(2);
 		this->maxHealth = 40;
 		this->attackRate -= 20;
 		TBAGame->playerChar = this;
@@ -44,7 +44,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 }
 
 //==========
-//	STATUS_MOVEMENT
+//	MOVEMENT
 //==========
 
 bool Character::resolveMove(float &newX, float &newY) {
@@ -144,15 +144,16 @@ int Character::getAttackDamage() {
 	if(this->isUnarmed()) {
 		return this->defaultAttackDamage;
 	}
-	return this->equipment->primary->getAttribute(DAMAGE);
+	return this->equipment->primary->getAttribute(ATTRIB_DAMAGE);
 }
 
 float Character::getAttackRange() {
 	if(this->isUnarmed()) {
 		return this->defaultAttackRange;
 	}
-	return this->equipment->primary->getAttribute(RANGE);
+	return this->equipment->primary->getAttribute(ATTRIB_RANGE);
 }
+
 
 
 //=============
@@ -191,21 +192,23 @@ std::string Character::getStatusString() {
 	if(statuses.size() == 0) {
 		return "";
 	}
-	return "\t"+join("\n\t\t\t\t",statuses);
+	return "\t"+join("\n\t...\t",statuses);
 	//return statusString;
 }
 
-
 std::string Character::getInfo() {
+	
 
-	return " \n\n Name:\t"+this->name + "\n" +
+	std::string info = " \n\n Name:\t"+this->name + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" +
-				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n" +
-				"\tTarget:\t"+this->getTargetName() + "\n" +
+				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
+				if(this->hasTarget()) {
+					info += "\tTarget:\t"+this->getTargetName() + "\n";
+				}
 				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
-				"\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
+				info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
 				"\tAttack rate: "+std::to_string(this->attackRate);
-
+	return info;
 }
 
 void Character::kill() {

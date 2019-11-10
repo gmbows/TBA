@@ -4,7 +4,7 @@
 #include "../game/Behavior.h"
 #include "../game/Projectile.h"
 #include "../game/FloatingText.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include "../game/Input.h"
 
 #include <SDL2/SDL.h>
@@ -53,6 +53,9 @@ void delChar() {
 void autocomplete() {
 	if(autocomplete(TBAGame->gameWindow->textScreen->command,TBAGame->commandStrings)) {
 		TBAGame->gameWindow->textScreen->commandAppend(' ');
+	} else {
+		//TBAGame->gameWindow->textScreen->setCommand(TBAGame->gameWindow->textScreen->command);
+		TBAGame->gameWindow->textScreen->setCommandLine();
 	}
 }
 
@@ -190,7 +193,9 @@ void move(bool m_up,bool m_down,bool m_left, bool m_right) {
 		}
 
 	if(x ^ y) {
-		TBAGame->playerChar->addStatus(STATUS_MOVE);
+		if(TBAGame->playerChar->isAlive()) {
+			TBAGame->playerChar->addStatus(STATUS_MOVE);
+		}
 	}
 
 	if(TBAGame->playerChar->isAlive()) {

@@ -2,7 +2,7 @@
 #include "ItemManifest.h"
 #include "Item.h"
 
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 Inventory::Inventory(int _capacity): capacity(_capacity) {
 }
@@ -11,7 +11,32 @@ void Inventory::add(Item* item) {
 
 	this->contents->push_back(item);
 	this->setInfoString();
+
 }
+
+int Inventory::find(Item* item) {
+	for(int i=0;i<this->contents->size();i++) {
+		if(item == this->contents->at(i)) return i;
+	}
+	return -1;
+}
+
+int Inventory::find(const std::string &name) {
+	std::vector<std::string> contentVec = this->getContentString();
+	std::string itemName = name;
+	if(!autocomplete(itemName,contentVec)) {
+		return -2;
+	}
+	for(int i=0;i<this->contents->size();i++) {
+		if(itemName == this->contents->at(i)->name) return i;
+	}
+	return -1;
+}
+
+////////////////
+//INTERACTION
+//MUST SET INFO STRING
+////////////////
 
 void Inventory::add(int id) {
 
@@ -25,6 +50,23 @@ void Inventory::add(const std::vector<int>& itemVec) {
 		this->contents->push_back(new Item(itemVec.at(i)));
 	}
 	this->setInfoString();
+}
+
+Item* Inventory::remove(int index) {
+	Item *removedItem = this->getItem(index);
+	this->contents->erase(this->contents->begin()+index);
+	this->setInfoString();
+	return removedItem;
+}
+
+std::vector<std::string> Inventory::getContentString() {
+	std::vector<std::string> contents;
+	for(int i=0;i<this->contents->size();i++) {
+		if(!contains(contents,this->contents->at(i)->name)) {
+			contents.push_back(this->contents->at(i)->name);
+		}
+	}
+	return contents;
 }
 
 void Inventory::setInfoString() {

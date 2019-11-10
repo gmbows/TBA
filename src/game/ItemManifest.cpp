@@ -2,21 +2,22 @@
 
 std::map<itemType,std::vector<itemAttribute>> attributeLookup {
 
-	{WEAPON,{DAMAGE,RANGE}},
-	{FOOD,{}},
-	{CRAFTING,{}},
-	{CONTAINER,{}},
+	{I_WEAPON,{ATTRIB_DAMAGE,ATTRIB_RANGE}},
+	{I_FOOD,{}},
+	{I_CRAFTING,{}},
+	{I_CONTAINER,{}},
 
 };
 
-std::map<int,itemTraits> itemManifest = {
+//std::map<int,itemTraits> itemManifest = {
+std::vector<itemTraits> itemManifest = {
 
 		//name,weight,size, {Primary type, sub types...},{Attribute values}
-	{0,{"Apple",1,4,{FOOD,FRUIT,INGREDIENT},{}}},
-	{1,{"Iron Ore",3,3,{CRAFTING,METAL,INGREDIENT},{}}},
-	{2,{"Rusted Longsword",8,3,{WEAPON,MELEE,SWORD,EQUIPMENT},{5,1.5}}},
-	{3,{"Glass vial (empty)",3,3,{CONTAINER},{}}},
-	{4,{"Cracked Longbow",3,3,{WEAPON,RANGED,BOW,EQUIPMENT},{2,-1}}},
-	
+	{"Apple",1,4,I_FOOD | I_FRUIT | I_INGREDIENT,{}},
+	{"Iron Ore",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
+	{"Iron Arrow",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
+	{"Rusted Longsword",8,3,I_WEAPON | I_MELEE | I_SWORD | I_EQUIPMENT,{5,1.5}},
+	{"Glass vial (empty)",3,3,I_CONTAINER,{}},
+	{"Cracked Longbow",3,3,I_WEAPON | I_RANGED | I_BOW | I_EQUIPMENT,{2,-1}},
 
 };

@@ -3,7 +3,7 @@
 #include "../common/Common.h"
 #include "../ui/Screen.h"
 #include "GameObject.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <random>
 #include <ctime>

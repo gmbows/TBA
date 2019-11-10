@@ -12,7 +12,7 @@ struct Command {
 	const std::vector<std::string> aliases;
 
 	//Minimum arg count
-	int argCount;
+	//int argCount;
 
 	//Error check string for information acquired during failed errochecking
 	std::string error;
@@ -32,7 +32,6 @@ struct Command {
 	//Command(const std::string&,const std::vector<std::string>&,int,std::string (*_function)(const std::vector<std::string>&));
 	Command(
 		const std::vector<std::string>&,
-		int,
 		std::string (*_function)(Command*, const std::vector<std::string>&),
 		bool (*_ECfunction)(Command*, const std::vector<std::string>&) = nullptr
 	);

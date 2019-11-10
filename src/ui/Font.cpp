@@ -1,5 +1,5 @@
 #include "Font.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 
 #include <iostream>
 #include <fstream>

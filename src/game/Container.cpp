@@ -4,7 +4,7 @@
 
 #include "../common/Tile.h"
 #include "../common/Common.h"
-#include "../tools/StringFuncs.h"
+#include "../tools/Utility.h"
 #include <tuple>
 
 Container::Container(const std::string &_name,std::tuple<float,float> location, int size): name(_name), GameObject(OBJ_CONTAINER) {
