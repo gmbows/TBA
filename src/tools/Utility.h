@@ -26,6 +26,10 @@ void dumpVec(const std::vector<T>& v) {
 //isdigit
 bool isdigit(const std::string& s);
 
+//strip
+std::string strip(const std::string &s);
+std::vector<std::string> strip(const std::vector<std::string> &v);
+
 //common
 //returns first n characters that strings have in common
 std::string common(const std::string &s1, const std::string &s2);

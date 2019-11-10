@@ -115,6 +115,7 @@ void Game::setupGame() {
 			new		Command({"hurtme"},hurtmeFunc,hurtmeEC),
 			new		Command({"exit","quit"},exitFunc),
 			new		Command({"take"},takeFunc,takeEC),
+			new		Command({"select"},selectFunc,selectEC),
 			////
 		};
 	
@@ -165,6 +166,15 @@ void Game::setupGame() {
 //=======================
 //			GAME OBJECTS
 //=======================
+
+std::vector<GameObject*> Game::convert(const std::vector<Character*> &v) {
+	std::vector<GameObject*> objs;
+	for(int i=0;i<v.size();i++) {
+		objs.push_back(static_cast<GameObject*>(v.at(i)));
+	}
+	return objs;
+}
+
 
 GameObject* Game::findObject(int id) {
 		for(int i=0;i<this->gameObjects.size();i++) {
@@ -266,7 +276,9 @@ void Game::update() {
 
 	if(this->timeToNextUpdate <= 0) {
 		if(!this->paused) {
-			debug("Falling behind!");
+			this->gameLog->get_timestamp();
+			std::string ts(this->gameLog->timestamp);
+			debug(ts+" : Falling behind!");
 		}
 	} else {
 		SDL_Delay(this->timeToNextUpdate);

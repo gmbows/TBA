@@ -45,6 +45,10 @@ struct Game {
 	
 	GameObject* displayTarget = nullptr;
 	bool inline hasDisplayTarget() { return !(this->displayTarget == nullptr);}
+	void clearDisplayTarget() {this->displayTarget = nullptr;}
+	void setDisplayTarget(GameObject *o) {this->displayTarget = o;}
+
+	std::vector<GameObject*> convert(const std::vector<Character*>&);
 
 	std::vector<GameObject*> gameObjects;
 	std::vector<GameObject*> gameUIObjects;
@@ -96,10 +100,12 @@ struct Game {
 
 	Game() {}
 	~Game() {
-		debug("\nClosing game");
+		debug("Closing game");
 		delete this->gameWindow;
 		this->gameObjects.clear();
+		this->gameUIObjects.clear();
 		std::vector<GameObject*>().swap(this->gameObjects);
+		std::vector<GameObject*>().swap(this->gameUIObjects);
 	}
 
 	void setupUI();

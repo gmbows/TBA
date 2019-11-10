@@ -69,7 +69,14 @@ struct Tile {
 	Tile(int,int,int);
 	
 
-	~Tile() {}
+	~Tile() {
+		this->occupiers.clear();
+		this->objects.clear();
+		this->blocks.clear();
+		std::vector<Character*>().swap(this->occupiers);
+		std::vector<GameObject*>().swap(this->objects);
+		std::vector<Block*>().swap(this->blocks);
+	}
 
 	
 

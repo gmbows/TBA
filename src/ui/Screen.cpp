@@ -250,7 +250,7 @@ void Screen::drawContent(const std::vector<std::string>& screenContent) {
 void TextScreen::update() {
 
 	this->drawBorder();
-	//this->setCommandLine();
+	this->setCommandLine();
 	this->drawContent(extend(this->content,this->commandLines));
 
 }

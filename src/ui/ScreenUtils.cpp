@@ -402,7 +402,12 @@ void TextScreen::setCommand(const std::string& s) {
 }
 
 void TextScreen::setCommandLine() {
-	this->commandLines = this->prepareCommandForDisplay(tabChar+command+"_");
+	//if(SDL_GetTicks()%2000 >= 1000) {
+	if(TBAGame->logicTicks%60 <= 30) {
+		this->commandLines = this->prepareCommandForDisplay(tabChar+command);
+	} else {
+		this->commandLines = this->prepareCommandForDisplay(tabChar+command+"_");
+	}
 }
 
 void TextScreen::commandAppend(char c) {

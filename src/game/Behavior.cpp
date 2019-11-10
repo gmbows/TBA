@@ -147,6 +147,28 @@ bool Character::findTargetInRadius(const std::string& _name) {
 	return false;
 }
 
+GameObject* Character::findObjectInRadius(const std::string &_name) {
+	//Find a target with provided partial or complete name
+	//If multiple matching targets are found cycle through them
+	std::vector<Tile*> tileSet = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder until awareness stat
+	GameObject* testObj;
+	std::vector<GameObject*> allObjs;
+	for(int i=0;i<tileSet.size();i++) {
+		if(tileSet.at(i)->hasObjects() or tileSet.at(i)->isOccupied()) {
+			allObjs = extend(tileSet.at(i)->objects,TBAGame->convert(tileSet.at(i)->occupiers));
+			for(int j=0;j<allObjs.size();j++) {
+				testObj = allObjs.at(j);
+				if(startsWith(toLower(testObj->getName()),toLower(_name))) {
+					return testObj;
+				}
+			}
+		}
+	}
+	return nullptr;
+}
+
+
+
 std::vector<Character*> Character::getCharactersInRadius() {
 	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
 	Tile* thisTile;

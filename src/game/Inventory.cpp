@@ -25,7 +25,9 @@ int Inventory::find(const std::string &name) {
 	std::vector<std::string> contentVec = this->getContentString();
 	std::string itemName = name;
 	if(!autocomplete(itemName,contentVec)) {
-		return -2;
+		//Autocomplete partially filled word,
+		// special return code for interaction parsing
+		if(itemName != name) return -2;
 	}
 	for(int i=0;i<this->contents->size();i++) {
 		if(itemName == this->contents->at(i)->name) return i;
@@ -77,6 +79,12 @@ void Inventory::setInfoString() {
 	int itemID;
 	int itemCount;
 	std::string itemName;
+
+	if(this->isEmpty()) {
+		this->contentString = "\tEmpty";
+		return;
+	}
+
 	//Populate idList with list of itemID's in inventory
 	for(int i=0;i<this->contents->size();i++) {
 		idList.push_back(this->contents->at(i)->id);

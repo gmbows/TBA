@@ -35,6 +35,7 @@ class World {
 
 		~World() {
 			this->tileVector.clear();
+			delete this->invalid;
 			std::vector<std::vector<Tile*>*>().swap(this->tileVector);
 		}
 

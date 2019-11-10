@@ -28,16 +28,16 @@ void World::cartesianToIndex(float &x,float &y) {
 
 	//Convert cartesian map coordinates used in character locations to indices in World tileVector
 
-	x = ( std::abs((int)(x*10)%10) >= 5 )? (int)( x + ((x > 0)? 1 : -1)) : (int)x;
-	y = ( std::abs((int)(y*10)%10) >= 5 )?  (int)( y + ((y > 0)? 1 : -1)) : (int)y;
+	//x = ( std::abs((int)(x*10)%10) >= 5 )? (int)( x + ((x > 0)? 1 : -1)) : (int)x;
+	//y = ( std::abs((int)(y*10)%10) >= 5 )?  (int)( y + ((y > 0)? 1 : -1)) : (int)y;
 
 	//x = ( (( ((int)x < 0)? -1 : 1 ) * (int)(x*10)%10) >= 5 )? (int)( x + ((x > 0)? 1 : -1)) : (int)x;
 	//y = ( (( ((int)y < 0)? -1 : 1 ) * (int)(y*10)%10) >= 5 )?  (int)( y + ((y > 0)? 1 : -1)) : (int)y;
 
 	//lightRound(x,y);
 
-	//x = std::round(x);
-	//y = std::round(y);
+	x = std::round(x);
+	y = std::round(y);
 
 	//x = lightRound(x);
 	//y = lightRound(y);

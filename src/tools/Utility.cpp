@@ -15,6 +15,26 @@ int rfind(char c, const std::string& s) {
 
 }
 
+std::string strip(const std::string &s) {
+    std::string newString = "";
+    for(int i=0;i<s.size();i++) {
+        if(s[i] != ' ') {
+            newString += s[i];
+        }
+    }
+    return newString;
+}
+
+std::vector<std::string> strip(const std::vector<std::string> &v) {
+    std::vector<std::string> newV = {};
+    for(int i=0;i<v.size();i++) {
+        if(v.at(i) != "") {
+            newV.push_back(v.at(i));
+        }
+    }
+    return newV;
+}
+
 std::string common(const std::string &s1, const std::string &s2) {
 	std::string c = "";
 	int range = std::min(s1.size(),s2.size());
@@ -171,6 +191,7 @@ std::string join(const std::string &c, const std::vector<std::string>& v) {
 
 bool isdigit(const std::string& s) {
     std::vector<char> digits = {'0','1','2','3','4','5','6','7','8','9'};
+	if(s.size() == 0) return false;
     for(int i=0;i<s.size();i++) {
         if(find(s[i], digits) == -1) {
             return false;

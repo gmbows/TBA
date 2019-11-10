@@ -101,20 +101,20 @@ void Game::setupGame() {
 			//				first alias is primary command name
 			//				name,alias,argc,commandFunc,ECfunc=nullptr
 			//COMMANDSTART
-			new		Command({"help","?"},0,helpFunc,helpEC),
-			new 	Command({"clear","clr"},0,clearFunc),
-			new 	Command({"inventory"},0,inventoryFunc),
-			new		Command({"move","mv"},1,moveFunc,moveEC),
-			new		Command({"pause"},0,pauseFunc),
-			new		Command({"stop"},0,stopFunc),
-			new		Command({"unpause"},0,unpauseFunc),
-			new		Command({"target"},1,targetFunc,targetEC),
-			new		Command({"attack","atk"},1,attackFunc,attackEC),
-			new		Command({"zoom","zm"},1,zoomFunc,zoomEC),
-			new		Command({"say"},1,sayFunc,sayEC),
-			new		Command({"take"},1,takeFunc,takeEC),
-			new		Command({"hurtme","hurt"},1,hurtmeFunc,hurtmeEC),
-			new		Command({"exit","quit"},0,exitFunc),
+			new		Command({"help","?"},helpFunc,helpEC),
+			new 	Command({"clear","clr"},clearFunc),
+			new 	Command({"inventory"},inventoryFunc),
+			new		Command({"move","mv"},moveFunc,moveEC),
+			new		Command({"pause"},pauseFunc),
+			new		Command({"stop"},stopFunc),
+			new		Command({"unpause"},unpauseFunc),
+			new		Command({"target"},targetFunc,targetEC),
+			new		Command({"attack","atk"},attackFunc,attackEC),
+			new		Command({"zoom","zm"},zoomFunc,zoomEC),
+			new		Command({"say"},sayFunc,sayEC),
+			new		Command({"hurtme"},hurtmeFunc,hurtmeEC),
+			new		Command({"exit","quit"},exitFunc),
+			new		Command({"take"},takeFunc,takeEC),
 			////
 		};
 	
@@ -266,7 +266,9 @@ void Game::update() {
 
 	if(this->timeToNextUpdate <= 0) {
 		if(!this->paused) {
-			debug("Falling behind!");
+			this->gameLog->get_timestamp();
+			std::string ts(this->gameLog->timestamp);
+			debug(ts+" : Falling behind!");
 		}
 	} else {
 		SDL_Delay(this->timeToNextUpdate);
