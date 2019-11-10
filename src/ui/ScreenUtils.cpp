@@ -402,12 +402,7 @@ void TextScreen::setCommand(const std::string& s) {
 }
 
 void TextScreen::setCommandLine() {
-	//if(SDL_GetTicks()%2000 >= 1000) {
-	if(TBAGame->logicTicks%60 <= 30) {
-		this->commandLines = this->prepareCommandForDisplay(tabChar+command);
-	} else {
-		this->commandLines = this->prepareCommandForDisplay(tabChar+command+"_");
-	}
+	this->commandLines = this->prepareCommandForDisplay(tabChar+command);
 }
 
 void TextScreen::commandAppend(char c) {
@@ -441,7 +436,7 @@ void TextScreen::sendCommand() {
 	}
 
 	//Remove cursor character (_) when displaying previous commands
-	this->commandLines.at(this->commandLines.size()-1).pop_back();
+	//this->commandLines.at(this->commandLines.size()-1).pop_back();
 
 	//Add command line to history
 	this->content = extend(this->content,this->commandLines);

@@ -251,7 +251,7 @@ void TextScreen::update() {
 
 	this->drawBorder();
 	this->setCommandLine();
-	this->drawContent(extend(this->content,this->commandLines));
+	this->drawContent(extend(this->content,appendToLast(this->commandLines,this->cursorChar)));
 
 }
 

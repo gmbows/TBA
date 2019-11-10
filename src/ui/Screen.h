@@ -32,6 +32,8 @@ class Screen {
 		int screenCharWidth;
 		int screenCharHeight;
 
+		std::string cursorChar;
+
 		int offsetX;
 		int offsetY;
 
@@ -73,6 +75,8 @@ class TextScreen: public Screen {
 		//Command line
 		std::string command;
 		std::string tabChar;
+		std::string cursorChar = "_";
+	
 		std::vector<std::string> commandLines;
 
 		std::vector<std::string> commandHistory;

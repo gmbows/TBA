@@ -236,6 +236,24 @@ void Game::popupText(int duration, const std::string& message) {
 //		UPDATE
 //=============
 
+void logic_thread_routine(Game *game) {
+	while(1) {
+		game->update_logic();
+		std::this_thread::sleep_for(std::chrono::milliseconds((1000/game->logicTickRate)));
+	}
+}
+void graphics_thread_routine(Game *game) {
+	while(1) {
+		game->update_graphics();
+		std::this_thread::sleep_for(std::chrono::milliseconds((1000/game->graphicsTickRate)));
+	}
+}
+
+void Game::spawn_threads() {
+	if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+}
+
 void Game::updateGameObjects() {
 	for(int i=0;i<this->gameObjects.size();i++) {
 		this->gameObjects.at(i)->update();
@@ -249,39 +267,37 @@ void Game::updateGameUIObjects() {
 	}
 }
 
-void Game::update() {
+void Game::update_logic() {
 
-	if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
-		//Update game window and all screens
-		this->lastGraphicsUpdate = SDL_GetTicks();
-		this->gameWindow->update();
-		this->graphicsTicks++;
-		this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
-	}
 	//Suspend logic ticks if game is paused
 	if(!this->paused) {
-		if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
+	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
 			//Update all active game objects
 			this->lastLogicUpdate = SDL_GetTicks();
 			this->updateGameObjects();
 			this->logicTicks++;
-			this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
-		}
+			//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+	//	}
 	}
 
-	//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
-	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+}
 
-	this->timeToNextUpdate = std::min(this->timeToNextGraphicsUpdate,this->timeToNextLogicUpdate);
+void Game::update_graphics() {
 
-	if(this->timeToNextUpdate <= 0) {
-		if(!this->paused) {
-			this->gameLog->get_timestamp();
-			std::string ts(this->gameLog->timestamp);
-			debug(ts+" : Falling behind!");
-		}
-	} else {
-		SDL_Delay(this->timeToNextUpdate);
-	}
+	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
+		//Update game window and all screens
+		this->lastGraphicsUpdate = SDL_GetTicks();
+		this->gameWindow->update();
+		this->graphicsTicks++;
+		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
+	//}
+
+}
+
+void Game::update() {
+
+	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
+
+	SDL_Delay(1000/30);
 
 }

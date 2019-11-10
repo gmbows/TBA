@@ -49,14 +49,13 @@ void World::cartesianToIndex(float &x,float &y) {
 
 void World::genWorld() {
 
-	srand(time(NULL));
-
 	debug("Generating world!");
 
 	int cartesianX;
 	int cartesianY;
 
 	for(int y=0;y<this->size;y++) {
+		std::cout << "Generating tile " << this->tileVector.size() << "\r" << std::flush;
 		this->tileVector.push_back(new std::vector<Tile*>);
 		for(int x=0;x<this->size;x++) {
 			cartesianX = x;

@@ -7,6 +7,8 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+	srand(time(NULL));
+
 	SDL_Init(SDL_INIT_EVERYTHING);
 
 	//Initialize UI objects
@@ -14,6 +16,8 @@ int main(int argc, char** argv) {
 
 	//Initialized game objects
 	TBAGame->setupGame();
+
+	TBAGame->spawn_threads();
 
 	TBAGame->gameLog->writeln("Entering game loop");
 	while(TBAGame->gameRunning) {

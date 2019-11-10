@@ -12,6 +12,7 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <pthread.h>
 
 struct Game {
 
@@ -100,12 +101,14 @@ struct Game {
 
 	Game() {}
 	~Game() {
-		debug("Closing game");
+		debug("Closing game                 ");
 		delete this->gameWindow;
 		this->gameObjects.clear();
 		this->gameUIObjects.clear();
 		std::vector<GameObject*>().swap(this->gameObjects);
 		std::vector<GameObject*>().swap(this->gameUIObjects);
+		//pthread_join(this->logic_thread,NULL);
+		//pthread_join(this->graphics_thread,NULL);
 	}
 
 	void setupUI();
@@ -116,5 +119,12 @@ struct Game {
 	
 	void input();
 	void update();
+
+	pthread_t logic_thread,graphics_thread;
+
+	void spawn_threads();
+
+	void update_logic();
+	void update_graphics();
 
 };

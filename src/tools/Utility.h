@@ -7,9 +7,22 @@
 
 typedef std::tuple<float,float> point;
 
+
 //=========
 //--VECTORS--
 //=========
+
+template <class T>
+inline std::vector<T> operator+(std::vector<T> v,T t) {
+	v.push_back(t);
+	return v;
+}
+
+template <class T>
+std::vector<T> appendToLast(std::vector<T> v, T t) {
+	v.at(v.size()-1) = v.at(v.size()-1)+t;
+	return v;
+}
 
 //dumpvec
 template <class T>
