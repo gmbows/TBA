@@ -239,7 +239,6 @@ void debugKey() {
 	//TBAGame->playerChar->isPlayer = true;
 
 	// for(int i=0;i<10;i++) {
-	//	 new Character(false,3,"Nigger",100,100);
 	// }
 
 	//debug(TBAGame->gameObjects.size());
