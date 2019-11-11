@@ -4,13 +4,13 @@ A multiplatform text based rpg written in c++
 ## Basic controls
 #### Commands
 `->help` or `?` for a list of commands
-#### Keyboard input
+#### Keyboard shortcuts
 
-Autocomplete command: `->partial-command [tab]`<br>
 Move: `ctrl + [arrow key]`<br>
-Select: `Right click`<br>
 Place block:  `Left click` <br>
 Pause:   `ctrl + space` or `->pause` <br>
+Autocomplete command: `->partial-command [tab]`<br>
+Select object or character: `Right click`<br>
 
 ## Utility
 
