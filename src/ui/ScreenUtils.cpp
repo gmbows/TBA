@@ -419,7 +419,6 @@ void TextScreen::deleteLastCharacter() {
 
 void TextScreen::sendCommand() {
 
-
 	std::string commandReturn;
 
 	//COMMAND HISTORY HANDLING
@@ -434,9 +433,6 @@ void TextScreen::sendCommand() {
 		this->commandHistory.push_back("");
 		this->commandIndex++;
 	}
-
-	//Remove cursor character (_) when displaying previous commands
-	//this->commandLines.at(this->commandLines.size()-1).pop_back();
 
 	//Add command line to history
 	this->content = extend(this->content,this->commandLines);

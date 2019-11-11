@@ -107,8 +107,8 @@ struct Game {
 		this->gameUIObjects.clear();
 		std::vector<GameObject*>().swap(this->gameObjects);
 		std::vector<GameObject*>().swap(this->gameUIObjects);
-		//pthread_join(this->logic_thread,NULL);
-		//pthread_join(this->graphics_thread,NULL);
+		pthread_join(this->logic_thread,NULL);
+		pthread_join(this->graphics_thread,NULL);
 	}
 
 	void setupUI();
@@ -121,6 +121,10 @@ struct Game {
 	void update();
 
 	pthread_t logic_thread,graphics_thread;
+	pthread_mutex_t updateLock;
+	pthread_cond_t logic;
+	pthread_cond_t graphics;
+
 
 	void spawn_threads();
 

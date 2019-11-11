@@ -237,17 +237,28 @@ void Game::popupText(int duration, const std::string& message) {
 //=============
 
 void logic_thread_routine(Game *game) {
-	while(1) {
+	while(game->gameRunning) {
+		//debug("BLACK");
+		pthread_mutex_lock(&game->updateLock);
+		//pthread_cond_wait(&game->logic,&game->updateLock);
 		game->update_logic();
+		//pthread_cond_signal(&game->graphics);
+		pthread_mutex_unlock(&game->updateLock);
 		std::this_thread::sleep_for(std::chrono::milliseconds((1000/game->logicTickRate)));
 	}
 }
 void graphics_thread_routine(Game *game) {
-	while(1) {
+	
+	while(game->gameRunning) {
+		//debug("EPIC");
+		pthread_mutex_lock(&game->updateLock);
+		//pthread_cond_wait(&game->graphics,&game->updateLock);
 		game->update_graphics();
+		//pthread_cond_signal(&game->logic);
+		pthread_mutex_unlock(&game->updateLock);
 		std::this_thread::sleep_for(std::chrono::milliseconds((1000/game->graphicsTickRate)));
 	}
-}
+}	
 
 void Game::spawn_threads() {
 	if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
@@ -298,6 +309,6 @@ void Game::update() {
 
 	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
 
-	SDL_Delay(1000/30);
+	SDL_Delay(1000/60);
 
 }

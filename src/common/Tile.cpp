@@ -17,7 +17,7 @@ std::map<int,std::tuple<float,bool,bool>> tileMap {
 	{-1,{1,false,false}},	//Invalid
 	{0,{.04,true,true}},	//Grass
 	{1,{.13,true,false}},	//Grass with rock
-	{2,{.04,false,false}},	//Tree
+	{2,{.04,true,false}},	//Tree
 	{3,{.04,true,false}},	//Player
 	{4,{.04,false,false}},	//Stone brick
 	{5,{.04,false,false}},	//Stone brick Bottom left

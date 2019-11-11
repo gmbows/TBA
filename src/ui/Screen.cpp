@@ -312,13 +312,20 @@ void MapScreen::drawMap() {
 	int offsetX = -this->charW;
 	int offsetY = -this->charH;
 
-	int playerOffsetX = (this->charW*0.01)*((int)(TBAGame->playerChar->x*100)%100);
-	int playerOffsetY = (this->charH*0.01)*((int)(TBAGame->playerChar->y*100)%100);
+	float centerX = this->lastMapX + .5;
+	float centerY = this->lastMapY + .5;
 
-	//Modify display location rectangle based on cursor and font display values << FIX
-	//SDL_Rect dRect = {-playerOffsetX+offsetX+this->x+(1*cursor[0]),-playerOffsetY+offsetY+(this->charH*cursor[1])+this->y+charInfo.yo,this->charW,this->charH};
+	int playerOffsetX = ((this->charW)*0.01)*((int)(TBAGame->playerChar->x*100)%100);
+	int playerOffsetY = ((this->charH)*0.01)*((int)(TBAGame->playerChar->y*100)%100);
+
+	//float playerOffsetX = this->charW*(TBAGame->playerChar->x - centerX);
+	//float playerOffsetY= this->charH*(TBAGame->playerChar->y - centerY);
+
+	//std::cout << playerOffsetX << "   " << playerOffsetY << "                        \r" << std::flush;
 
 	this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
+
+	//std::cout << -playerOffsetX+offsetX << ", " << -playerOffsetY+offsetY << std::endl;
 
 	SDL_RenderCopy(TBAGame->gameWindow->renderer,this->mapTexture,NULL,&this->mapTextureRect);
 
