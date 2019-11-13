@@ -139,7 +139,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<10000;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -237,26 +237,49 @@ void Game::popupText(int duration, const std::string& message) {
 //=============
 
 void logic_thread_routine(Game *game) {
+
+	Uint32 start;
+	int elapsed;
+	int real_wait = 0;
+
 	while(game->gameRunning) {
-		//debug("BLACK");
 		pthread_mutex_lock(&game->updateLock);
-		//pthread_cond_wait(&game->logic,&game->updateLock);
+		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
+		start = SDL_GetTicks();
 		game->update_logic();
+		elapsed = SDL_GetTicks()-start;
+		//std::cout << elapsed << "   " << std::flush;
+		//game->canUpdateGraphics = true;
+		//game->canUpdateLogic = false;
 		//pthread_cond_signal(&game->graphics);
 		pthread_mutex_unlock(&game->updateLock);
-		std::this_thread::sleep_for(std::chrono::milliseconds((1000/game->logicTickRate)));
+		
+		real_wait = (1000/game->logicTickRate)-elapsed;
+		if(real_wait <= 0) debug("Falling behind! (logic)");
+		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
 	}
 }
 void graphics_thread_routine(Game *game) {
+
+	Uint32 start;
+	int elapsed;
+	int real_wait = 0;
 	
 	while(game->gameRunning) {
-		//debug("EPIC");
 		pthread_mutex_lock(&game->updateLock);
-		//pthread_cond_wait(&game->graphics,&game->updateLock);
+		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
+		start = SDL_GetTicks();
 		game->update_graphics();
+		elapsed = SDL_GetTicks()-start;
+		//std::cout << elapsed << "       \r" << std::flush;
+		//game->canUpdateGraphics = false;
+		//game->canUpdateLogic = true;
 		//pthread_cond_signal(&game->logic);
 		pthread_mutex_unlock(&game->updateLock);
-		std::this_thread::sleep_for(std::chrono::milliseconds((1000/game->graphicsTickRate)));
+
+		real_wait = (1000/game->graphicsTickRate)-elapsed;
+		if(real_wait <= 0) debug("Falling behind! (graphics)");
+		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
 	}
 }	
 
@@ -309,6 +332,7 @@ void Game::update() {
 
 	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
 
+	//Keyboard input delay
 	SDL_Delay(1000/60);
 
 }

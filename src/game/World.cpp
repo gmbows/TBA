@@ -51,13 +51,18 @@ void World::genWorld() {
 
 	debug("Generating world!");
 
+	int tileCount = 0;
+
 	int cartesianX;
 	int cartesianY;
 
 	for(int y=0;y<this->size;y++) {
-		std::cout << "Generating tile " << this->tileVector.size() << "\r" << std::flush;
+		
 		this->tileVector.push_back(new std::vector<Tile*>);
 		for(int x=0;x<this->size;x++) {
+
+			//std::cout << "Generating tile " << ++tileCount << "\r" << std::flush;
+
 			cartesianX = x;
 			cartesianY = y;
 			indexToCartesian(cartesianX,cartesianY);

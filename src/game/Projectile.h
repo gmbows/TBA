@@ -14,7 +14,7 @@ class Projectile: public GameObject {
 		bool active;
 		int displaySize = 10;
 		float collisionSize = .35; //.35 Meters in any direction
-		int maxAge = 1000;	//Projectiles decay after 5 seconds
+		int maxAge = TBAGame->convert(1000);	//Projectiles decay after 1 seconds
 
 		int getDisplayID() {return 7;}
 

@@ -1,2 +1,2 @@
-Nov/10/2019(Sun)21:43:53 : Window.txt initialized
-Nov/10/2019(Sun)21:43:53 : New window initialized
+Nov/13/2019(Wed)11:19:21 : Window.txt initialized
+Nov/13/2019(Wed)11:19:21 : New window initialized

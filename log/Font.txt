@@ -1,19 +1,19 @@
-Nov/10/2019(Sun)21:43:53 : Font.txt initialized
-Nov/10/2019(Sun)21:43:53 : Loading font map...
-Nov/10/2019(Sun)21:43:53 : Font map loaded.
-Nov/10/2019(Sun)21:43:53 : Opening front from path assets/font/map_tileset_0.tga
-Nov/10/2019(Sun)21:43:53 : Optimizing font surface...
-Nov/10/2019(Sun)21:43:53 : Font surface optimized
-Nov/10/2019(Sun)21:43:53 : Font texture generation complete
-Nov/10/2019(Sun)21:43:53 : Opening front from path assets/font/terminal_0.tga
-Nov/10/2019(Sun)21:43:53 : Optimizing font surface...
-Nov/10/2019(Sun)21:43:53 : Font surface optimized
-Nov/10/2019(Sun)21:43:53 : Font texture generation complete
-Nov/10/2019(Sun)21:43:53 : Opening front from path assets/font/terminal_0.tga
-Nov/10/2019(Sun)21:43:53 : Optimizing font surface...
-Nov/10/2019(Sun)21:43:53 : Font surface optimized
-Nov/10/2019(Sun)21:43:53 : Font texture generation complete
-Nov/10/2019(Sun)21:43:53 : Opening front from path assets/font/terminal_0.tga
-Nov/10/2019(Sun)21:43:53 : Optimizing font surface...
-Nov/10/2019(Sun)21:43:53 : Font surface optimized
-Nov/10/2019(Sun)21:43:53 : Font texture generation complete
+Nov/13/2019(Wed)11:19:21 : Font.txt initialized
+Nov/13/2019(Wed)11:19:21 : Loading font map...
+Nov/13/2019(Wed)11:19:21 : Font map loaded.
+Nov/13/2019(Wed)11:19:21 : Opening front from path assets/font/map_tileset_0.tga
+Nov/13/2019(Wed)11:19:21 : Optimizing font surface...
+Nov/13/2019(Wed)11:19:21 : Font surface optimized
+Nov/13/2019(Wed)11:19:21 : Font texture generation complete
+Nov/13/2019(Wed)11:19:21 : Opening front from path assets/font/terminal_0.tga
+Nov/13/2019(Wed)11:19:21 : Optimizing font surface...
+Nov/13/2019(Wed)11:19:21 : Font surface optimized
+Nov/13/2019(Wed)11:19:21 : Font texture generation complete
+Nov/13/2019(Wed)11:19:21 : Opening front from path assets/font/terminal_0.tga
+Nov/13/2019(Wed)11:19:21 : Optimizing font surface...
+Nov/13/2019(Wed)11:19:21 : Font surface optimized
+Nov/13/2019(Wed)11:19:21 : Font texture generation complete
+Nov/13/2019(Wed)11:19:21 : Opening front from path assets/font/terminal_0.tga
+Nov/13/2019(Wed)11:19:21 : Optimizing font surface...
+Nov/13/2019(Wed)11:19:21 : Font surface optimized
+Nov/13/2019(Wed)11:19:21 : Font texture generation complete

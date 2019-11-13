@@ -18,9 +18,12 @@ int main(int argc, char** argv) {
 	//Initialized game objects
 	TBAGame->setupGame();
 
+	TBAGame->canUpdateLogic = false;
+	TBAGame->canUpdateGraphics = true;
+
 	//Let graphics thread update first
 	TBAGame->spawn_threads();
-	pthread_cond_signal(&TBAGame->graphics);
+	//pthread_cond_signal(&TBAGame->graphics);
 
 	TBAGame->gameLog->writeln("Entering game loop");
 	while(TBAGame->gameRunning) {

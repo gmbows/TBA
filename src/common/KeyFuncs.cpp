@@ -96,8 +96,11 @@ void click(SDL_MouseButtonEvent& event) {
 				return;
 			}
 		}
-
+		
+		pthread_mutex_lock(&TBAGame->updateLock);
 		thisTile->addBlock(4);
+		pthread_mutex_unlock(&TBAGame->updateLock);
+
 	} else if(TBAGame->gameWindow->mapScreen->enclose(event.x,event.y)) {
 
 		GameObject* testTarget = nullptr;

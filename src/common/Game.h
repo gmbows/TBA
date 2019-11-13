@@ -125,6 +125,8 @@ struct Game {
 	pthread_cond_t logic;
 	pthread_cond_t graphics;
 
+	bool canUpdateLogic;
+	bool canUpdateGraphics;
 
 	void spawn_threads();
 

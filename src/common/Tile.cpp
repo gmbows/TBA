@@ -68,6 +68,7 @@ void Tile::occupyWith(Character* c) {
 
 void Tile::addBlock(int bid) {
 	this->blocks.push_back(new Block(bid));
+	debug(this->blocks.size());
 }
 
 void Tile::addBlock(Block* block) {

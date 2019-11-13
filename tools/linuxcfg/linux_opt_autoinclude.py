@@ -46,14 +46,14 @@ makestr = ""
 
 binlist = ["bin"+src[src.rfind('/'):]+".o" for src in srcs]
 
-makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" `sdl2-config --libs --cflags` -lSDL2main -lSDL2_image -lpthread -fpermissive -O2 -o "+execname+"\n\n"
+makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" `sdl2-config --libs --cflags` -lSDL2main -lSDL2_image -lpthread -fpermissive -O3 -o "+execname+"\n\n"
 
 for src in srcs:
 	head=""
 	if src in heads:
 		head = src+".h"
 	deps = getDeps(src)
-	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp `sdl2-config --libs --cflags` -lSDL2main -lSDL2_image -lpthread -fpermissive -O2 -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head + deps)
+	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp `sdl2-config --libs --cflags` -lSDL2main -lSDL2_image -lpthread -fpermissive -O3 -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head + deps)
 	
 makefile.write(makestr)
 makefile.close()

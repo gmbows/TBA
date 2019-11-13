@@ -321,7 +321,8 @@ void MapScreen::drawMap() {
 	//float playerOffsetX = this->charW*(TBAGame->playerChar->x - centerX);
 	//float playerOffsetY= this->charH*(TBAGame->playerChar->y - centerY);
 
-	//std::cout << playerOffsetX << "   " << playerOffsetY << "                        \r" << std::flush;
+	//std::cout << TBAGame->playerCha	r->x << "   " << TBAGame->playerChar->y << "                        ";
+	//std::cout << (6+playerOffsetX)%16 << " "<<  16-(-playerOffsetX+offsetX+this->x)%16 << "                        \r" <<  std::flush;
 
 	this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
 

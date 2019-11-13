@@ -31,7 +31,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 		TBAGame->playerChar = this;
 		this->maxMoveSpeed = 4; 
 		this->displayID=3;
-		this->traction = 1;
+		this->traction = 2;
 	} else {
 		//Random movespeeds
 		this->maxMoveSpeed = 3+((rand()%2)-1); //10+-5
