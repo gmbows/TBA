@@ -7,7 +7,7 @@ A multiplatform text based rpg written in c++
 #### Keyboard shortcuts
 
 Move: `ctrl + [arrow key]`<br>
-Place block:  `Left click` <br>
+Place or remove block:  `Left click` <br>
 Pause:   `ctrl + space` or `->pause` <br>
 Autocomplete command: `->partial-command [tab]`<br>
 Select object or character: `Right click`<br>

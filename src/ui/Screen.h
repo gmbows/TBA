@@ -107,10 +107,17 @@ class TextBox: public TextScreen {
 
 	public:
 
+		std::string oldContent;
+
 		TextBox(int,int,int,int,bool);
 		TextBox() {}
 
+		Uint32 lastUpdate = 0;
+		int updateInterval = 5*1000;
+
 		void prepareContent();
+		std::string getContent();
+		bool inline hasNewContent() {return (this->getContent() != this->oldContent);}
 
 		void setContent(const std::string&);
 
@@ -160,6 +167,7 @@ class MapScreen: public Screen {
 		void drawMap();
 		void trueDrawBorder();
 		void generateMapTexture();
+		void updateMap();
 		void generateMapTiles();
 
 		int lastMapX = 400;

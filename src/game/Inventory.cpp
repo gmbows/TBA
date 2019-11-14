@@ -112,7 +112,13 @@ void Inventory::setInfoString() {
 
 		itemName = replace(this->contents->at(i)->name,' ',"");
 		itemCount = count(idList,itemID);
-		invString += "\t-"+itemName+"("+std::to_string(itemCount)+")";
+		if(itemCount == 1) {
+			invString += "\t-"+itemName;
+		} else {
+			// invString += "\t-"+std::to_string(itemCount)+""+this->contents->at(i)->getPluralDisplayName();
+			invString += "\t-"+std::to_string(itemCount)+"x"+this->contents->at(i)->getDisplayName();
+			//invString += "\t-"+itemName+""+"("+std::to_string(itemCount)+")";
+		}
 		checkedIDs.push_back(itemID);
 	}
 

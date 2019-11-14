@@ -59,6 +59,7 @@ bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
 	std::string matchlist;
 	bool hasMultipleMatches = false;
 
+
 	for(int i=0;i<wordList.size();i++) {
 		testWord = toLower(wordList.at(i));
 		if(startsWith(testWord,searchString)) {
@@ -111,11 +112,18 @@ std::string replace(const std::string &s, char token, const std::string &sub) {
 
 //startWith
 bool startsWith(const std::string& s, const std::string& token) {
-
-	for(int i=0;i<token.size();i++) {
-		if(token[i] != s[i]) {
-			return false;
+	std::vector<std::string> splitWord = split(' ',s);
+	if(splitWord.size() == 1) {
+		for(int i=0;i<token.size();i++) {
+			if(token[i] != s[i]) {
+				return false;
+			}
 		}
+	} else {
+		for(int i=0;i<splitWord.size();i++) {
+			if(startsWith(splitWord.at(i),token)) return true;
+		}
+		return false;
 	}
 	return true;
 }
@@ -198,6 +206,10 @@ bool isdigit(const std::string& s) {
         }
     }
     return true;
+}
+bool issymbol(char c) {
+    std::vector<char> symbols = {'!','@','#','$','%','^','&','*',')','(','-','=','+','_','`','~','/','\\','.','|','[',']','{','}',';',':','"','?','<','>'};
+    return contains(symbols,c);
 }
 
 float dist(point p1, point p2) {

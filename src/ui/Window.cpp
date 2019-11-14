@@ -16,10 +16,10 @@ Window::Window(int w,int h) {
 													SDL_WINDOWPOS_UNDEFINED,
 													SDL_WINDOWPOS_UNDEFINED,
 													w,h,
-													0
+													SDL_WINDOW_OPENGL
 													);
 
-	this->renderer = SDL_CreateRenderer(this->window,-1,0);
+	this->renderer = SDL_CreateRenderer(this->window,-1,SDL_RENDERER_ACCELERATED);
 
 	this->width = w;
 	this->height = h;

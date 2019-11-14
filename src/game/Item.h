@@ -37,6 +37,9 @@ class Item {
 
 
 		std::string getName();
+		std::string getPlural();
+		std::string getPluralDisplayName();
+		std::string getDisplayName();
 
 		~Item() {
 			//delete this->attributes;

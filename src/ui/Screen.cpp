@@ -138,8 +138,6 @@ MapScreen::MapScreen(int x, int y, int w, int h, bool border) {
 	this->screenCharHeight = this->h/this->charH;
 	
 	screenFont = new Font("map_tileset");
-
-	srand(time(NULL));
 	
 	this->bdRect = {this->x,this->y,this->w,this->h};
 	this->mapTextureRect = {this->x+1,this->y+1,this->w+(2*this->charW),this->h+(2*this->charH)};
@@ -257,12 +255,14 @@ void TextScreen::update() {
 
 void TextBox::update() {
 
-	this->drawBorder();
-	//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
-	this->prepareContent();
-	//this->setContent("Inventory:"+TBAGame->playerChar->inventory->contentString+"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo()+"\n\nTarget info:\n\t"+TBAGame->playerChar->getTargetInfo());
-	this->drawContent(this->content);
-
+	if(this->hasNewContent() or (this->lastUpdate + this->updateInterval <= SDL_GetTicks())) {
+		this->drawBorder();
+		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
+		this->prepareContent();
+		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->contentString+"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo()+"\n\nTarget info:\n\t"+TBAGame->playerChar->getTargetInfo());
+		this->drawContent(this->content);
+		this->lastUpdate = SDL_GetTicks();
+	}
 }
 
 void DynamicTextBox::setToggledContent(const std::string& message) {
@@ -305,8 +305,6 @@ void DynamicTextBox::update() {
 }
 
 void MapScreen::drawMap() {
-
-	this->generateMapTexture();
 
 	//Text offsets
 	int offsetX = -this->charW;
@@ -361,6 +359,7 @@ void MapScreen::trueDrawBorder() {
 void MapScreen::update() {
 
 	this->drawBorder();
+	this->updateMap();
 	this->drawMap();
 	this->trueDrawBorder();
 

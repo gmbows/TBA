@@ -292,16 +292,23 @@ bool putEC(Command* command, const std::vector<std::string> &args) {
 
 //Search
 std::string searchFunc(Command* command, const std::vector<std::string> &args) {
-	return "\n"+TBAGame->displayTarget->getInvString();
+	if(args.size() > 0) {
+		std::string containerName = join(' ',args);
+		std::vector<GameObject*> containers = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER);
+		for(int i=0;i<containers.size();i++) {
+			if(startsWith(toLower(containers.at(i)->getName()),toLower(containerName))) {
+				return "\n"+containers.at(i)->getInvString();
+			}
+		}
+		return "\nContainer not found";
+	} else {
+		return "\n"+TBAGame->displayTarget->getInvString();
+	}
 }
 bool searchEC(Command* command, const std::vector<std::string> &args) {
 	//Check if player has selected a valid container
-	if(!TBAGame->hasDisplayTarget()) {
+	if(!TBAGame->hasDisplayTarget() and args.size() == 0) {
 		command->error = "No target selected";
-		return false;
-	}
-	if(!TBAGame->displayTarget->hasInventory()) {
-		command->error = "Cannot search "+TBAGame->displayTarget->getName();
 		return false;
 	}
 	return true;

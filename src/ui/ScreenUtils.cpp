@@ -12,6 +12,8 @@ void TextScreen::addContent(const std::string& str) {
 
 	std::string s = str;
 
+	//debug("Adding content");
+
 	if(this->content.size() == 0) {
 		this->content.push_back("");
 		if(s[0] == '\n') {
@@ -51,7 +53,8 @@ void TextScreen::addContent(const std::string& str) {
 				thisLine += s[i];
 				this->content.push_back(thisLine.substr(0,indexOfLastSpace));
 				//thisLine = thisLine.substr(indexOfLastSpace+1,thisLine.size());
-				thisLine = thisLine.substr(indexOfLastSpace,thisLine.size());
+				s.insert(i+1,thisLine.substr(indexOfLastSpace,thisLine.size()));
+				thisLine = "";
 			}
 		} else {
 			if(s[i] == ' ') {
@@ -147,17 +150,19 @@ void MapScreen::generateMapTiles() {
 	this->lastMapY = centerY;
 }
 
-void MapScreen::generateMapTexture() {
+void MapScreen::updateMap() {
+
 	int centerX = TBAGame->playerChar->x;
 	int centerY = TBAGame->playerChar->y;
 
 	if(centerX != this->lastMapX or centerY != this->lastMapY) {
 		this->generateMapTiles();
+		this->generateMapTexture();
 	}
 
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->mapTexture);
 
-	SDL_RenderClear(TBAGame->gameWindow->renderer);
+	///SDL_RenderClear(TBAGame->gameWindow->renderer);
 
 	//Source rectangle taken from screenFont->fontTexture
 	SDL_Rect sRect;
@@ -166,10 +171,6 @@ void MapScreen::generateMapTexture() {
 	//Destination rectangle on screen
 	SDL_Rect dRect;
 
-	//Format raw content string for display
-	//std::vector<std::vector<Tile*>> visibleContent = subVec(this->map,0,this->map.size());
-
-	//visibleContent.push_back("->");
 	Tile* thisTile;
 
 	//Cursor
@@ -178,58 +179,6 @@ void MapScreen::generateMapTexture() {
 	int tileID;
 	int occupierTileID;
 	int index = -1;
-
-	//For each line of visible Content
-	for(int i=0;i<map.size();i++) {
-		for(int j=0;j<map.size();j++) {
-			thisTile = this->map.at(i).at(j);
-	
-			//Get tile ID from tile and get tile texture from tileset
-
-			tileID = thisTile->getDisplayID();
-
-			if(thisTile->isOccupied()) {
-				SDL_SetTextureAlphaMod(this->screenFont->fontTexture,220);
-			}
-
-			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
-				debug("ERROR: Missing charMap entry for tile "+tileID);
-				exit(0);
-			}
-
-			charInfo = this->screenFont->fontMap.at(tileID);
-
-			//Read values from charInfo into SDL_Rect
-			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
-
-			//Add rectangle in next tile slot on map texture
-			dRect = {(1*cursor[0]),(this->charH*cursor[1])+charInfo.yo,this->charW,this->charH};
-
-			if(thisTile->hasBlocks()) {
-				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-			} else {
-				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-			}
-
-			if(thisTile->isOccupied()) {
-				SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
-			}
-
-			//Advance cursor for next character
-			cursor[0] += this->charW;
-		}
-		//Advance cursor to next line
-		cursor[1]++;
-		cursor[0] = 0;
-
-	}
-
-	//=======================
-	//		CHARPASS / OBJPASS
-	//=======================
-
-	cursor[0] = 0;
-	cursor[1] = 0;
 
 	int charSize;
 
@@ -242,7 +191,7 @@ void MapScreen::generateMapTexture() {
 
 	int objOffsetX;
 	int objOffsetY;
-
+	
 	for(int i=0;i<map.size();i++) {
 		for(int j=0;j<map.size();j++) {
 			thisTile = this->map.at(i).at(j);
@@ -250,9 +199,38 @@ void MapScreen::generateMapTexture() {
 			//Get tile ID from tile and get tile texture from tileset
 
 			if(thisTile->isOccupied()) {
+				int tcursor[2] = {cursor[0],cursor[1]};
+				for(int k=-1;k<=1;k++) {
+					for(int n=-1;n<=1;n++) {
+						tcursor[0] = cursor[0]+(n*charW);
+						tcursor[1] = cursor[1]+k;	
+						//debug(std::min(i+k,(int)this->map.size()));debug(std::min(j+n,(int)this->map.size()));
+						thisTile = this->map.at(std::min(i+k,(int)this->map.size())).at(std::min(j+n,(int)this->map.size()));
+						tileID = thisTile->getDisplayID();
 
-				charSize = 5;
-				for(int k=0;k<thisTile->occupiers.size();k++) {
+						//Update tiles in a 3x3 radius around the occupied tile
+
+						//SDL_SetTextureAlphaMod(this->screenFont->fontTexture,220);
+
+						if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+							debug("ERROR: Missing charMap entry for tile "+tileID);
+							exit(0);
+						}
+
+						charInfo = this->screenFont->fontMap.at(tileID);
+
+						sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+						dRect = {(1*tcursor[0]),(this->charH*tcursor[1])+charInfo.yo,this->charW,this->charH};
+						charSize = 5;
+
+						SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+						
+						//SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+					}
+				}
+				thisTile = this->map.at(i).at(j);
+				for(int k=0;k<thisTile->occupiers.size();k++) {				
+
 					occupant = thisTile->occupiers.at(k);
 
 					charInfo = TBAGame->gameWindow->textScreen->screenFont->fontMap.at((int)occupant->getName()[0]);
@@ -341,6 +319,84 @@ void MapScreen::generateMapTexture() {
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
 }
 
+void MapScreen::generateMapTexture() {
+
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->mapTexture);
+
+	SDL_RenderClear(TBAGame->gameWindow->renderer);
+
+	//Source rectangle taken from screenFont->fontTexture
+	SDL_Rect sRect;
+	fChar charInfo;
+
+	//Destination rectangle on screen
+	SDL_Rect dRect;
+
+	//Format raw content string for display
+	//std::vector<std::vector<Tile*>> visibleContent = subVec(this->map,0,this->map.size());
+
+	//visibleContent.push_back("->");
+	Tile* thisTile;
+
+	//Cursor
+	int cursor[2] = {0,0};
+
+	int tileID;
+	int occupierTileID;
+	int index = -1;
+
+	//debug("Generating map texture");
+
+	//For each line of visible Content
+	for(int i=0;i<map.size();i++) {
+		for(int j=0;j<map.size();j++) {
+			thisTile = this->map.at(i).at(j);
+	
+			//Get tile ID from tile and get tile texture from tileset
+
+			tileID = thisTile->getDisplayID();
+
+			if(thisTile->isOccupied()) {
+				cursor[0] += this->charW;
+				continue;
+				//SDL_SetTextureAlphaMod(this->screenFont->fontTexture,220);
+			}
+
+			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+				debug("ERROR: Missing charMap entry for tile "+tileID);
+				exit(0);
+			}
+
+			charInfo = this->screenFont->fontMap.at(tileID);
+
+			//Read values from charInfo into SDL_Rect
+			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+
+			//Add rectangle in next tile slot on map texture
+			dRect = {(1*cursor[0]),(this->charH*cursor[1])+charInfo.yo,this->charW,this->charH};
+
+			if(thisTile->hasBlocks()) {
+				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+			} else {
+				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+			}
+
+			if(thisTile->isOccupied()) {
+				//SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+			}
+
+			//Advance cursor for next character
+			cursor[0] += this->charW;
+		}
+		//Advance cursor to next line
+		cursor[1]++;
+		cursor[0] = 0;
+
+	}
+
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+}
+
 void Screen::shiftContentWindow(int i) {
 
 	this->contentWindowOffset -= 2*i;
@@ -356,7 +412,12 @@ void TextBox::setContent(const std::string& content) {
 }
 
 void TextBox::prepareContent() {
+	std::string newContent = this->getContent();
+	this->setContent(newContent);
+	this->oldContent = newContent;
+}
 
+std::string TextBox::getContent() {
 	std::string newContent = 
 		"Player:"+TBAGame->playerChar->inventory->toString();
 		//"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo();
@@ -364,7 +425,7 @@ void TextBox::prepareContent() {
 		//Draw display target info
 		/*if(TBAGame->playerChar->hasTarget()) {
 			newContent += TBAGame->playerChar->getTargetInfo();
-			
+
 		}*/
 
 		if(TBAGame->hasDisplayTarget()) {
@@ -373,9 +434,7 @@ void TextBox::prepareContent() {
 				newContent += "\n\n"+TBAGame->playerChar->getEquipString();
 			}
         }
-
-	this->setContent(newContent);
-
+	return newContent;
 }
 
 void DynamicTextBox::setContent(const std::string& content) {

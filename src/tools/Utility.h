@@ -38,6 +38,7 @@ void dumpVec(const std::vector<T>& v) {
 
 //isdigit
 bool isdigit(const std::string& s);
+bool issymbol(char);
 
 //strip
 std::string strip(const std::string &s);

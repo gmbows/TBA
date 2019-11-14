@@ -45,7 +45,7 @@ void Game::input() {
 
 	while(SDL_PollEvent(&event)) {
 
-		keycode = event.key.keysym.sym;
+		keycode = event.key.keysym.sym; 
 
 		switch(event.type) {
 			case SDL_QUIT:
@@ -71,6 +71,9 @@ void Game::input() {
 						break;
 					case SDLK_LSHIFT:
 						shift=true;
+						break;
+					case 96:
+						//backtick not supported
 						break;
 					case 32:
 						if(SDL_GetModState() & (KMOD_LCTRL ^ KMOD_CAPS)) {

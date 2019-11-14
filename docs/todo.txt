@@ -68,7 +68,11 @@ KNOWN BUGS:
 ========
 TODO:
 ========
-
+	Screen:
+		Only update tiles that are occupied on map screen
+		Don't need to get entirely new tiles each frame
+		Actually use maptexture, regenerate when necessary but only redraw tiles that are occupied
+		Generate base texture upon new tile, only update and redraw character offsets in map loop
 	Threads:
 		Split logic thread into threads for each component of logic updates (game, ui obj updates)
 		Don't need a thread for graphics

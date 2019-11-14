@@ -75,8 +75,8 @@ void Game::setupUI() {
 	//Map panel to obscure mapscreen overlap
 	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
 	SDL_Rect fillLeft = {textScreen->x+textScreen->w-6,0,borderSize+5,gameWindow->height};
-	SDL_Rect fillRight = {mapScreen->x+mapScreenS+2,0,borderSize+3,gameWindow->height};
-	SDL_Rect fillBottom = {0,borderSize+mapScreenS+2,this->gameWindow->width,mapScreenS};
+	SDL_Rect fillRight = {mapScreen->x+mapScreenS+2,0,borderSize-3,gameWindow->height};
+	SDL_Rect fillBottom = {0,borderSize+mapScreenS+2,mapScreenS+400,mapScreenS};
 
 	//Draw 4 panels around map screen to block map overlap
 	this->gameWindow->mapPanel->panelVector = {fillTop,fillLeft,fillRight,fillBottom};
@@ -156,6 +156,7 @@ void Game::setupGame() {
 	}
 	newChar = new Character(false,160,"Debug Looter",-1,3);
 	LB = new Character(false,160,"Lost Bladesman",0,3);
+	LB->equipment->primary = new Item(5);
 	Dog = new Character(false,160,"Wolf",5,3);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	newChar->setTarget(LB);

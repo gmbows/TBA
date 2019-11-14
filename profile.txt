@@ -1,0 +1,15 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 52.94      0.36     0.36                             Screen::drawContent(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&)
+ 32.35      0.58     0.22                             MapScreen::generateMapTexture()
+  7.35      0.63     0.05                             World::getTileAt(float, float)
+  1.47      0.64     0.01                             Tile::getFlip()
+  1.47      0.65     0.01                             Tile::Tile(int, int, int)
+  1.47      0.66     0.01                             void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.74      0.67     0.01                             Window::bringToFront(Screen*)
+  0.74      0.67     0.01                             Window::update()
+  0.74      0.68     0.01                             TextBox::setContent(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.74      0.68     0.01                             TextBox::prepareContent()

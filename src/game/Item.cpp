@@ -67,7 +67,6 @@ void Item::createAttributeSet(const std::vector<itemAttribute> &attribs,const st
 	}
 }
 
-
 bool Item::hasAttribute(itemAttribute attrib) {
 	//return (this->attributeValues.find(attrib) != this->attributeValues.end());
 	return (this->attributes.find(attrib) != this->attributes.end());
@@ -85,4 +84,15 @@ float Item::getAttribute(itemAttribute attrib) {
 std::string Item::getName() {
 	//For advanced item types with names that may be different than default
 	return this->name;
+}
+std::string Item::getPlural() {
+	if(this->name[this->name.size()-1] == 's') return this->name+"'";
+	if(issymbol(this->name[this->name.size()-1])) return this->name;
+	return this->name+'s';
+}
+std::string Item::getPluralDisplayName() {
+	return replace(this->getPlural(),' ',"");
+}
+std::string Item::getDisplayName() {
+	return replace(this->name,' ',"");
 }
