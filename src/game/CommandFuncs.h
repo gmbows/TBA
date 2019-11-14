@@ -71,3 +71,10 @@
 	//Search
 	std::string searchFunc(Command*, const std::vector<std::string>&);
 	bool searchEC(Command*, const std::vector<std::string>&);
+
+	//Equip
+	std::string equipFunc(Command*, const std::vector<std::string>&);
+	bool equipEC(Command*, const std::vector<std::string>&);
+
+	//Debug
+	std::string debugFunc(Command*, const std::vector<std::string>&);

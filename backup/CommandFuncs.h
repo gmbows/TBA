@@ -67,3 +67,11 @@
 	//Put
 	std::string putFunc(Command*, const std::vector<std::string>&);
 	bool putEC(Command*, const std::vector<std::string>&);
+
+	//Search
+	std::string searchFunc(Command*, const std::vector<std::string>&);
+	bool searchEC(Command*, const std::vector<std::string>&);
+
+	//Equip
+	std::string equipFunc(Command*, const std::vector<std::string>&);
+	bool equipEC(Command*, const std::vector<std::string>&);

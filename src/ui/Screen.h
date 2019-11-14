@@ -91,6 +91,7 @@ class TextScreen: public Screen {
 		void addContent(char);
 		void setLastLine(const std::string&);
 		void commandAppend(char);
+		void commandAppend(const std::string&);
 		void deleteLastCharacter();
 		void resetContentWindowOffset();
 

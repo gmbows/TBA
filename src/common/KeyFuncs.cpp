@@ -14,7 +14,6 @@ bool moving = false;
 int activeScreen = 1;
 int lastMove[2];
 
-
 void processKeystroke(int keycode) {
 	if(moving) {
 		switch(keycode) {
@@ -50,6 +49,10 @@ void delChar() {
 	TBAGame->gameWindow->textScreen->deleteLastCharacter();
 }
 
+//==========
+//	  MACROS
+//==========
+
 void autocomplete() {
 	if(autocomplete(TBAGame->gameWindow->textScreen->command,TBAGame->commandStrings)) {
 		TBAGame->gameWindow->textScreen->commandAppend(' ');
@@ -59,14 +62,23 @@ void autocomplete() {
 	}
 }
 
-void commandAppend(char c) {
-	//TBAGame->gameWindow->textScreen->commandAppend(c);
-}
-
 void pause() {
 	
 	TBAGame->togglePause();
 
+}
+
+void clear() {
+	TBAGame->gameWindow->textScreen->content.clear();
+}
+
+void clearCommand() {
+	TBAGame->gameWindow->textScreen->command = "";
+}
+
+void paste() {
+	std::string clipboard(SDL_GetClipboardText());
+	TBAGame->gameWindow->textScreen->commandAppend(clipboard);
 }
 
 //==========

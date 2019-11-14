@@ -14,7 +14,12 @@ void delChar();
 void sendCommand();
 void swapCommand(int);
 void shiftContentWindow(int);
+
+//Macro
 void autocomplete();
+void clear();
+void paste();
+void clearCommand();
 
 //Mouse functions
 void click(SDL_MouseButtonEvent&);

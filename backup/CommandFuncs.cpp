@@ -5,6 +5,7 @@
 #include "Container.h"
 #include "FloatingText.h"
 #include "CommandUtils.h"
+#include "GameObject.h"
 
 #include "World.h"
 
@@ -48,7 +49,7 @@ std::string clearFunc(Command* command,const std::vector<std::string>& args) {
 
 //Inventory
 std::string inventoryFunc(Command* command,const std::vector<std::string>& args) {
-	return TBAGame->playerChar->inventory->contentString;
+	return "\n"+TBAGame->playerChar->getInvString();
 }
 
 //Move + EC
@@ -278,11 +279,50 @@ bool putEC(Command* command, const std::vector<std::string> &args) {
 	}
 	//Check if player has selected a valid container
 	if(!TBAGame->hasDisplayTarget()) {
-		command->error = "No container selected";
+		command->error = "No target selected";
 		return false;
 	}
-	if(TBAGame->displayTarget->type != OBJ_CONTAINER and TBAGame->displayTarget->type != OBJ_CHARACTER) {
+	if(!TBAGame->displayTarget->hasInventory()) {
 		command->error = "Cannot put item in "+TBAGame->displayTarget->getName();
+		return false;
+	}
+	return true;
+}
+
+//Search
+std::string searchFunc(Command* command, const std::vector<std::string> &args) {
+	return "\n"+TBAGame->displayTarget->getInvString();
+}
+bool searchEC(Command* command, const std::vector<std::string> &args) {
+	//Check if player has selected a valid container
+	if(!TBAGame->hasDisplayTarget()) {
+		command->error = "No target selected";
+		return false;
+	}
+	if(!TBAGame->displayTarget->hasInventory()) {
+		command->error = "Cannot search "+TBAGame->displayTarget->getName();
+		return false;
+	}
+	return true;
+}
+
+
+//Equip
+std::string equipFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	int index = TBAGame->playerChar->inventory->find(itemName);
+	if(index >= 0) {
+		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+		if(TBAGame->playerChar->equip(goodItem)) return "\nEquipped "+goodItem->name;
+		return "\nCan't equip this item";
+	} else if(index == -2) {
+		return "";
+	}
+	return "\nItem not found";
+}
+bool equipEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
 		return false;
 	}
 	return true;

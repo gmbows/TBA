@@ -2,22 +2,9 @@
 #include <vector>
 #include <map>
 
+#include "GameObject.h"
 #include "Command.h"
 #include "../tools/Utility.h"
-
-#include "GameObject.h"
-#include "Container.h"
-#include "Character.h"
-#include "Inventory.h"
-
-Inventory* GameObject::getInventory() {
-	switch(this->type) {
-		case OBJ_CHARACTER:
-			return static_cast<Character*>(this)->inventory;
-		case OBJ_CONTAINER:
-			return static_cast<Container*>(this)->inventory;
-	}
-}
 
 int moveItems(int itemCount,Item *goodItem,Inventory *source, Inventory *destination) {
 	int taken = 0;
@@ -82,6 +69,8 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 			break;
 		}
 	}
+
+	if(args.size() == 0) return "\nNo item specified";
 
 	//Join everything between [command,itemcount] into item name 
 	itemName = join(' ',args);

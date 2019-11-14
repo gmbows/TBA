@@ -154,7 +154,30 @@ float Character::getAttackRange() {
 	return this->equipment->primary->getAttribute(ATTRIB_RANGE);
 }
 
+std::string Character::getInvString() {
+	return this->name+":"+this->inventory->toString();
+}
 
+bool Character::equip(Item *item) {
+	//Item is a weapon, placeholder for secondary equipping
+	if(item->hasType(I_WEAPON)) {
+		this->equipment->primary = item;
+		return true;
+	}
+	if(item->hasType(I_ARMOR)) {
+		if(item->hasType(I_ARMOR_HEAD)) {
+			this->equipment->head = item;
+		} else if(item->hasType(I_ARMOR_BODY)) {
+			this->equipment->body = item;
+		} else if(item->hasType(I_ARMOR_LEGS)) {
+			this->equipment->legs = item;
+		} else if(item->hasType(I_ARMOR_FEET)) {
+			this->equipment->feet = item;
+		}
+		return true;
+	}
+	return false;
+}
 
 //=============
 // MISC / CLEANUP

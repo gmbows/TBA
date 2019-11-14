@@ -1,10 +1,12 @@
 #include "CommandFuncs.h"
 #include "../common/Common.h"
+#include "../common/KeyFuncs.h"
 #include "Character.h"
 #include "Command.h"
 #include "Container.h"
 #include "FloatingText.h"
 #include "CommandUtils.h"
+#include "GameObject.h"
 
 #include "World.h"
 
@@ -48,14 +50,14 @@ std::string clearFunc(Command* command,const std::vector<std::string>& args) {
 
 //Inventory
 std::string inventoryFunc(Command* command,const std::vector<std::string>& args) {
-	return TBAGame->playerChar->inventory->toString();
+	return "\n"+TBAGame->playerChar->getInvString();
 }
 
 //Move + EC
 std::string moveFunc(Command* command, const std::vector<std::string> &args) {
 
 	TBAGame->playerChar->direction = std::get<1>(dirMap.at(args.at(0)));
-	TBAGame->playerChar->setStatus(STATUS_MOVE);
+	TBAGame->playerChar->addStatus(STATUS_MOVE);
 	return "\nMoving "+command->aux;
 
 }
@@ -290,7 +292,7 @@ bool putEC(Command* command, const std::vector<std::string> &args) {
 
 //Search
 std::string searchFunc(Command* command, const std::vector<std::string> &args) {
-	return TBAGame->displayTarget->getInventory()->toString();
+	return "\n"+TBAGame->displayTarget->getInvString();
 }
 bool searchEC(Command* command, const std::vector<std::string> &args) {
 	//Check if player has selected a valid container
@@ -305,3 +307,30 @@ bool searchEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
 
+
+//Equip
+std::string equipFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	int index = TBAGame->playerChar->inventory->find(itemName);
+	if(index >= 0) {
+		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+		if(TBAGame->playerChar->equip(goodItem)) return "\nEquipped "+goodItem->name;
+		return "\nCan't equip this item";
+	} else if(index == -2) {
+		return "";
+	}
+	return "\nItem not found";
+}
+bool equipEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+
+//Debug
+std::string debugFunc(Command* command, const std::vector<std::string> &args) {
+	debugKey();
+	return "";
+}

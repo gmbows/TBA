@@ -136,6 +136,9 @@ int count(const std::vector<T> &v, T token) {
 //--STRINGS--
 //========
 
+//sdlerror
+void getSDLError();
+
 //autocomplete
 bool autocomplete(std::string&, const std::vector<std::string>&);
 

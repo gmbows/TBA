@@ -1,6 +1,12 @@
 #include "GameObject.h"
 #include "../common/Common.h"
-//Blank file for inclusion purposes
+
+#include "Container.h"
+#include "Character.h"
+#include "Inventory.h"
+
+class Character;
+class Container;
 
 GameObject::GameObject(objType obj): type(obj) {
 	this->objectID = ++TBAGame->objectTotal;
@@ -20,3 +26,18 @@ GameObject::GameObject(objType obj): type(obj) {
 	}
 	
 }
+
+Inventory* GameObject::getInventory() {
+	switch(this->type) {
+		case OBJ_CHARACTER:
+			return static_cast<Character*>(this)->inventory;
+		case OBJ_CONTAINER:
+			return static_cast<Container*>(this)->inventory;
+	}
+}
+
+std::string GameObject::getInvString() {
+	if(!this->hasInventory()) return "ERR_NO_INVENTORY";
+	return this->getName()+":"+this->getInventory()->toString();
+}
+

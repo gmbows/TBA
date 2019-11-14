@@ -24,6 +24,9 @@ void TextScreen::addContent(const std::string& str) {
 	int cursorX;
 
 	//Read last content line into a string and delete it from content vector
+	if(this->content.at(this->content.size()-1)[this->content.at(this->content.size()-1).size()-1] == '\r') {
+		this->content.pop_back();
+	}
 	std::string thisLine = this->content.at(this->content.size()-1);
 	this->content.pop_back();
 
@@ -37,7 +40,7 @@ void TextScreen::addContent(const std::string& str) {
 				this->content.push_back(thisLine);
 				thisLine = "";
 				indexOfLastSpace = -1;
-			} else if(indexOfLastSpace < 0) {
+			} else if(indexOfLastSpace == -1) {
 				//If the line has no spaces, break word
 				this->content.push_back(thisLine);
 				thisLine = s[i];
@@ -70,17 +73,18 @@ void TextScreen::addContent(const std::string& str) {
 						thisLine += ' ';
 						indexOfLastSpace = thisLine.size()-1;
 					} else if(cursorX < tabStop) {
-						while(cursorX != tabStop) {
+						while(cursorX <= tabStop) {
 							thisLine += ' ';
-							indexOfLastSpace = thisLine.size()-1;
 							cursorX = thisLine.size();
 						}
+						indexOfLastSpace = thisLine.size()-1;
 					} else if(cursorX >= tabStop) {
 						this->content.push_back(thisLine);
 						thisLine = " ";
 						indexOfLastSpace = 0;
 				}
 			} else {
+				//	if(s[i] == '') TBAGame->gameRunning = false;
 				//Character is a traditional character, add to line
 				thisLine += s[i];
 			}
@@ -354,7 +358,7 @@ void TextBox::setContent(const std::string& content) {
 void TextBox::prepareContent() {
 
 	std::string newContent = 
-		"Player inventory:"+TBAGame->playerChar->inventory->toString();
+		"Player:"+TBAGame->playerChar->inventory->toString();
 		//"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo();
 
 		//Draw display target info
@@ -365,6 +369,9 @@ void TextBox::prepareContent() {
 
 		if(TBAGame->hasDisplayTarget()) {
             newContent += TBAGame->displayTarget->getInfo();
+			if((char*)TBAGame->displayTarget == (char*)TBAGame->playerChar) {
+				newContent += "\n\n"+TBAGame->playerChar->getEquipString();
+			}
         }
 
 	this->setContent(newContent);
@@ -407,6 +414,10 @@ void TextScreen::setCommandLine() {
 
 void TextScreen::commandAppend(char c) {
 	this->setCommand(this->command+c);
+}
+
+void TextScreen::commandAppend(const std::string& s) {
+	this->setCommand(this->command+s);
 }
 
 void TextScreen::deleteLastCharacter() {

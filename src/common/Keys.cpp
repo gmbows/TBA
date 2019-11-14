@@ -79,7 +79,31 @@ void Game::input() {
 							processKeystroke(32);
 						}
 						break;
-					case  SDLK_KP_PLUS: //DEBUG KEY
+					case 108:
+						if(SDL_GetModState() & (KMOD_LCTRL)) {
+							clear();
+						} else {
+							if(shift) processKeystroke(76);
+							if(!shift) processKeystroke(108);
+						}
+						break;
+					case 117:
+						if(SDL_GetModState() & (KMOD_LCTRL)) {
+							clearCommand();
+						} else {
+							if(shift) processKeystroke(85);
+							if(!shift) processKeystroke(117);
+						}
+						break;
+					case 118:
+						if(SDL_GetModState() & (KMOD_LCTRL)) {
+							paste();
+						} else {
+							if(shift) processKeystroke(86);
+							if(!shift) processKeystroke(118);
+						}
+						break;
+					case SDLK_KP_PLUS: //DEBUG KEY
 						debugKey();
 						break;
 					case SDLK_UP:

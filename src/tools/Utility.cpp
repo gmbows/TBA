@@ -75,7 +75,7 @@ bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
 				}
 			}
 			if(hasMultipleMatches) {
-				TBAGame->displayText("\n"+matchlist);
+				TBAGame->displayText("\n"+matchlist+"\r");
 				return false;
 			} else {
 				return true;
@@ -207,4 +207,12 @@ float dist(point p1, point p2) {
 	float y2 = std::get<1>(p2);
 
 	return sqrt(pow((y1-y2),2)+pow(x1-x2,2));
+}
+
+void getSDLError() {
+    const char *sdlError = SDL_GetError();
+    if(sdlError && *sdlError)
+    {
+        ::std::cout << "SDL ERROR: " << sdlError << ::std::endl;
+    }
 }

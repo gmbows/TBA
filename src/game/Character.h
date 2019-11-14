@@ -17,6 +17,8 @@ struct Tile;
 
 typedef unsigned int flag;
 
+class GameObject;
+
 enum statusIndicator: flag {
 	STATUS_IDLE = 		1 << 0,
 	STATUS_MOVE = 		1 << 1,
@@ -73,10 +75,19 @@ class Character: public GameObject {
 		std::tuple<float,float> getApproximateLocation();
 
 		//=============
+		//	  INVENTORY
+		//=============
+
+		std::string getInvString();
+		
+
+		//=============
 		//	  EQUIPMENT
 		//=============
 
 		Equipment *equipment;
+		std::string inline getEquipString() {return this->equipment->getEquipString();}
+		bool equip(Item*);
 
 		//=============
 		//	  	STATS
@@ -199,6 +210,11 @@ class Character: public GameObject {
 		virtual inline int getID() {return this->objectID;}
 		std::tuple<float,float> getLocation() {return {this->x,this->y}; }
 
-		~Character() {}
+		~Character() {
+			delete this->equipment;
+			delete this->inventory;
+			//this->location->evict(this);
+			delete this;
+		}
 
 };

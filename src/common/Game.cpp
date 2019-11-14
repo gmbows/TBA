@@ -118,6 +118,8 @@ void Game::setupGame() {
 			new		Command({"select","sel"},selectFunc,selectEC),
 			new		Command({"put"},putFunc,putEC),
 			new		Command({"search"},searchFunc,searchEC),
+			new		Command({"equip"},equipFunc,equipEC),
+			new		Command({"debug"},debugFunc),
 			////
 		};
 	
@@ -136,7 +138,10 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
-	this->playerChar->inventory->add({0,1,0,1,0,1,0,1,0,1,0,1,0,1,3,3,3,3,3,3,3,3,3,3,0,1,0,1,0,1,0,1,0,1,2,2,2,2,2,2,2,2,2,2,2});
+	for(int i=0;i<50;i++) {
+		//Don't add null item
+		this->playerChar->inventory->add(1+(random()%(itemManifest.size()-1)));
+	}
 	this->displayTarget = this->playerChar;
 
 	//New characters are added to gameObjects automatically

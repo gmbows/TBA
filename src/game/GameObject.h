@@ -32,7 +32,8 @@ class GameObject {
 		virtual int getDisplayID() {return -1;}
 
 		inline bool hasInventory() { return this->type == OBJ_CHARACTER or this->type == OBJ_CONTAINER;}
-		inline Inventory* getInventory();
+		Inventory* getInventory();
+		std::string getInvString();
 
 		GameObject(objType);
 

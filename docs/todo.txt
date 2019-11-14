@@ -1,6 +1,7 @@
 ========
 IDEAS:
 ========
+		Only autocomplete on wildcard chars (*)
 		Characters
 			Width? Right now a character is only one pixel
 				Width currently only matters when passing through the corner of two impassable blocks into a passable block and in detecting projectile collision
@@ -71,6 +72,11 @@ TODO:
 	Threads:
 		Split logic thread into threads for each component of logic updates (game, ui obj updates)
 		Don't need a thread for graphics
+	Autocomplete:
+		Autocompleting after entering a telemetry-supported command will attempt to 
+			autocomplete the arguments of the command as well:
+			->take r[tab] will check same conditions as takeEC and display matching items
+			in selected container
 	Blocks/Construction/Tile heights
 	Character:
 		Limbs/Limb damage

@@ -381,10 +381,10 @@ attackStatus Character::getAttackStatus() {
 
 itemType Character::getAttackType() {
 	if(this->equipment->primary == nullptr) {
-		return I_MELEE;
+		return I_WEAPON_MELEE;
 	}
-	if(this->equipment->primary->hasType(I_MELEE)) return I_MELEE;
-	return I_RANGED;
+	if(this->equipment->primary->hasType(I_WEAPON_MELEE)) return I_WEAPON_MELEE;
+	return I_WEAPON_RANGED;
 }
 
 void Character::sendAttack(GameObject *target) {
@@ -396,15 +396,15 @@ void Character::sendAttack(GameObject *target) {
 	int damage = this->getAttackDamage();
 
 	switch(this->getAttackType()) {
-		case I_RANGED:
+		case I_WEAPON_RANGED:
 			float x,y;
 			decompose(this->getLocation(),x,y);
 			float tx,ty;
 			decompose(this->target->getLocation(),tx,ty);
-			// DEBUG:: Replace rand range with accuracy deviation and projectile speed
-			new Projectile(this,this->getLocation(),(-1+rand()%1)-atan2(ty-y,tx-x)/(3.1415/180),.5);
+			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
+			new Projectile(this,this->getLocation(),(-1+rand()%1)-atan2(ty-y,tx-x)/(3.1415/180),.5); //placeholder velocity
 			break;
-		case I_MELEE:
+		case I_WEAPON_MELEE:
 			// Send to target to be changed based on damage resistance
 			static_cast<Character*>(target)->receiveAttack(damage,this);
 			break;

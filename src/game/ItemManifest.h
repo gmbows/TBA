@@ -10,26 +10,32 @@ typedef unsigned int flag;
 enum itemType: flag {
 
 	//Should go from General type to Specific type in descending order
+	// Item picks up attributes of lowest type
 
 	I_FOOD =		1 << 0,
 	I_FRUIT =		1 << 1,
 	I_VEGETABLE	=	1 << 2,
 	
-	I_WEAPON = 		1 << 4,
-	I_EQUIPMENT =	1 << 3,
-	I_MELEE	=		1 << 5,
-	I_SWORD=		1 << 6,
-	I_RANGED =		1 << 7,
-	I_BOW =			1 << 8,
+	I_WEAPON = 			1 << 3,
+	I_EQUIPMENT =		1 << 4,
+	I_WEAPON_MELEE =	1 << 5,
+	I_WEAPON_SWORD =	1 << 6,
+	I_WEAPON_RANGED =	1 << 7,
+	I_WEAPON_BOW =		1 << 8,
 	
-	I_ARMOR =		1 << 9,
+	I_ARMOR =			1 << 9,
+	I_ARMOR_HEAD =		1 << 10,
+	I_ARMOR_BODY =		1 << 11,
+	I_ARMOR_LEGS =		1 << 12,
+	I_ARMOR_FEET =		1 << 13,
 	
-	I_CRAFTING =	1 << 10,
-	I_METAL =		1 << 11,
-	I_INGREDIENT = 	1 << 12,
+	I_CRAFTING =	1 << 14,
+	I_METAL =		1 << 15,
+	I_INGREDIENT = 	1 << 16,
+	I_CURRENCY = 	1 << 17,
 	
-	I_CONTAINER =	1 << 13,
-	I_END =			1 << 14,
+	I_CONTAINER =	1 << 18,
+	I_END =			1 << 19,
 
 };
 
@@ -69,6 +75,7 @@ inline bool operator!=(itemType f1,itemType f2) {
 enum itemAttribute {
 	ATTRIB_DAMAGE,
 	ATTRIB_RANGE,
+	ATTRIB_DEFENSE,
 };
 
 extern std::map<itemType,std::vector<itemAttribute>> attributeLookup;
