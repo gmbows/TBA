@@ -68,8 +68,9 @@ KNOWN BUGS:
 TODO:
 ========
 
-	Screen:
-		
+	Threads:
+		Split logic thread into threads for each component of logic updates (game, ui obj updates)
+		Don't need a thread for graphics
 	Blocks/Construction/Tile heights
 	Character:
 		Limbs/Limb damage

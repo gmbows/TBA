@@ -354,7 +354,7 @@ void TextBox::setContent(const std::string& content) {
 void TextBox::prepareContent() {
 
 	std::string newContent = 
-		"Inventory:"+TBAGame->playerChar->inventory->contentString;
+		"Player inventory:"+TBAGame->playerChar->inventory->toString();
 		//"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo();
 
 		//Draw display target info

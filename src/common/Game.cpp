@@ -115,7 +115,9 @@ void Game::setupGame() {
 			new		Command({"hurtme"},hurtmeFunc,hurtmeEC),
 			new		Command({"exit","quit"},exitFunc),
 			new		Command({"take"},takeFunc,takeEC),
-			new		Command({"select"},selectFunc,selectEC),
+			new		Command({"select","sel"},selectFunc,selectEC),
+			new		Command({"put"},putFunc,putEC),
+			new		Command({"search"},searchFunc,searchEC),
 			////
 		};
 	
@@ -139,11 +141,11 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<10000;i++) {
+	for(int i=0;i<100;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
-		newChar->setStatus(STATUS_COMBAT);
+		//newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
@@ -243,6 +245,7 @@ void logic_thread_routine(Game *game) {
 	int real_wait = 0;
 
 	while(game->gameRunning) {
+		//debug("Updating logic");
 		pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
 		start = SDL_GetTicks();
@@ -266,6 +269,7 @@ void graphics_thread_routine(Game *game) {
 	int real_wait = 0;
 	
 	while(game->gameRunning) {
+		//debug("Updating graphics");
 		pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
 		start = SDL_GetTicks();
@@ -333,6 +337,6 @@ void Game::update() {
 	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
 
 	//Keyboard input delay
-	SDL_Delay(1000/60);
+	SDL_Delay(1000/30);
 
 }

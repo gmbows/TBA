@@ -115,6 +115,8 @@ void Game::setupGame() {
 			new		Command({"hurtme"},hurtmeFunc,hurtmeEC),
 			new		Command({"exit","quit"},exitFunc),
 			new		Command({"take"},takeFunc,takeEC),
+			new		Command({"select"},selectFunc,selectEC),
+			new		Command({"put"},putFunc,putEC),
 			////
 		};
 	
@@ -138,11 +140,11 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<100;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
-		newChar->setStatus(STATUS_COMBAT);
+		//newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
@@ -165,6 +167,15 @@ void Game::setupGame() {
 //=======================
 //			GAME OBJECTS
 //=======================
+
+std::vector<GameObject*> Game::convert(const std::vector<Character*> &v) {
+	std::vector<GameObject*> objs;
+	for(int i=0;i<v.size();i++) {
+		objs.push_back(static_cast<GameObject*>(v.at(i)));
+	}
+	return objs;
+}
+
 
 GameObject* Game::findObject(int id) {
 		for(int i=0;i<this->gameObjects.size();i++) {
@@ -226,6 +237,60 @@ void Game::popupText(int duration, const std::string& message) {
 //		UPDATE
 //=============
 
+void logic_thread_routine(Game *game) {
+
+	Uint32 start;
+	int elapsed;
+	int real_wait = 0;
+
+	while(game->gameRunning) {
+		//debug("Updating logic");
+		pthread_mutex_lock(&game->updateLock);
+		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
+		start = SDL_GetTicks();
+		game->update_logic();
+		elapsed = SDL_GetTicks()-start;
+		//std::cout << elapsed << "   " << std::flush;
+		//game->canUpdateGraphics = true;
+		//game->canUpdateLogic = false;
+		//pthread_cond_signal(&game->graphics);
+		pthread_mutex_unlock(&game->updateLock);
+		
+		real_wait = (1000/game->logicTickRate)-elapsed;
+		if(real_wait <= 0) debug("Falling behind! (logic)");
+		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
+	}
+}
+void graphics_thread_routine(Game *game) {
+
+	Uint32 start;
+	int elapsed;
+	int real_wait = 0;
+	
+	while(game->gameRunning) {
+		//debug("Updating graphics");
+		pthread_mutex_lock(&game->updateLock);
+		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
+		start = SDL_GetTicks();
+		game->update_graphics();
+		elapsed = SDL_GetTicks()-start;
+		//std::cout << elapsed << "       \r" << std::flush;
+		//game->canUpdateGraphics = false;
+		//game->canUpdateLogic = true;
+		//pthread_cond_signal(&game->logic);
+		pthread_mutex_unlock(&game->updateLock);
+
+		real_wait = (1000/game->graphicsTickRate)-elapsed;
+		if(real_wait <= 0) debug("Falling behind! (graphics)");
+		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
+	}
+}	
+
+void Game::spawn_threads() {
+	if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+}
+
 void Game::updateGameObjects() {
 	for(int i=0;i<this->gameObjects.size();i++) {
 		this->gameObjects.at(i)->update();
@@ -239,39 +304,38 @@ void Game::updateGameUIObjects() {
 	}
 }
 
-void Game::update() {
+void Game::update_logic() {
 
-	if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
-		//Update game window and all screens
-		this->lastGraphicsUpdate = SDL_GetTicks();
-		this->gameWindow->update();
-		this->graphicsTicks++;
-		this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
-	}
 	//Suspend logic ticks if game is paused
 	if(!this->paused) {
-		if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
+	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
 			//Update all active game objects
 			this->lastLogicUpdate = SDL_GetTicks();
 			this->updateGameObjects();
 			this->logicTicks++;
-			this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
-		}
+			//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+	//	}
 	}
 
-	//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
-	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+}
 
-	this->timeToNextUpdate = std::min(this->timeToNextGraphicsUpdate,this->timeToNextLogicUpdate);
+void Game::update_graphics() {
 
-	if(this->timeToNextUpdate <= 0) {
-		if(!this->paused) {
-			this->gameLog->get_timestamp();
-			std::string ts(this->gameLog->timestamp);
-			debug(ts+" : Falling behind!");
-		}
-	} else {
-		SDL_Delay(this->timeToNextUpdate);
-	}
+	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
+		//Update game window and all screens
+		this->lastGraphicsUpdate = SDL_GetTicks();
+		this->gameWindow->update();
+		this->graphicsTicks++;
+		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
+	//}
+
+}
+
+void Game::update() {
+
+	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
+
+	//Keyboard input delay
+	SDL_Delay(1000/30);
 
 }

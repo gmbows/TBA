@@ -30,7 +30,7 @@ std::string processCommand(const std::string& s) {
 		args = subVec(commandVector,1,commandVector.size());
 	}
 
-	
+	args = strip(args);
 	
 	Command* testCommand;
 

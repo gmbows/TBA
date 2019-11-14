@@ -48,7 +48,7 @@ std::string clearFunc(Command* command,const std::vector<std::string>& args) {
 
 //Inventory
 std::string inventoryFunc(Command* command,const std::vector<std::string>& args) {
-	return TBAGame->playerChar->inventory->contentString;
+	return TBAGame->playerChar->inventory->toString();
 }
 
 //Move + EC
@@ -232,6 +232,15 @@ bool takeEC(Command* command, const std::vector<std::string> &args) {
 		command->error = "No item specified";
 		return false;
 	}
+	//Check if player has selected a valid container
+	if(!TBAGame->hasDisplayTarget()) {
+		command->error = "No container selected";
+		return false;
+	}
+	if(TBAGame->displayTarget->type != OBJ_CONTAINER and TBAGame->displayTarget->type != OBJ_CHARACTER) {
+		command->error = "Cannot take item from "+TBAGame->displayTarget->getName();
+		return false;
+	}
 	return true;
 }
 
@@ -257,3 +266,42 @@ std::string selectFunc(Command* command, const std::vector<std::string> &args) {
 bool selectEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
+
+//Put
+std::string putFunc(Command* command, const std::vector<std::string> &args) {
+	return parseInteraction(command,args);
+}
+bool putEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	//Check if player has selected a valid container
+	if(!TBAGame->hasDisplayTarget()) {
+		command->error = "No target selected";
+		return false;
+	}
+	if(!TBAGame->displayTarget->hasInventory()) {
+		command->error = "Cannot put item in "+TBAGame->displayTarget->getName();
+		return false;
+	}
+	return true;
+}
+
+//Search
+std::string searchFunc(Command* command, const std::vector<std::string> &args) {
+	return TBAGame->displayTarget->getInventory()->toString();
+}
+bool searchEC(Command* command, const std::vector<std::string> &args) {
+	//Check if player has selected a valid container
+	if(!TBAGame->hasDisplayTarget()) {
+		command->error = "No target selected";
+		return false;
+	}
+	if(!TBAGame->displayTarget->hasInventory()) {
+		command->error = "Cannot search "+TBAGame->displayTarget->getName();
+		return false;
+	}
+	return true;
+}
+

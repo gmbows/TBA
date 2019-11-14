@@ -15,18 +15,21 @@ struct Inventory {
 	void add(Item*);
 	void add(int);
 	void add(const std::vector<int>&);
+	int find(Item*);
+	int find(const std::string&);
+
+	int itemCount(int);
+
 	Item* remove(int);
 
 	inline Item* getItem(int i) {return this->contents->at(i);}
-
-	int find(Item*);
-	int find(const std::string&);
 
 	std::vector<std::string> getContentString();
 	inline bool isEmpty() { return this->contents->size() == 0; } 
 	
 	void setInfoString();
 	std::string contentString;
+	std::string toString();
 
 	~Inventory() {
 		this->contents->clear();

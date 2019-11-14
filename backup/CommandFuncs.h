@@ -59,3 +59,11 @@
 	//Take
 	std::string takeFunc(Command*, const std::vector<std::string>&);
 	bool takeEC(Command*, const std::vector<std::string>&);
+
+	//Select
+	std::string selectFunc(Command*, const std::vector<std::string>&);
+	bool selectEC(Command*, const std::vector<std::string>&);
+
+	//Put
+	std::string putFunc(Command*, const std::vector<std::string>&);
+	bool putEC(Command*, const std::vector<std::string>&);

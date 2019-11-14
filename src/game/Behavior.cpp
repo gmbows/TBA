@@ -279,7 +279,7 @@ void Character::setLocomotion() {
 	this->velocityX = std::max(-this->maxMoveSpeed,std::min(this->maxMoveSpeed,this->velocityX+std::get<0>(this->direction)));
 	this->velocityY = std::max(-this->maxMoveSpeed,std::min(this->maxMoveSpeed,this->velocityY+std::get<1>(this->direction)));
 
-	if(this->velocityX == 0 and this->velocityY == 0) {
+	if(this->velocityX == 0 and this->velocityY == 0 and std::get<0>(this->direction) == 0 and std::get<1>(this->direction) == 0) {
 		this->removeStatus(STATUS_MOVE);
 		return;
 	}

@@ -35,6 +35,19 @@ int Inventory::find(const std::string &name) {
 	return -1;
 }
 
+int Inventory::itemCount(int id) {
+	int c = 0;
+	for(int i=0;i<this->contents->size();i++) {
+		if(this->contents->at(i)->id == id) c++;
+	}
+	return c;
+}
+
+std::string Inventory::toString() {
+	if(this->isEmpty()) return "\nEmpty";
+	return this->contentString;
+}
+
 ////////////////
 //INTERACTION
 //MUST SET INFO STRING

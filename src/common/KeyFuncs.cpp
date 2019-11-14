@@ -98,7 +98,11 @@ void click(SDL_MouseButtonEvent& event) {
 		}
 		
 		pthread_mutex_lock(&TBAGame->updateLock);
-		thisTile->addBlock(4);
+		if(thisTile->hasBlocks()) {
+			thisTile->blocks.clear();
+		} else {
+			thisTile->addBlock(4);
+		}
 		pthread_mutex_unlock(&TBAGame->updateLock);
 
 	} else if(TBAGame->gameWindow->mapScreen->enclose(event.x,event.y)) {

@@ -232,5 +232,58 @@ bool takeEC(Command* command, const std::vector<std::string> &args) {
 		command->error = "No item specified";
 		return false;
 	}
+	//Check if player has selected a valid container
+	if(!TBAGame->hasDisplayTarget()) {
+		command->error = "No container selected";
+		return false;
+	}
+	if(TBAGame->displayTarget->type != OBJ_CONTAINER and TBAGame->displayTarget->type != OBJ_CHARACTER) {
+		command->error = "Cannot take item from "+TBAGame->displayTarget->getName();
+		return false;
+	}
+	return true;
+}
+
+//Select
+std::string selectFunc(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		if(TBAGame->hasDisplayTarget()) {
+			std::string name = TBAGame->displayTarget->getName();
+			TBAGame->clearDisplayTarget();
+			return "\nDeselected "+name;
+		}
+		return "";
+	}
+	std::string objName = join(' ',args);
+	GameObject *newDisplayTarget = TBAGame->playerChar->findObjectInRadius(objName);
+	if(newDisplayTarget == nullptr) {
+		return "\nObject not found";
+	} else {
+		TBAGame->setDisplayTarget(newDisplayTarget);
+	}
+	return "\nSelected "+newDisplayTarget->getName();
+}
+bool selectEC(Command* command, const std::vector<std::string> &args) {
+	return true;
+}
+
+//Put
+std::string putFunc(Command* command, const std::vector<std::string> &args) {
+	return parseInteraction(command,args);
+}
+bool putEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	//Check if player has selected a valid container
+	if(!TBAGame->hasDisplayTarget()) {
+		command->error = "No container selected";
+		return false;
+	}
+	if(TBAGame->displayTarget->type != OBJ_CONTAINER and TBAGame->displayTarget->type != OBJ_CHARACTER) {
+		command->error = "Cannot put item in "+TBAGame->displayTarget->getName();
+		return false;
+	}
 	return true;
 }

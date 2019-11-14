@@ -63,3 +63,11 @@
 	//Select
 	std::string selectFunc(Command*, const std::vector<std::string>&);
 	bool selectEC(Command*, const std::vector<std::string>&);
+
+	//Put
+	std::string putFunc(Command*, const std::vector<std::string>&);
+	bool putEC(Command*, const std::vector<std::string>&);
+
+	//Search
+	std::string searchFunc(Command*, const std::vector<std::string>&);
+	bool searchEC(Command*, const std::vector<std::string>&);

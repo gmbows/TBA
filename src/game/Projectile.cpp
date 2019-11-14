@@ -29,7 +29,6 @@ void Projectile::update() {
 		this->relocate();
 	} else if(this->trackSubject != nullptr) {
 		decompose(trackSubject->getLocation(),this->x,this->y);
-
 	}
 
 	if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
@@ -59,8 +58,8 @@ void Projectile::relocate() {
 		// Check collision with impassable block or tile
 		// Embed a bit into surface
 		if(!thisTile->isPassable()) {
-			this->x = testX + (rand()%4)*(this->velocity*std::cos(this->angle));
-			this->y = testY + (rand()%4)*(this->velocity*std::sin(this->angle));
+			this->x = testX;// + (rand()%4)*(this->velocity*std::cos(this->angle));
+			this->y = testY;// + (rand()%4)*(this->velocity*std::sin(this->angle));
 			this->active = false;
 			return;
 		}
@@ -74,7 +73,7 @@ void Projectile::relocate() {
 				if((char*)occupant == (char*)this->owner) continue;
 				if(!occupant->isAlive()) continue;
 
-				if(dist(occupant->getLocation(),{testX,testY}) < this->collisionSize) {
+				if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
 					//Arrow damage
 					occupant->receiveAttack(1,this->owner);
 					//Do not embed arrows into characters
