@@ -3,6 +3,7 @@
 #include "Character.h"
 #include "../common/Tile.h"
 #include "Structure.h"
+#include "../ui/Font.h"
 
 #include <vector>
 
@@ -14,13 +15,18 @@ class World {
 		int size;
 
 		std::vector<std::vector<Tile*>*> tileVector;
+		
+		SDL_Texture* worldTexture;
 
 		Tile* invalid = new Tile(-1,-1,-1);
 		
 		World(int i): size(i) {}
+		
+		Font *screenFont = new Font("map_tileset");
 
 		//Generates and inserts tiles into world
 		void genWorld();
+		void genWorld_new(SDL_Renderer*);
 
 		std::vector<std::vector<Tile*>> getMapAt(int,int,int);
 		Tile* getTileAt(float,float);

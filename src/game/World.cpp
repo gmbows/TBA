@@ -3,6 +3,7 @@
 #include "../common/Tile.h"
 #include "Structure.h"
 #include "../tools/Utility.h"
+#include "../ui/Font.h"
 
 #include <vector>
 #include <random>
@@ -75,6 +76,69 @@ void World::genWorld() {
 			}
 		}
 	}
+}
+
+void World::genWorld_new(SDL_Renderer* renderer) {
+
+	debug("Generating world!");
+
+	SDL_SetRenderTarget(renderer,this->worldTexture);
+
+	//Source rectangle taken from screenFont->fontTexture
+	SDL_Rect sRect;
+	fChar charInfo;
+
+	//Destination rectangle on screen
+	SDL_Rect dRect;
+
+	//Format raw content string for display
+	//std::vector<std::vector<Tile*>> visibleContent = subVec(this->map,0,this->map.size());
+
+	//visibleContent.push_back("->");
+	Tile* thisTile;
+
+	//Cursor
+	int cursor[2] = {0,0};
+
+	int tileID;
+	int occupierTileID;
+	int index = -1;
+	
+	int texSize = 16;
+
+	for(int y=0;y<this->size;y++) {
+		for(int x=0;x<this->size;x++) {
+			
+			thisTile = this->tileVector.at(y)->at(x);
+
+			//For each line of visible Content
+			//Get tile ID from tile and get tile texture from tileset
+
+			tileID = thisTile->getDisplayID();
+
+			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+				debug("ERROR: Missing charMap entry for tile "+tileID);
+				exit(0);
+			}
+			
+			charInfo = this->screenFont->fontMap.at(tileID);
+
+			//Read values from charInfo into SDL_Rect
+			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+
+			//Add rectangle in next tile slot on map texture
+			dRect = {(texSize*cursor[0]),(texSize*cursor[1])+charInfo.yo,texSize,texSize};
+
+			SDL_RenderCopyEx(renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+
+			//Advance cursor for next character
+			cursor[0]++;
+		}
+		//Advance cursor to next line
+		cursor[1]++;
+		cursor[0] = 0;
+	}
+	SDL_SetRenderTarget(renderer,NULL);
 }
 
 void World::createStructure(std::tuple<int,int> location, structure s, int tileID) {

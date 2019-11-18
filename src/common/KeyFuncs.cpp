@@ -89,8 +89,8 @@ void click(SDL_MouseButtonEvent& event) {
 
 
 	//Left click
-	int centerX = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
-	int centerY = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
+	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
+	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
 
 	int tileX = std::round(((float)(event.x-centerX))/TBAGame->gameWindow->mapScreen->charW);
 	int tileY = std::round(((float)(event.y-centerY))/TBAGame->gameWindow->mapScreen->charH);

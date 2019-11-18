@@ -75,7 +75,7 @@ void Window::update() {
 
 	this->mapScreen->update();
 	TBAGame->updateGameUIObjects();
-	this->mapPanel->update();
+	//this->mapPanel->update();
 	if(this->popupBox->enabled or this->popupBox->toggled) {
 		this->popupBox->update();
 	}

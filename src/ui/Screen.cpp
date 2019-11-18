@@ -255,7 +255,7 @@ void TextScreen::update() {
 
 void TextBox::update() {
 
-	if(this->hasNewContent() or (this->lastUpdate + this->updateInterval <= SDL_GetTicks())) {
+	if(true or this->hasNewContent() or (this->lastUpdate + this->updateInterval <= SDL_GetTicks())) {
 		this->drawBorder();
 		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
 		this->prepareContent();
@@ -307,26 +307,21 @@ void DynamicTextBox::update() {
 void MapScreen::drawMap() {
 
 	//Text offsets
-	int offsetX = -this->charW;
-	int offsetY = -this->charH;
+	int offsetX = 0;//-this->charW;
+	int offsetY = 0;//-this->charH;
 
 	float centerX = this->lastMapX + .5;
 	float centerY = this->lastMapY + .5;
 
-	int playerOffsetX = ((this->charW)*0.01)*((int)(TBAGame->playerChar->x*100)%100);
-	int playerOffsetY = ((this->charH)*0.01)*((int)(TBAGame->playerChar->y*100)%100);
-
-	//float playerOffsetX = this->charW*(TBAGame->playerChar->x - centerX);
-	//float playerOffsetY= this->charH*(TBAGame->playerChar->y - centerY);
-
-	//std::cout << TBAGame->playerCha	r->x << "   " << TBAGame->playerChar->y << "                        ";
-	//std::cout << (6+playerOffsetX)%16 << " "<<  16-(-playerOffsetX+offsetX+this->x)%16 << "                        \r" <<  std::flush;
-
-	this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
-
-	//std::cout << -playerOffsetX+offsetX << ", " << -playerOffsetY+offsetY << std::endl;
-
-	SDL_RenderCopy(TBAGame->gameWindow->renderer,this->mapTexture,NULL,&this->mapTextureRect);
+	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
+	this->mapTextureRect = {offsetX+this->x,offsetY+this->y,this->w,this->h};
+	
+	int windowOffsetX = ((TBAGame->gameWorld->size/2)+TBAGame->playerChar->x)*this->charW;
+	int windowOffsetY = ((TBAGame->gameWorld->size/2)+TBAGame->playerChar->y)*this->charH;
+	
+	SDL_Rect srect = {windowOffsetX-(this->w/2),windowOffsetY-(this->h/2),this->w,this->h};
+	
+	SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture,&srect,&this->mapTextureRect);
 
 }
 

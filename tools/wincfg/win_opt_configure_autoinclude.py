@@ -2,7 +2,7 @@ import os
 
 execname = "TBA.exe"
 
-basedir = "D:\Downloads\projects\TBA\NEWEST\\"
+basedir = os.path.dirname(os.path.realpath(__file__))+"/../../"
 
 makefile = open(basedir+"makefile","w+")
 
@@ -19,7 +19,7 @@ def getDeps(filename):
 		try:
 			line = header[i]
 		except:
-			print filename;return ""
+			print(filename);return ""
 		if '#include "' in line:
 			if "/" not in line:
 				line = line.replace("#include ","").replace('"',"").replace("../","").replace("\n","") + " "
@@ -46,14 +46,14 @@ makestr = ""
 
 binlist = ["bin"+src[src.rfind('/'):]+".o" for src in srcs]
 
-makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -O2 -o "+execname+"\n\n"
+makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -fpermissive  -O3 -o "+execname+"\n\n"
 
 for src in srcs:
 	head=""
 	if src in heads:
 		head = src+".h"
 	deps = getDeps(src)
-	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -O2 -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head + deps)
+	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -fpermissive -O3 -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head + deps)
 	
 makefile.write(makestr)
 makefile.close()

@@ -2,12 +2,20 @@ Threads/Synchronization:
 	MUST lock mutex before altering anything that is interacted with by 
 		both the graphics and logic thread (blocks for example are added
 		in main thread and drawn in graphics thread)
+		
 Debug:
 	-If runtime crash: You are referencing an object that is not fully constructed
 	-Undefined reference to x() = class or function has not been defined by the time this line is run
 	-Implement all template functions in header files or define all possible template types
 
 Screen:
+	Map:
+		A single, huge world texture should be created at world generation
+		Moving through world just changes crop window
+	Optimizations:
+		Entire map texture only "clears" when player moves tiles 
+			Otherwise only updates select tiles by necessity
+			
 	DO NOT modify screen contents directly via "this->contents.at()"
 		-ONLY use this->setLastLine
 

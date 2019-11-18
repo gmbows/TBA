@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <thread>
+#include <random>
 
 #include "../ui/Window.h"
 #include "../ui/Screen.h"
@@ -134,19 +135,29 @@ void Game::setupGame() {
 	int quadSize = 128;
 
 	this->gameWorld = new World(quadSize*2);
+	
+	gameWorld->worldTexture = SDL_CreateTexture(this->gameWindow->renderer,
+                               SDL_GetWindowPixelFormat( this->gameWindow->window),
+								SDL_TEXTUREACCESS_TARGET,
+                               gameWorld->size*this->gameWindow->mapScreen->charW,
+                               gameWorld->size*this->gameWindow->mapScreen->charH);
+							   
+	gameWorld->screenFont->generateFontTexture(this->gameWindow->window,this->gameWindow->renderer);
+	
 	this->gameWorld->genWorld();
+	this->gameWorld->genWorld_new(this->gameWindow->renderer);
 
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
 	for(int i=0;i<50;i++) {
 		//Don't add null item
-		this->playerChar->inventory->add(1+(random()%(itemManifest.size()-1)));
+		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
 	this->displayTarget = this->playerChar;
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<100;i++) {
+	for(int i=0;i<0;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
