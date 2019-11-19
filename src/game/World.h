@@ -31,6 +31,7 @@ class World {
 		std::vector<std::vector<Tile*>> getMapAt(int,int,int);
 		Tile* getTileAt(float,float);
 		bool locationIsValid(float,float);
+		bool locationInBoundary(float,float);
 		void cartesianToIndex(float&,float&);
 		void indexToCartesian(int&,int&);
 

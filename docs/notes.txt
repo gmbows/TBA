@@ -12,6 +12,8 @@ Screen:
 	Map:
 		A single, huge world texture should be created at world generation
 		Moving through world just changes crop window
+		Inactive tiles are not redrawn
+			Tiles are "activated" when a character moves near them 
 	Optimizations:
 		Entire map texture only "clears" when player moves tiles 
 			Otherwise only updates select tiles by necessity

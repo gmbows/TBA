@@ -159,6 +159,8 @@ int find(T o,const std::vector<T> v) {
 	return -1;
 }
 
+int find(char c,const std::string &s);
+
 //rfind
 int rfind(char, const std::string&);
 

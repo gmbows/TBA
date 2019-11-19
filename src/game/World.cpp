@@ -242,3 +242,11 @@ bool World::locationIsValid(float x,float y) {
 	return !(x >= this->size or x < 0 or y >= this->size or y < 0);
 
 }
+
+bool World::locationInBoundary(float x,float y) {
+
+	cartesianToIndex(x,y);
+
+	return !(x >= this->size or x < 16 or y >= this->size or y < 16);
+
+}

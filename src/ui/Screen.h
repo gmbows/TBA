@@ -166,8 +166,9 @@ class MapScreen: public Screen {
 	
 		void drawMap();
 		void trueDrawBorder();
-		void generateMapTexture();
+		//void generateMapTexture();
 		void updateMap();
+		void redrawActiveTiles();
 		void generateMapTiles();
 
 		int lastMapX = 400;

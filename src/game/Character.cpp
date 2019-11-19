@@ -14,7 +14,7 @@
 
 Character::Character(bool player, int capacity, const std::string& _name, float _x,float _y): x(_x), y(_y), isPlayer(player), name(_name), GameObject(OBJ_CHARACTER) {
 
-	this->location = TBAGame->gameWorld->getTileAt(x,y);
+	this->location = TBAGame->gameWorld->getTileAt(_x,_y);
 
 	this->stats = new StatSet();
 	this->equipment = new Equipment();
@@ -29,9 +29,9 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 		this->maxHealth = 40;
 		this->attackRate -= 20;
 		TBAGame->playerChar = this;
-		this->maxMoveSpeed = 4; 
+		this->maxMoveSpeed = 400; 
 		this->displayID=3;
-		this->traction = 2;
+		this->traction = 200;
 	} else {
 		//Random movespeeds
 		this->maxMoveSpeed = 3+((rand()%2)-1); //10+-5
@@ -54,7 +54,7 @@ bool Character::resolveMove(float &newX, float &newY) {
 	Tile* thisTile = TBAGame->gameWorld->getTileAt(this->x,newY);
 	//If movement on Y axis results in occupation conflict
 	//Set Y movement to 0
-	if(!thisTile->isPassable() or thisTile->invalid) {
+	if(!thisTile->isPassable() or thisTile->invalid or !TBAGame->gameWorld->locationInBoundary(this->x,newY)) {
 		if(thisTile != this->location) {
 			newY = this->y;
 			this->velocityY = 0;
@@ -65,7 +65,7 @@ bool Character::resolveMove(float &newX, float &newY) {
 	thisTile = TBAGame->gameWorld->getTileAt(newX,this->y);
 	//If movement on X axis results in occupation conflict
 	//Set X movement to 0
-	if(!thisTile->isPassable() or thisTile->invalid) {
+	if(!thisTile->isPassable() or thisTile->invalid or !TBAGame->gameWorld->locationInBoundary(newX,this->y)) {
 		if(thisTile != this->location) {
 			newX = this->x;
 			this->velocityX = 0;
@@ -100,7 +100,7 @@ void Character::move(std::tuple<int,int> direction) {
 	//If character is trying to move into a new space
 	if(thisTile != this->location) {
 		//If new space is occupied or otherwise impassable
-		if(!thisTile->isPassable() or !TBAGame->gameWorld->locationIsValid(newX,newY)) {
+		if(!thisTile->isPassable() or !TBAGame->gameWorld->locationInBoundary(newX,newY)) {
 
 			if(!this->resolveMove(newX,newY)) {
 				//If move cannot be resolved to free space, cancel movement

@@ -25,8 +25,6 @@ struct Tile {
 	bool invalid = false;
 	bool randomized = false;
 	
-	int needsUpdate = 0;
-
 	//How fast character speed decays
 	float roughness;
 

@@ -15,6 +15,16 @@ int rfind(char c, const std::string& s) {
 
 }
 
+int find(char c,const std::string &s) {
+	for(int i=0;i<s.size();i++) {
+		if(c == s[i]) {
+			return i;
+		}
+	}
+	return -1;
+}
+
+
 std::string strip(const std::string &s) {
     std::string newString = "";
     for(int i=0;i<s.size();i++) {
@@ -70,9 +80,9 @@ bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
 				if(startsWith(testWord,searchString) and wordList.at(j) != s) {
 					if(common(s,wordList.at(j)) != "") {
 						s = common(s,wordList.at(j));
-						matchlist += " | "+wordList.at(j);	
-						hasMultipleMatches = true;
 					}
+					matchlist += " | "+wordList.at(j);	
+					hasMultipleMatches = true;
 				}
 			}
 			if(hasMultipleMatches) {
@@ -112,18 +122,17 @@ std::string replace(const std::string &s, char token, const std::string &sub) {
 
 //startWith
 bool startsWith(const std::string& s, const std::string& token) {
-	std::vector<std::string> splitWord = split(' ',s);
-	if(splitWord.size() == 1) {
-		for(int i=0;i<token.size();i++) {
-			if(token[i] != s[i]) {
-				return false;
+
+	for(int i=0;i<token.size();i++) {
+		if(token[i] != s[i]) {
+			if(find(' ',s) >= 0) {
+				std::vector<std::string> splitWord = split(' ',s);
+				for(int j=0;j<splitWord.size();j++) {
+					if(startsWith(splitWord.at(j),token)) return true;
+				}
 			}
+			return false;
 		}
-	} else {
-		for(int i=0;i<splitWord.size();i++) {
-			if(startsWith(splitWord.at(i),token)) return true;
-		}
-		return false;
 	}
 	return true;
 }

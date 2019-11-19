@@ -75,7 +75,6 @@ void Tile::addBlock(Block* block) {
 }
 
 void Tile::evict(Character* occupant) {
-	this->needsUpdate = 2;
 	int i = find(occupant, this->occupiers);
 
 	if(i >= 0) {

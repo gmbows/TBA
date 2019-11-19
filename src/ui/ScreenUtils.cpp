@@ -150,6 +150,79 @@ void MapScreen::generateMapTiles() {
 	this->lastMapY = centerY;
 }
 
+void MapScreen::redrawActiveTiles() {
+
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
+
+	//Source rectangle taken from screenFont->fontTexture
+	SDL_Rect sRect;
+	fChar charInfo;
+
+	//Destination rectangle on screen
+	SDL_Rect dRect;
+
+	Tile* thisTile;
+
+	//Cursor
+	int cursor[2] = {0,0};
+
+	int tileID;
+	int occupierTileID;
+	int index = -1;
+
+	int charSize;
+
+	for(int i=0;i<map.size();i++) {
+		for(int j=0;j<map.size();j++) {
+			thisTile = this->map.at(i).at(j);
+			if(thisTile->isOccupied()) {
+				charSize = this->charW;
+				int tcursor[2] = {cursor[0],cursor[1]};
+				for(int k=-1;k<=1;k++) {
+					for(int n=-1;n<=1;n++) {
+						tcursor[0] = cursor[0]+(n*charW);
+						tcursor[1] = cursor[1]+k;	
+
+						try {
+							thisTile = this->map.at(std::min(i+k,(int)this->map.size()-1)).at(std::min(j+n,(int)this->map.size()-1));
+						} catch(const std::exception &e) {
+							continue;
+						}
+						tileID = thisTile->getDisplayID();
+
+						if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+							debug("ERROR: Missing charMap entry for tile "+tileID);
+							exit(0);
+						}
+
+						charInfo = this->screenFont->fontMap.at(tileID);
+
+						int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
+						int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
+
+						sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+						dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
+
+						if(thisTile->hasBlocks()) {
+							//SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+						} else {
+							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+						}
+					}
+				}
+			}
+
+			//Advance cursor for next character
+			cursor[0] += this->charW;
+		}
+		//Advance cursor to next line
+		cursor[1]++;
+		cursor[0] = 0;
+
+	}
+
+}
+
 void MapScreen::updateMap() {
 
 	int centerX = TBAGame->playerChar->x;
@@ -191,35 +264,38 @@ void MapScreen::updateMap() {
 
 	int objOffsetX;
 	int objOffsetY;
+
+	//make initial pass to update active tiles
+	this->redrawActiveTiles();
 	
 	for(int i=0;i<map.size();i++) {
 		for(int j=0;j<map.size();j++) {
 
 				thisTile = this->map.at(i).at(j);
 				
-				for(int k=0;k<thisTile->blocks.size();k++) {
-					
-					charSize = this->charW;
-					
-					tileID = thisTile->getDisplayID();
-
-					if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
-						debug("ERROR: Missing charMap entry for tile "+tileID);
-						exit(0);
-					}
-
-					charInfo = this->screenFont->fontMap.at(tileID);
-
-					int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
-					int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
-
-					sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
-					dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
-
-					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-
-				}
+				charSize = this->charW;
 				
+				tileID = thisTile->getDisplayID();
+
+				if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+					debug("ERROR: Missing charMap entry for tile "+tileID);
+					exit(0);
+				}
+
+				charInfo = this->screenFont->fontMap.at(tileID);
+
+				int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
+				int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
+
+				sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+				dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
+
+				if(thisTile->hasBlocks()) {
+					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+				} else {
+					//SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+				}
+
 				for(int k=0;k<thisTile->occupiers.size();k++) {
 					
 					charSize = 5;
@@ -264,79 +340,6 @@ void MapScreen::updateMap() {
 							break;
 					}
 				}
-
-			//Advance cursor for next character
-			cursor[0] += this->charW;
-		}
-		//Advance cursor to next line
-		cursor[1]++;
-		cursor[0] = 0;
-
-	}
-
-	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
-}
-
-void MapScreen::generateMapTexture() {
-
-	// SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->mapTexture);
-	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
-
-	//SDL_RenderClear(TBAGame->gameWindow->renderer);
-
-	//Source rectangle taken from screenFont->fontTexture
-	SDL_Rect sRect;
-	fChar charInfo;
-
-	//Destination rectangle on screen
-	SDL_Rect dRect;
-
-	//Format raw content string for display
-	//std::vector<std::vector<Tile*>> visibleContent = subVec(this->map,0,this->map.size());
-
-	//visibleContent.push_back("->");
-	Tile* thisTile;
-
-	//Cursor
-	int cursor[2] = {0,0};
-
-	int tileID;
-	int occupierTileID;
-	int index = -1;
-
-	//debug("Generating map texture");
-
-	//For each line of visible Content
-	for(int i=0;i<map.size();i++) {
-		for(int j=0;j<map.size();j++) {
-			thisTile = this->map.at(i).at(j);
-	
-			//Get tile ID from tile and get tile texture from tileset
-
-			tileID = thisTile->getDisplayID();
-
-			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
-				debug("ERROR: Missing charMap entry for tile "+tileID);
-				exit(0);
-			}
-
-			charInfo = this->screenFont->fontMap.at(tileID);
-
-			//Read values from charInfo into SDL_Rect
-			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
-
-			//Add rectangle in next tile slot on map texture
-			dRect = {(1*cursor[0]),(this->charH*cursor[1])+charInfo.yo,this->charW,this->charH};
-
-			if(thisTile->hasBlocks()) {
-				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-			} else {
-				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-			}
-
-			if(thisTile->isOccupied()) {
-				//SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
-			}
 
 			//Advance cursor for next character
 			cursor[0] += this->charW;
