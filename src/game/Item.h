@@ -13,15 +13,17 @@ class Item {
 		int id;
 		
 		std::string name;
+		std::string description;
 		int weight;
 		int size;
 		time_t created;
 
 		flag types;
 		itemType primaryType;
-		//AttributeSet *attributes;
+		std::string getTypeAsString();
 		std::map<itemAttribute,float> attributes;
 		
+		std::string getInfo();
 
 		Item(int);
 
@@ -34,7 +36,6 @@ class Item {
 		float getAttribute(itemAttribute);
 		std::vector<itemAttribute> getAttributes();
 		void createAttributeSet(const std::vector<itemAttribute>&,const std::vector<float>&);
-
 
 		std::string getName();
 		std::string getPlural();

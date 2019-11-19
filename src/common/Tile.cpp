@@ -27,6 +27,23 @@ std::map<int,std::tuple<float,bool,bool>> tileMap {
 	
 };
 
+std::map<int,std::string> tileNameMap {
+
+	//id,roughness,passable,randomized
+
+	{-1,"Invalid"},	//Invalid
+	{0,"Grass"},	//Grass
+	{1,"Rock"},	//Grass with rock
+	{2,"Tree"},	//Tree
+	{4,"Stone Brick"},	//Stone brick
+	{8,"Chest"},	//Chest
+	
+};
+
+std::string Tile::getName() {
+	return tileNameMap.at(this->id);
+}
+
 Tile::Tile(int tid, int _x, int _y): id(tid), x(_x), y(_y) {
 
 	if(tileMap.find(tid) == tileMap.end()) {

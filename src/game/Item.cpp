@@ -6,6 +6,30 @@
 #include <tuple>
 #include <ctime>
 
+std::map<itemType,std::string> itemTypeMap = {
+	{I_FOOD,"Food"},
+	{I_FRUIT,"Fruit"},
+	{I_VEGETABLE,"Vegetable"},
+	{I_WEAPON,"Weapon"},
+	{I_EQUIPMENT,"Equipment"},
+	{I_WEAPON_MELEE,"Melee weapon"},
+	{I_WEAPON_RANGED,"Ranged weapon"},
+	{I_WEAPON_SWORD,"Sword weapon"},
+	{I_WEAPON_BOW,"Bow weapon"},
+	{I_ARMOR,"Armor"},	
+	{I_ARMOR_HEAD,"Armor"},	
+	{I_ARMOR_BODY,"Body armor"},	
+	{I_ARMOR_LEGS,"Leg armor"},	
+	{I_ARMOR_FEET,"Foot armor"},
+	{I_CRAFTING,"Crafting item"},
+	{I_METAL,"Metal"},
+	{I_INGREDIENT,"Ingredient"},
+	{I_CURRENCY,"Currency"},
+	{I_CONTAINER,"Container"},
+	
+	
+};
+
 Item::Item(int _id): id(_id) {
 
 	if(id >= itemManifest.size()) {
@@ -15,11 +39,12 @@ Item::Item(int _id): id(_id) {
 	itemTraits itemInfo = itemManifest.at(id);
 
 	this->name = std::get<0>(itemInfo);
-	this->weight = std::get<1>(itemInfo);
-	this->size = std::get<2>(itemInfo);
-	this->types = std::get<3>(itemInfo);
+	this->description = std::get<1>(itemInfo);
+	this->weight = std::get<2>(itemInfo);
+	this->size = std::get<3>(itemInfo);
+	this->types = std::get<4>(itemInfo);
 	this->primaryType = this->getPrimaryType();
-	this->createAttributeSet(this->getAttributes(),std::get<4>(itemInfo));
+	this->createAttributeSet(this->getAttributes(),std::get<5>(itemInfo));
 
 	/*std::vector<itemAttribute> attribEnums = attributeLookup.at(this->primaryType);
 	std::vector<int> attribValues = std::get<4>(itemInfo);
@@ -79,6 +104,19 @@ float Item::getAttribute(itemAttribute attrib) {
 	}
 	return -1;
 
+}
+
+std::string Item::getTypeAsString() {
+	return itemTypeMap.at(this->primaryType);
+}
+
+std::string Item::getInfo() {
+	std::string infoString = 
+	" Name:\t"+this->name+"\n" +
+	" Type:\t"+this->getTypeAsString()+"\n" +
+	" Weight:\t"+std::to_string(this->weight)+"\n" +
+	" Size:\t"+std::to_string(this->size);
+	return infoString;
 }
 
 std::string Item::getName() {

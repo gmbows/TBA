@@ -78,8 +78,8 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 	Inventory *source;
 	Inventory *destination;
 
-	std::string sourceName;
-	std::string destName;
+	//std::string sourceName;
+	std::string targetName;
 	std::string tense,preposition;
 
 	if(command == "take") {
@@ -87,8 +87,7 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 		tense = "Took";
 		preposition = "from";
 
-		sourceName = TBAGame->displayTarget->getName();
-		destName = "inventory";
+		targetName = TBAGame->displayTarget->getName();
 
 		//Source and destination containers
 		// source is errorchecked and is a valid container
@@ -101,8 +100,8 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 		tense = "Put";
 		preposition = "in";
 
-		sourceName = "inventory";
-		destName = TBAGame->displayTarget->getName();
+		//sourceName = "inventory";
+		targetName = TBAGame->displayTarget->getName();
 
 		//Source and destination containers
 		// source is errorchecked and is a valid container
@@ -119,13 +118,13 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 		goodItem = source->getItem(index);
 		if(takeAll) itemCount = source->itemCount(goodItem->id);
 		int taken = moveItems(itemCount,goodItem,source,destination);
-		if(taken > 1) return "\n"+tense+" "+goodItem->name + " ("+std::to_string(taken)+")"+" "+preposition+" "+destName;
-		return "\n"+tense+" "+goodItem->name+" "+preposition+" "+destName;
+		if(taken > 1) return "\n"+tense+" "+goodItem->name + " ("+std::to_string(taken)+")"+" "+preposition+" "+targetName;
+		return "\n"+tense+" "+goodItem->name+" "+preposition+" "+targetName;
 	} else if(index == -2) {
 		//itemName was found in a container but with multiple matches
 		return "";
 	} else {
 		//itemName was not found in any containers
-		return "\nItem not found in "+sourceName;
+		return "\nItem not found in "+targetName;
 	}
 }

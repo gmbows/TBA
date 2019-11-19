@@ -17,11 +17,12 @@
 struct Game {
 
 	//=============
-	//		BASIC
+	//	  BASIC
 	//=============
 
 	bool gameRunning;
 	bool paused = false;
+	bool debugMode = false;
 
 	Window *gameWindow;
 	Log *gameLog;

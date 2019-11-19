@@ -68,12 +68,12 @@ void Window::bringToFront(Screen* screen) {
 	}
 }
 
-void Window::update() {
+void Window::update(bool gdebug) {
 
 	SDL_SetRenderDrawColor(this->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
 	SDL_RenderClear(this->renderer);
 
-	this->mapScreen->update();
+	if(gdebug == false) this->mapScreen->update();
 	TBAGame->updateGameUIObjects();
 	//this->mapPanel->update();
 	if(this->popupBox->enabled or this->popupBox->toggled) {

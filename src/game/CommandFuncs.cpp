@@ -341,3 +341,24 @@ std::string debugFunc(Command* command, const std::vector<std::string> &args) {
 	debugKey();
 	return "";
 }
+
+
+//Examine
+std::string examineFunc(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		return "\nStanding on "+TBAGame->playerChar->location->getName();
+	} else {
+		int index = TBAGame->playerChar->inventory->find(join(' ',args));
+		if(index >= 0) {
+			return "\n"+TBAGame->playerChar->inventory->getItem(index)->getInfo();
+		} else if(index == -2) {
+			return "";
+		} else {
+			return "\nItem not found";
+		}
+	}
+}
+
+bool examineEC(Command* command, const std::vector<std::string> &args) {
+	return true;
+}

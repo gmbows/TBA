@@ -13,6 +13,7 @@ class Character;
 #include <vector>
 
 extern std::map<int,std::tuple<float,bool,bool>> tileMap;
+extern std::map<int,std::string> tileNameMap;
 
 struct Tile {
 	
@@ -29,6 +30,8 @@ struct Tile {
 	
 	//How fast character speed decays
 	float roughness;
+
+	std::string getName();
 
 	//================
 	//		OCCUPANTS

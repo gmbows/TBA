@@ -84,6 +84,7 @@ extern std::map<itemType,std::vector<itemAttribute>> attributeLookup;
 
 typedef std::tuple<
 		std::string,				//Name
+		std::string,				//desc
 		int,						//Weight
 		int,						//Size
 		flag,						//Type 

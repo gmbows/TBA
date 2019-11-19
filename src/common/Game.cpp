@@ -121,6 +121,7 @@ void Game::setupGame() {
 			new		Command({"search"},searchFunc,searchEC),
 			new		Command({"equip"},equipFunc,equipEC),
 			new		Command({"debug"},debugFunc),
+			new		Command({"examine"},examineFunc,examineEC),
 			////
 		};
 	
@@ -132,7 +133,7 @@ void Game::setupGame() {
 	}
 
 	//Length of one edge of map square
-	int quadSize = 256;
+	int quadSize = 128;
 
 	this->gameWorld = new World(quadSize*2);
 	
@@ -149,7 +150,7 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
-	for(int i=0;i<50;i++) {
+	for(int i=0;i<20;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
@@ -179,7 +180,7 @@ void Game::setupGame() {
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 	this->gameWorld->createStructure({0,0}, house, 4);
-	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,0,1,2,1,2,1,2,1,2,1});
+	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 }
 
 //=======================
@@ -342,7 +343,7 @@ void Game::update_graphics() {
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
 		this->lastGraphicsUpdate = SDL_GetTicks();
-		this->gameWindow->update();
+		this->gameWindow->update(this->debugMode);
 		this->graphicsTicks++;
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}

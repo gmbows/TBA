@@ -10,22 +10,23 @@ std::map<itemType,std::vector<itemAttribute>> attributeLookup {
 
 };
 
+
 //std::map<int,itemTraits> itemManifest = {
 std::vector<itemTraits> itemManifest = {
 
 		//name,weight,size, types...,{Attribute values if applicable}
-	{"None",0,0,I_END,{}},
-	{"Apple",1,4,I_FOOD | I_FRUIT | I_INGREDIENT,{}},
-	{"Copper Coin",1,4,I_CURRENCY | I_METAL,{}},
-	{"Iron Ore",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
-	{"Iron Arrow",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
-	{"Rusted Longsword",8,3,I_WEAPON | I_WEAPON_MELEE | I_WEAPON_SWORD | I_EQUIPMENT,{5,1.5}},
-	{"Iron Dagger",4,1,I_WEAPON | I_WEAPON_MELEE | I_WEAPON_SWORD | I_EQUIPMENT,{2,1.2}},
-	{"Glass vial (empty)",3,3,I_CONTAINER,{}},
-	{"Cracked Longbow",3,3,I_WEAPON | I_WEAPON_RANGED | I_WEAPON_BOW | I_EQUIPMENT,{2,-1}},
-	{"Old Knight's Helmet",3,3,I_ARMOR | I_ARMOR_HEAD | I_EQUIPMENT,{5}},
-	{"Old Knight's Chestplate",3,3,I_ARMOR | I_ARMOR_BODY | I_EQUIPMENT,{5}},
-	{"Old Knight's Plated Leggings",3,3,I_ARMOR | I_ARMOR_LEGS | I_EQUIPMENT,{5}},
-	{"Old Knight's Boots",3,3,I_ARMOR | I_ARMOR_FEET | I_EQUIPMENT,{5}},
+	{"ITEM_INVALID","ITEM_DESC_INVALID",0,0,I_END,{}},
+	{"Apple","A shiny red apple.", 1,4,I_FOOD | I_FRUIT | I_INGREDIENT,{}},
+	{"Copper Coin","A scuffed, bent, copper coin. It a building printed on it.", 1,4,I_CURRENCY | I_METAL,{}},
+	{"Iron Ore","A smooth looking grey rock. Quite heavy.", 3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
+	{"Iron Arrow","A wood-shafted arrow with an iron tip. Could probably do some damage.",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
+	{"Rusted Longsword","A dull, rusted sword. It looks like it hasn't been touched for some time.",8,3,I_WEAPON | I_WEAPON_MELEE | I_WEAPON_SWORD | I_EQUIPMENT,{5,1.5}},
+	{"Iron Dagger","A small iron dagger with a wooden grip.",4,1,I_WEAPON | I_WEAPON_MELEE | I_WEAPON_SWORD | I_EQUIPMENT,{2,1.2}},
+	{"Glass vial (empty)","A tiny glass vial and a small cork. Could store a splash of liquid in here.",3,3,I_CONTAINER,{}},
+	{"Cracked Longbow","A wooden bow. Probably won't survive more than a few shots.",3,3,I_WEAPON | I_WEAPON_RANGED | I_WEAPON_BOW | I_EQUIPMENT,{2,-1}},
+	{"Old Knight's Helmet","An old iron helmet, probably used by a knight. Rusted around the hinges.",3,3,I_ARMOR | I_ARMOR_HEAD | I_EQUIPMENT,{5}},
+	{"Old Knight's Chestplate","An iron chestplate, part of a full set of armor.",3,3,I_ARMOR | I_ARMOR_BODY | I_EQUIPMENT,{5}},
+	{"Old Knight's Plated Leggings","Some dented iron leggings. Looks like they've taken a beating.",3,3,I_ARMOR | I_ARMOR_LEGS | I_EQUIPMENT,{5}},
+	{"Old Knight's Boots","Some iron boots. They don't look very comfortable.",3,3,I_ARMOR | I_ARMOR_FEET | I_EQUIPMENT,{5}},
 
 };

@@ -8,6 +8,11 @@ using namespace std;
 
 int main(int argc, char** argv) {
 
+	if(argc > 1) {
+		TBAGame->debugMode = true;
+		std::cout << "Debug mode enabled" << std::endl;
+	}
+
 	srand(time(NULL));
 
 	SDL_Init(SDL_INIT_EVERYTHING);

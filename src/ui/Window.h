@@ -52,7 +52,7 @@ class Window {
 		}
 
 		//Basic screen functions
-		void update();
+		void update(bool);
 		void input();
 		void drawScreens();
 		void bringToFront(Screen*);
