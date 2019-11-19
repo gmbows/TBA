@@ -67,10 +67,12 @@ void Tile::occupyWith(Character* c) {
 }
 
 void Tile::addBlock(int bid) {
+	this->needsUpdate = true;
 	this->blocks.push_back(new Block(bid));
 }
 
 void Tile::addBlock(Block* block) {
+	this->needsUpdate = true;
 	this->blocks.push_back(block);
 }
 
@@ -86,8 +88,8 @@ void Tile::evict(Character* occupant) {
 }
 
 void Tile::removeObject(GameObject* generic) {
+	this->needsUpdate = true;
 	int i = find(generic, this->objects);
-
 	if(i >= 0) {
 		this->objects.erase(this->objects.begin() + i);
 		if(this->objects.size() > 1) {

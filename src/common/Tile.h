@@ -24,6 +24,8 @@ struct Tile {
 	bool passable = true;
 	bool invalid = false;
 	bool randomized = false;
+
+	bool needsUpdate = false;
 	
 	//How fast character speed decays
 	float roughness;

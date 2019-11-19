@@ -50,7 +50,7 @@ void World::cartesianToIndex(float &x,float &y) {
 
 void World::genWorld() {
 
-	debug("Generating world!");
+	debug("Generating tiles!");
 
 	int tileCount = 0;
 
@@ -80,7 +80,7 @@ void World::genWorld() {
 
 void World::genWorld_new(SDL_Renderer* renderer) {
 
-	debug("Generating world!");
+	debug("Generating world texture!");
 
 	SDL_SetRenderTarget(renderer,this->worldTexture);
 
@@ -156,6 +156,7 @@ void World::createStructure(std::tuple<int,int> location, structure s, int tileI
 		for(int j=0;j<s.at(i).size();j++) {
 			//Check corner types
 			this->replaceTile({startingX+j,startingY+i},0);
+			this->getTileAt(startingX+j,startingY+i)->needsUpdate = true;
 			//if( (j == 0 and i == 0) or (j == 0 and i == s.size()-1) or (j == s.at(i).size()-1 and i == 0) or (j == s.at(i).size()-1 and i == s.size()-1) ) {
 			if(s.at(i).at(j) < 0) {
 				block = new Block(4);
@@ -247,6 +248,6 @@ bool World::locationInBoundary(float x,float y) {
 
 	cartesianToIndex(x,y);
 
-	return !(x >= this->size or x < 16 or y >= this->size or y < 16);
+	return !(x >= this->size-16 or x < 16 or y >= this->size-16 or y < 16);
 
 }

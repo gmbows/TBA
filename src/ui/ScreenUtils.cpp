@@ -175,6 +175,7 @@ void MapScreen::redrawActiveTiles() {
 	for(int i=0;i<map.size();i++) {
 		for(int j=0;j<map.size();j++) {
 			thisTile = this->map.at(i).at(j);
+
 			if(thisTile->isOccupied()) {
 				charSize = this->charW;
 				int tcursor[2] = {cursor[0],cursor[1]};
@@ -203,11 +204,8 @@ void MapScreen::redrawActiveTiles() {
 						sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 						dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
-						if(thisTile->hasBlocks()) {
-							//SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-						} else {
-							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-						}
+						SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+
 					}
 				}
 			}
@@ -292,8 +290,9 @@ void MapScreen::updateMap() {
 
 				if(thisTile->hasBlocks()) {
 					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-				} else {
-					//SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+				} else if(thisTile->needsUpdate) {
+					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+					thisTile->needsUpdate = false;
 				}
 
 				for(int k=0;k<thisTile->occupiers.size();k++) {

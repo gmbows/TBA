@@ -89,8 +89,8 @@ void click(SDL_MouseButtonEvent& event) {
 
 
 	//Left click
-	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
-	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
+	int centerX = 6+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
+	int centerY = 6+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
 
 	int tileX = std::round(((float)(event.x-centerX))/TBAGame->gameWindow->mapScreen->charW);
 	int tileY = std::round(((float)(event.y-centerY))/TBAGame->gameWindow->mapScreen->charH);
@@ -108,7 +108,21 @@ void click(SDL_MouseButtonEvent& event) {
 				return;
 			}
 		}
-		
+		if(TBAGame->gameWindow->mapScreen->enclose(event.x,event.y)) {
+
+			GameObject* testTarget = nullptr;
+
+			if(thisTile->isOccupied()) {
+				testTarget = thisTile->occupiers.at(0);
+				if((char*)TBAGame->displayTarget == (char*)testTarget) {
+					testTarget = static_cast<GameObject*>(thisTile->getNextOccupant(static_cast<Character*>(testTarget)));
+				}
+			} else if(thisTile->hasObjects()) {
+				testTarget = thisTile->objects.at(0);
+			}
+			TBAGame->displayTarget = testTarget;
+		}
+	} else {
 		pthread_mutex_lock(&TBAGame->updateLock);
 		if(thisTile->hasBlocks()) {
 			thisTile->blocks.clear();
@@ -116,20 +130,6 @@ void click(SDL_MouseButtonEvent& event) {
 			thisTile->addBlock(4);
 		}
 		pthread_mutex_unlock(&TBAGame->updateLock);
-
-	} else if(TBAGame->gameWindow->mapScreen->enclose(event.x,event.y)) {
-
-		GameObject* testTarget = nullptr;
-
-		if(thisTile->isOccupied()) {
-			testTarget = thisTile->occupiers.at(0);
-			if((char*)TBAGame->displayTarget == (char*)testTarget) {
-				testTarget = static_cast<GameObject*>(thisTile->getNextOccupant(static_cast<Character*>(testTarget)));
-			}
-		} else if(thisTile->hasObjects()) {
-			testTarget = thisTile->objects.at(0);
-		}
-		TBAGame->displayTarget = testTarget;
 	}
 
 }

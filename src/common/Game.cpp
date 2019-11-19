@@ -132,7 +132,7 @@ void Game::setupGame() {
 	}
 
 	//Length of one edge of map square
-	int quadSize = 128;
+	int quadSize = 256;
 
 	this->gameWorld = new World(quadSize*2);
 	
