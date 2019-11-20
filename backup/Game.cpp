@@ -1,6 +1,7 @@
 #include "Game.h"
 
 #include <thread>
+#include <random>
 
 #include "../ui/Window.h"
 #include "../ui/Screen.h"
@@ -75,8 +76,8 @@ void Game::setupUI() {
 	//Map panel to obscure mapscreen overlap
 	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
 	SDL_Rect fillLeft = {textScreen->x+textScreen->w-6,0,borderSize+5,gameWindow->height};
-	SDL_Rect fillRight = {mapScreen->x+mapScreenS+2,0,borderSize+3,gameWindow->height};
-	SDL_Rect fillBottom = {0,borderSize+mapScreenS+2,this->gameWindow->width,mapScreenS};
+	SDL_Rect fillRight = {mapScreen->x+mapScreenS+2,0,borderSize-3,gameWindow->height};
+	SDL_Rect fillBottom = {0,borderSize+mapScreenS+2,mapScreenS+400,mapScreenS};
 
 	//Draw 4 panels around map screen to block map overlap
 	this->gameWindow->mapPanel->panelVector = {fillTop,fillLeft,fillRight,fillBottom};
@@ -119,6 +120,7 @@ void Game::setupGame() {
 			new		Command({"put"},putFunc,putEC),
 			new		Command({"search"},searchFunc,searchEC),
 			new		Command({"equip"},equipFunc,equipEC),
+			new		Command({"debug"},debugFunc),
 			////
 		};
 	
@@ -130,21 +132,32 @@ void Game::setupGame() {
 	}
 
 	//Length of one edge of map square
-	int quadSize = 128;
+	int quadSize = 256;
 
 	this->gameWorld = new World(quadSize*2);
+	
+	gameWorld->worldTexture = SDL_CreateTexture(this->gameWindow->renderer,
+                               SDL_GetWindowPixelFormat( this->gameWindow->window),
+								SDL_TEXTUREACCESS_TARGET,
+                               gameWorld->size*this->gameWindow->mapScreen->charW,
+                               gameWorld->size*this->gameWindow->mapScreen->charH);
+							   
+	gameWorld->screenFont->generateFontTexture(this->gameWindow->window,this->gameWindow->renderer);
+	
 	this->gameWorld->genWorld();
+	this->gameWorld->genWorld_new(this->gameWindow->renderer);
 
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
 	for(int i=0;i<50;i++) {
-		this->playerChar->inventory->add(random()%itemManifest.size());
+		//Don't add null item
+		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
 	this->displayTarget = this->playerChar;
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<100;i++) {
+	for(int i=0;i<0;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -154,6 +167,7 @@ void Game::setupGame() {
 	}
 	newChar = new Character(false,160,"Debug Looter",-1,3);
 	LB = new Character(false,160,"Lost Bladesman",0,3);
+	LB->equipment->primary = new Item(5);
 	Dog = new Character(false,160,"Wolf",5,3);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	newChar->setTarget(LB);
@@ -165,7 +179,7 @@ void Game::setupGame() {
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 	this->gameWorld->createStructure({0,0}, house, 4);
-	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,0,1,2,1,2,1,2,1,2,1});
+	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 }
 
 //=======================

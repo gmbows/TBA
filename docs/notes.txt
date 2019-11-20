@@ -1,3 +1,5 @@
+Items:
+	Move item manifest to file and import by reading
 Threads/Synchronization:
 	MUST lock mutex before altering anything that is interacted with by 
 		both the graphics and logic thread (blocks for example are added

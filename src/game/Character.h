@@ -95,6 +95,9 @@ class Character: public GameObject {
 
 		StatSet *stats;
 
+		//width in meters (one tile is 2x2 meters
+		int width = .35;
+
 		void init_stats();
 
 		unsigned int defaultAttackRate;

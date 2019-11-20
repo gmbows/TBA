@@ -88,8 +88,8 @@ void Window::update(bool gdebug) {
 	//TBAGame->updateGameUIObjects();
 
 	//DEBUG MAP CENTER
-	// SDL_SetRenderDrawColor(this->renderer,255,255,255,255);
-	// SDL_RenderDrawPoint(this->renderer,this->mapScreen->x+this->mapScreen->w/2,this->mapScreen->y+this->mapScreen->h/2);
+	//SDL_SetRenderDrawColor(this->renderer,255,255,255,255);
+	//SDL_RenderDrawPoint(this->renderer,this->mapScreen->x+this->mapScreen->w/2,this->mapScreen->y+this->mapScreen->h/2);
 
 	SDL_RenderPresent(this->renderer);
 

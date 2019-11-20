@@ -168,14 +168,11 @@ bool attackEC(Command* command, const std::vector<std::string> &args) {
 std::string zoomFunc(Command* command, const std::vector<std::string> &args) {
 	
 	if(command->aux == "out") {
-		TBAGame->gameWindow->mapScreen->charW /= 2;
-		TBAGame->gameWindow->mapScreen->charH /= 2;
+		TBAGame->gameWindow->mapScreen->zoom /= 2;
 	} else if(command->aux == "in") {
-		TBAGame->gameWindow->mapScreen->charW *= 2;
-		TBAGame->gameWindow->mapScreen->charH *= 2;
+		TBAGame->gameWindow->mapScreen->zoom *= 2;
 	} else {
-		TBAGame->gameWindow->mapScreen->charW = 16;
-		TBAGame->gameWindow->mapScreen->charH = 16;
+		TBAGame->gameWindow->mapScreen->zoom = 1;
 		TBAGame->gameWindow->mapScreen->generateMapTiles();
 		return "\nReset zoom";
 	}

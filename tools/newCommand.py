@@ -7,7 +7,7 @@ gameSrcf.close()
 objectString = "\t\t\tnew\t\t"
 
 name = input("Command name? \n->")
-aliases = ""#input("Comma separated alias list?\n->")
+aliases = name# input("Comma separated alias list?\n->")
 argc = ""#input("Minimum argument count?\n->")
 hasEC = input("Does this command have errorchecking? [y/n] \n->")
 
@@ -27,7 +27,7 @@ if len(aliases) > 0:
 else:
 	aliasString = "{}"
 
-objectString += 'Command({0},{3}{4}),\n'.format(name,aliasString,argc,funcString,ecString)
+objectString += 'Command({1},{3}{4}),\n'.format(name,aliasString,argc,funcString,ecString)
 
 declaration = "\n\t//{0}\n\tstd::string {1}Func(Command*, const std::vector<std::string>&);\n".format(name.title(),name)
 

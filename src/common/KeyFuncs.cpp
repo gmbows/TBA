@@ -89,11 +89,13 @@ void click(SDL_MouseButtonEvent& event) {
 
 
 	//Left click
-	int centerX = 6+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
-	int centerY = 6+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
+	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
+	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
 
-	int tileX = std::round(((float)(event.x-centerX))/TBAGame->gameWindow->mapScreen->charW);
-	int tileY = std::round(((float)(event.y-centerY))/TBAGame->gameWindow->mapScreen->charH);
+	int tileX = std::round(((float)(event.x-centerX))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+	int tileY = std::round(((float)(event.y-centerY))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+
+	std::cout << tileX << ", " << tileY << std::endl;
 
 	Tile* thisTile = TBAGame->gameWorld->getTileAt(tileX,tileY);
 

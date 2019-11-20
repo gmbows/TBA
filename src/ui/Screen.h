@@ -171,6 +171,8 @@ class MapScreen: public Screen {
 		void redrawActiveTiles();
 		void generateMapTiles();
 
+		int zoom = 1;
+
 		int lastMapX = 400;
 		int lastMapY = 0;
 

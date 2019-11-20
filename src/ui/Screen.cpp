@@ -306,20 +306,13 @@ void DynamicTextBox::update() {
 
 void MapScreen::drawMap() {
 
-	//Text offsets
-	int offsetX = 0;//-this->charW;
-	int offsetY = 0;//-this->charH;
-
-	float centerX = this->lastMapX + .5;
-	float centerY = this->lastMapY + .5;
-
 	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
-	this->mapTextureRect = {offsetX+this->x,offsetY+this->y,this->w,this->h};
+	this->mapTextureRect = {this->x,this->y,this->w,this->h};
 	
-	int windowOffsetX = ((TBAGame->gameWorld->size/2)+TBAGame->playerChar->x)*this->charW;
-	int windowOffsetY = ((TBAGame->gameWorld->size/2)+TBAGame->playerChar->y)*this->charH;
+	int windowOffsetX = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->x)*this->charW;
+	int windowOffsetY = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->y)*this->charH;
 	
-	SDL_Rect srect = {windowOffsetX-(this->w/2),windowOffsetY-(this->h/2),this->w,this->h};
+	SDL_Rect srect = {windowOffsetX-(this->w/2/this->zoom),windowOffsetY-(this->h/2/this->zoom),this->w/this->zoom,this->h/this->zoom};
 	
 	SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture,&srect,&this->mapTextureRect);
 
