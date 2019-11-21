@@ -158,11 +158,11 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<100;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
-		//newChar->setStatus(STATUS_COMBAT);
+		newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
@@ -171,6 +171,7 @@ void Game::setupGame() {
 	LB->equipment->primary = new Item(5);
 	Dog = new Character(false,160,"Wolf",5,3);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
+	newChar->lookAt(LB);
 	newChar->setTarget(LB);
 	Dog->setTarget(LB);
 	Dog->setStatus(STATUS_COMBAT);

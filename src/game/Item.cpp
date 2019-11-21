@@ -26,6 +26,7 @@ std::map<itemType,std::string> itemTypeMap = {
 	{I_INGREDIENT,"Ingredient"},
 	{I_CURRENCY,"Currency"},
 	{I_CONTAINER,"Container"},
+	{I_PLANTABLE,"Plantable"},
 	
 	
 };

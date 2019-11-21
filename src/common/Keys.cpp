@@ -11,7 +11,8 @@
 
 bool shift=false;
 
-bool m_up,m_down,m_left,m_right;
+bool m_forward,m_back;
+bool turn_left,turn_right;
 
 std::map<int,int> shiftMap = {
 	{47,63}, //Forward slash
@@ -109,26 +110,30 @@ void Game::input() {
 					case SDLK_KP_PLUS: //DEBUG KEY
 						debugKey();
 						break;
-					case SDLK_UP:
-					case SDLK_DOWN:
 					case SDLK_LEFT:
 					case SDLK_RIGHT:
 						if(SDL_GetModState() & (KMOD_LCTRL ^ KMOD_CAPS)) {
 							switch(keycode) {
-								case SDLK_UP:
-									m_up = true;
-									break;
-								case SDLK_DOWN:
-									m_down = true;
-									break;
 								case SDLK_LEFT:
-									m_left = true;
+									turn_left = true;
 									break;
 								case SDLK_RIGHT:
-									m_right = true;
+									turn_right = true;
 									break;
 							}
-							move(m_up,m_down,m_left,m_right);
+						}
+						break;
+					case SDLK_UP:
+					case SDLK_DOWN:
+						if(SDL_GetModState() & (KMOD_LCTRL ^ KMOD_CAPS)) {
+							switch(keycode) {
+								case SDLK_UP:
+									m_forward = true;
+									break;
+								case SDLK_DOWN:
+									m_back = true;
+									break;
+							}
 						} else {
 							switch(keycode) {
 								case SDLK_UP:
@@ -139,7 +144,6 @@ void Game::input() {
 									break;
 							}
 						}
-						
 						break;
 					default:
 						if(shift) {
@@ -166,23 +170,25 @@ void Game::input() {
 						break;
 					case SDLK_UP:
 					case SDLK_DOWN:
+						switch(keycode) {
+							case SDLK_UP:
+								m_forward = false;
+								break;
+							case SDLK_DOWN:
+								m_back = false;
+								break;
+							}
+						break;
 					case SDLK_LEFT:
 					case SDLK_RIGHT:
-							switch(keycode) {
-								case SDLK_UP:
-									m_up = false;
-									break;
-								case SDLK_DOWN:
-									m_down = false;
-									break;
-								case SDLK_LEFT:
-									m_left = false;
-									break;
-								case SDLK_RIGHT:
-									m_right = false;
-									break;
+						switch(keycode) {
+							case SDLK_LEFT:
+								turn_left = false;
+								break;
+							case SDLK_RIGHT:
+								turn_right = false;
+								break;
 							}
-							move(m_up,m_down,m_left,m_right);
 						break;
 				}
 				break;
@@ -212,4 +218,6 @@ void Game::input() {
 					break;
 			}
 		}
+		move(m_forward,m_back);
+		turn(turn_left,turn_right);
 	}

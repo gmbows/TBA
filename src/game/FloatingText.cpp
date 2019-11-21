@@ -19,8 +19,8 @@ void FloatingText::drawContent() {
 	int charIndex;
 
 	//Center text above tracker
-	int x = std::get<0>(this->location) - (TBAGame->gameWindow->textScreen->charW*this->message.at(0).size()/2);
-	int y = std::get<1>(this->location) - (TBAGame->gameWindow->textScreen->charH*this->message.size()/2);
+	int x = std::get<0>(this->location) - (TBAGame->gameWindow->textScreen->charW/TBAGame->gameWindow->mapScreen->zoom*this->message.at(0).size()/2);
+	int y = std::get<1>(this->location) - (TBAGame->gameWindow->textScreen->charH/TBAGame->gameWindow->mapScreen->zoom*this->message.size()/2);
 	
 	//For each line of visible Content
 	for(int i=0;i<this->message.size();i++) {

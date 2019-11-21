@@ -193,37 +193,34 @@ void resetAllScreens() {
 //		PLAYER STATUS_MOVEMENT
 //====================
 
-void move(bool m_up,bool m_down,bool m_left, bool m_right) {
+void move(bool m_forward,bool m_back) {
 
 		std::tuple<int,int> Qdirection;
 
-		int x = 0;
-		int y = 0;
-
-		if(m_up)	{
-			y += 1;
-		}
-		if(m_down) 	{
-			y -= 1;
-		}
-		if(m_left) 	{
-			x -= 1;
-		}
-		if(m_right) {
-			x =+ 1;
-		}
-
-	if(x ^ y) {
+	if(m_forward ^ m_back) {
 		if(TBAGame->playerChar->isAlive()) {
 			TBAGame->playerChar->addStatus(STATUS_MOVE);
 		}
 	}
 
 	if(TBAGame->playerChar->isAlive()) {
-		Qdirection = std::make_tuple(x,y);
-		TBAGame->playerChar->direction = Qdirection;
+		TBAGame->playerChar->move_forward = m_forward;
+		TBAGame->playerChar->move_back = m_back;
 	}
 }
+
+void turn(bool turn_left,bool turn_right) {
+
+		if(turn_left) {
+			TBAGame->playerChar->ang -= .1;
+			//TBAGame->playerChar->ang = TBAGame->playerChar->ang%360;
+		}
+		if(turn_right) {
+			TBAGame->playerChar->ang += .1;
+			//TBAGame->playerChar->ang = TBAGame->playerChar->ang%360;
+		}
+}
+
 
 //==========
 //		MISC

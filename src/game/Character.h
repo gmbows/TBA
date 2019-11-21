@@ -63,6 +63,9 @@ class Character: public GameObject {
 		//=============
 
 		float x,y;
+		float ang = 0;
+		bool move_forward = false;
+		bool move_back = false;
 		bool isPlayer;
 		Inventory* inventory;
 		std::string name;
@@ -95,8 +98,8 @@ class Character: public GameObject {
 
 		StatSet *stats;
 
-		//width in meters (one tile is 2x2 meters
-		int width = .35;
+		//width in % of tile (one tile is 2x2 meters)
+		float width = .25;
 
 		void init_stats();
 
@@ -128,8 +131,7 @@ class Character: public GameObject {
 		//========
 
 		//In format units per ms
-		int velocityX = 0;
-		int velocityY = 0;
+		float velocity = 0;
 		int maxMoveSpeed;
 
 		float traction;
@@ -137,9 +139,9 @@ class Character: public GameObject {
 
 		void setLocation(float,float);
 		void setLocomotion();
-		void move(std::tuple<int,int>);
+		void move();
 		bool resolveMove(float&, float&);
-		void moveTo(std::tuple<float,float>);
+		void moveTo(Character*);
 		void moveAway(std::tuple<float,float>);
 
 		//========
@@ -169,6 +171,7 @@ class Character: public GameObject {
 			return (dist(this->getLocation(),c1->getLocation()) < dist(this->getLocation(),c2->getLocation()))? c1 : c2;
 
 		}
+		void lookAt(Character*);
 
 		//Status
 		void setStatus(statusIndicator);

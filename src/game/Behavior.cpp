@@ -41,6 +41,9 @@ std::string Character::getTargetName() {
 void Character::setTarget(GameObject *o) {
 	this->resetCombatTimer();
 	this->target = o;
+	if(o != nullptr and !this->isPlayer) {
+		this->lookAt(this->getCharTarget());
+	}	
 }
 
 Character* Character::getCharTarget()  {
@@ -167,7 +170,9 @@ GameObject* Character::findObjectInRadius(const std::string &_name) {
 	return nullptr;
 }
 
-
+void Character::lookAt(Character *c) {
+	this->ang = atan2(c->y-this->y,c->x-this->x);
+}	
 
 std::vector<Character*> Character::getCharactersInRadius() {
 	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
@@ -248,10 +253,9 @@ bool Character::combatRetarget() {
 	return this->hasTarget();
 }
 
-void Character::moveTo(std::tuple<float,float> location) {
-	int x = (this->x > this->getCharTarget()->x)? -1 : 1;
-	int y = (this->y > this->getCharTarget()->y)? 1 : -1;
-	this->direction = {x,y};
+void Character::moveTo(Character *c) {
+	this->lookAt(c);
+	this->move_forward = true;
 }
 
 void Character::moveAway(std::tuple<float,float> location) {
@@ -269,17 +273,14 @@ void Character::setLocomotion() {
 	if(!this->isPlayer) {
 		if(this->hasTarget()) {
 			if(this->hasStatus(STATUS_PURSUE)) {
-				this->moveTo({this->getCharTarget()->x,this->getCharTarget()->y});
+				this->moveTo(this->getCharTarget());
 			} else if(this->hasStatus(STATUS_ESCAPE)) {
 				this->moveAway({this->getCharTarget()->x,this->getCharTarget()->y});
 			}
 		}
 	}
 
-	this->velocityX = std::max(-this->maxMoveSpeed,std::min(this->maxMoveSpeed,this->velocityX+std::get<0>(this->direction)));
-	this->velocityY = std::max(-this->maxMoveSpeed,std::min(this->maxMoveSpeed,this->velocityY+std::get<1>(this->direction)));
-
-	if(this->velocityX == 0 and this->velocityY == 0 and std::get<0>(this->direction) == 0 and std::get<1>(this->direction) == 0) {
+	if(this->velocity < 0.01f) {
 		this->removeStatus(STATUS_MOVE);
 		return;
 	}
@@ -416,7 +417,6 @@ void Character::sendAttack(GameObject *target) {
 }
 
 void Character::receiveAttack(int damage,GameObject *attacker) {
-
 	//Takes attack type and specifics
 	//Performs resistance calculation, returns damage dealt
 
@@ -448,11 +448,12 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	//Apply damage resistance calculation
 	this->health -= damage;
 
+
 	// Apply knockback
 	int magnitude = damage;
 	float directionX = -(this->getCharTarget()->x-this->x);
 	float directionY = this->getCharTarget()->y-this->y;
-	this->move({magnitude*directionX,magnitude*directionY});
+	//this->move({magnitude*directionX,magnitude*directionY});
 
 	//Damage popups
 	if(this->isPlayer) {
@@ -467,6 +468,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		TBAGame->displayText("\nDealt "+std::to_string(damage)+" damage to "+this->getName());
 	}
 
+
 	//====================
 	// REACT POST STATUS_ATTACK
 	//====================
@@ -474,7 +476,6 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	if(this->health <= 0) {
 		if(static_cast<Character*>(attacker)->isPlayer) TBAGame->displayText("\nKilled "+this->getName());
 		this->kill();
-
 		static_cast<Character*>(attacker)->setTarget(nullptr);
 		static_cast<Character*>(attacker)->say("It's a shame, really");
 
@@ -516,6 +517,7 @@ void Character::update() {
 		if(this->targetInRange()) {
 			//this->addStatus(STATUS_COMBAT);
 			this->removeStatus(STATUS_PURSUE);
+			this->move_forward = false;	
 		}
 		this->setLocomotion();
 	}
@@ -548,6 +550,6 @@ void Character::update() {
 	}
 	*/
 	//Physics
-	this->move(this->direction);
+	this->move();
 
 }

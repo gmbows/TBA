@@ -49,32 +49,7 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 
 bool Character::resolveMove(float &newX, float &newY) {
 
-	bool changed = false;
-
-	Tile* thisTile = TBAGame->gameWorld->getTileAt(this->x,newY);
-	//If movement on Y axis results in occupation conflict
-	//Set Y movement to 0
-	if(!thisTile->isPassable() or thisTile->invalid or !TBAGame->gameWorld->locationInBoundary(this->x,newY)) {
-		if(thisTile != this->location) {
-			newY = this->y;
-			this->velocityY = 0;
-			changed = true;
-		}
-	}
-
-	thisTile = TBAGame->gameWorld->getTileAt(newX,this->y);
-	//If movement on X axis results in occupation conflict
-	//Set X movement to 0
-	if(!thisTile->isPassable() or thisTile->invalid or !TBAGame->gameWorld->locationInBoundary(newX,this->y)) {
-		if(thisTile != this->location) {
-			newX = this->x;
-			this->velocityX = 0;
-			changed = true;
-		}
-	}
-
-	return changed;
-
+	return true;
 }
 
 void Character::setLocation(float newX,float newY) {
@@ -83,44 +58,35 @@ void Character::setLocation(float newX,float newY) {
 	this->location->occupyWith(this);
 }
 
-void Character::move(std::tuple<int,int> direction) {
-	float newX = this->x+((float)this->velocityX*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
-	float newY = this->y-((float)this->velocityY*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
+void Character::move() {
 
-	int dx = std::get<0>(direction);
-	int dy = std::get<1>(direction);
+	float newX = this->x+cos(-this->ang)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
+	float newY = this->y-sin(-this->ang)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
 
-	this->velocityX += dx;
-	this->velocityY += dy;
+	if(this->move_forward) this->velocity += .5;
+	if(this->move_back) this->velocity -= .5;
+
+	if(this->velocity == 0) return;
 
 	
-	Tile* thisTile = TBAGame->gameWorld->getTileAt(newX,newY);
+	///Tile* thisTile;
 
-
+	//debug(xProx);
+	
 	//If character is trying to move into a new space
-	if(thisTile != this->location) {
-		//If new space is occupied or otherwise impassable
-		if(!thisTile->isPassable() or !TBAGame->gameWorld->locationInBoundary(newX,newY)) {
-
-			if(!this->resolveMove(newX,newY)) {
-				//If move cannot be resolved to free space, cancel movement
-				return;
-			}
-		}	
-		//Move character to new location and vacate current tile
-		this->setLocation(newX,newY);
+	if(!this->resolveMove(newX,newY)) {
+		//If move cannot be resolved to free space, cancel movement
+		//return;
 	}
+
+	this->setLocation(newX,newY);
 
 	this->x = newX;
 	this->y = newY;
 
 	//Resistance
-	if(dx == 0) {
-		this->velocityX *= 1-(this->location->roughness);
-	}
-	if(dy == 0) {
-		this->velocityY *= 1-(this->location->roughness);
-	}
+
+	this->velocity *= .9;
 
 	this->lastMove = TBAGame->logicTicks;
 

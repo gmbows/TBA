@@ -7,6 +7,7 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <utility>
+#include <unordered_set>
 
 
 class Screen {
@@ -160,6 +161,10 @@ class MapScreen: public Screen {
 	public:
 
 		std::vector<std::vector<Tile*>> map;
+
+		//to keep track of redrawn tiles each loop
+		std::unordered_set<char*> checked;
+		
 
 		SDL_Texture* mapTexture;
 		SDL_Rect mapTextureRect;

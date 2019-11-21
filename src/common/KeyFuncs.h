@@ -31,7 +31,8 @@ void resetScreen(int);
 void resetAllScreens();
 
 //Movement
-void move(bool,bool,bool,bool);
+void move(bool,bool);
+void turn(bool,bool);
 
 //Misc
 void pause();

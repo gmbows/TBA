@@ -33,9 +33,10 @@ enum itemType: flag {
 	I_METAL =		1 << 15,
 	I_INGREDIENT = 	1 << 16,
 	I_CURRENCY = 	1 << 17,
+	I_PLANTABLE = 	1 << 18,
 	
-	I_CONTAINER =	1 << 18,
-	I_END =			1 << 19,
+	I_CONTAINER =	1 << 19,
+	I_END =			1 << 20,
 
 };
 

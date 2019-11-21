@@ -4,6 +4,8 @@
 #include "../common/Common.h"
 #include "../game/Projectile.h"
 
+#include <unordered_set>
+
 //========================
 //CONTENT DRAWING FUNCTIONS
 //========================
@@ -172,6 +174,8 @@ void MapScreen::redrawActiveTiles() {
 
 	int charSize;
 
+	this->checked.clear();
+
 	for(int i=0;i<map.size();i++) {
 		for(int j=0;j<map.size();j++) {
 			thisTile = this->map.at(i).at(j);
@@ -182,13 +186,19 @@ void MapScreen::redrawActiveTiles() {
 				for(int k=-1;k<=1;k++) {
 					for(int n=-1;n<=1;n++) {
 						tcursor[0] = cursor[0]+(n*charW);
-						tcursor[1] = cursor[1]+k;	
-
+						tcursor[1] = cursor[1]+k;
 						try {
 							thisTile = this->map.at(std::min(i+k,(int)this->map.size()-1)).at(std::min(j+n,(int)this->map.size()-1));
 						} catch(const std::exception &e) {
 							continue;
 						}
+						//Check if this tile has been updated already
+						if(this->checked.find((char*)thisTile) != this->checked.end()) {
+							continue;
+						} else {
+							this->checked.insert((char*)thisTile);
+						}
+
 						tileID = thisTile->getDisplayID();
 
 						if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
@@ -218,7 +228,6 @@ void MapScreen::redrawActiveTiles() {
 		cursor[0] = 0;
 
 	}
-
 }
 
 void MapScreen::updateMap() {
@@ -310,7 +319,7 @@ void MapScreen::updateMap() {
 					dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
 					SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
-
+					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+cos(occupant->ang)*10,windowOffsetY+2.5+sin(occupant->ang)*10);
 				}
 
 				for(int k=0;k<thisTile->objects.size();k++) {
