@@ -171,7 +171,8 @@ GameObject* Character::findObjectInRadius(const std::string &_name) {
 }
 
 void Character::lookAt(Character *c) {
-	this->ang = atan2(c->y-this->y,c->x-this->x);
+	this->ang = atan2(c->y-this->y,c->x-this->x)*CONV_RADIANS;
+	//if(this->name == "Wolf") debug(this->ang);
 }	
 
 std::vector<Character*> Character::getCharactersInRadius() {
@@ -403,7 +404,7 @@ void Character::sendAttack(GameObject *target) {
 			float tx,ty;
 			decompose(this->target->getLocation(),tx,ty);
 			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
-			new Projectile(this,this->getLocation(),(-1+rand()%1)-atan2(ty-y,tx-x)/(3.1415/180),.5); //placeholder velocity
+			new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
 			break;
 		case I_WEAPON_MELEE:
 			// Send to target to be changed based on damage resistance

@@ -319,7 +319,7 @@ void MapScreen::updateMap() {
 					dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
 					SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
-					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+cos(occupant->ang)*10,windowOffsetY+2.5+sin(occupant->ang)*10);
+					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+std::cos(occupant->ang*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->ang*CONV_DEGREES)*10);
 				}
 
 				for(int k=0;k<thisTile->objects.size();k++) {
@@ -339,7 +339,7 @@ void MapScreen::updateMap() {
 						case OBJ_PROJECTILE:
 							charSize = static_cast<Projectile*>(generic)->displaySize;
 							dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
-							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,static_cast<Projectile*>(generic)->angle/(3.1415/180),NULL,SDL_FLIP_NONE);
+							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,static_cast<Projectile*>(generic)->angle*CONV_RADIANS,NULL,SDL_FLIP_NONE);
 							break;
 						case OBJ_CONTAINER:
 							charSize = this->charW;

@@ -29,12 +29,12 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 		this->maxHealth = 40;
 		this->attackRate -= 20;
 		TBAGame->playerChar = this;
-		this->maxMoveSpeed = 4; 
+		this->maxMoveSpeed = .5;
 		this->displayID=3;
 		this->traction = 2;
 	} else {
 		//Random movespeeds
-		this->maxMoveSpeed = 3+((rand()%2)-1); //10+-5
+		this->maxMoveSpeed = .3+(.1*((rand()%2)-1)); //10+-5
 		this->displayID=6;
 		this->traction = 1;
 	}
@@ -60,11 +60,11 @@ void Character::setLocation(float newX,float newY) {
 
 void Character::move() {
 
-	float newX = this->x+cos(-this->ang)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
-	float newY = this->y-sin(-this->ang)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit);
+	float newX = this->x+(std::cos(this->ang*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
+	float newY = this->y+(std::sin(this->ang*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
 
-	if(this->move_forward) this->velocity += .5;
-	if(this->move_back) this->velocity -= .5;
+	if(this->move_forward) this->velocity += this->maxMoveSpeed;
+	if(this->move_back) this->velocity -= this->maxMoveSpeed;
 
 	if(this->velocity == 0) return;
 
@@ -190,6 +190,7 @@ std::string Character::getInfo() {
 
 	std::string info = " \n\n Name:\t"+this->name + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" +
+				"\tAim Angle:"+std::to_string(this->ang) + "\n" +
 				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
 				if(this->hasTarget()) {
 					info += "\tTarget:\t"+this->getTargetName() + "\n";

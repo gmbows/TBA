@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,float _ang,float _velocity): owner(_owner), angle(_ang*(-3.1415/180)), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
+Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,float _ang,float _velocity): owner(_owner), angle(_ang), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
 
 	float _x,_y;
 	decompose(_location,_x,_y);

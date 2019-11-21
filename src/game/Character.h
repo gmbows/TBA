@@ -63,6 +63,7 @@ class Character: public GameObject {
 		//=============
 
 		float x,y;
+		//Aim angle in degrees
 		float ang = 0;
 		bool move_forward = false;
 		bool move_back = false;
@@ -132,7 +133,7 @@ class Character: public GameObject {
 
 		//In format units per ms
 		float velocity = 0;
-		int maxMoveSpeed;
+		float maxMoveSpeed;
 
 		float traction;
 		std::tuple<int,int> direction;

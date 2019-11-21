@@ -150,7 +150,7 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
-	for(int i=0;i<20;i++) {
+	for(int i=0;i<100;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
@@ -160,7 +160,7 @@ void Game::setupGame() {
 	Character *newChar,*LB,*Dog;
 	for(int i=0;i<100;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
-		newChar->equipment->primary = new Item(4);
+		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
 		newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
@@ -168,11 +168,12 @@ void Game::setupGame() {
 	}
 	newChar = new Character(false,160,"Debug Looter",-1,3);
 	LB = new Character(false,160,"Lost Bladesman",0,3);
+	Dog = new Character(false,160,"Wolf",5,5);
+	Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
-	Dog = new Character(false,160,"Wolf",5,3);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	newChar->lookAt(LB);
-	newChar->setTarget(LB);
+	//newChar->lookAt(LB);
+	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
 	Dog->setStatus(STATUS_COMBAT);
 	//newChar->equipment->primary = new Item(4);

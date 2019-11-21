@@ -195,8 +195,6 @@ void resetAllScreens() {
 
 void move(bool m_forward,bool m_back) {
 
-		std::tuple<int,int> Qdirection;
-
 	if(m_forward ^ m_back) {
 		if(TBAGame->playerChar->isAlive()) {
 			TBAGame->playerChar->addStatus(STATUS_MOVE);
@@ -212,11 +210,11 @@ void move(bool m_forward,bool m_back) {
 void turn(bool turn_left,bool turn_right) {
 
 		if(turn_left) {
-			TBAGame->playerChar->ang -= .1;
+			TBAGame->playerChar->ang -= 4;
 			//TBAGame->playerChar->ang = TBAGame->playerChar->ang%360;
 		}
 		if(turn_right) {
-			TBAGame->playerChar->ang += .1;
+			TBAGame->playerChar->ang += 4;
 			//TBAGame->playerChar->ang = TBAGame->playerChar->ang%360;
 		}
 }
