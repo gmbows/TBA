@@ -3,13 +3,57 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  Ts/call  Ts/call  name    
- 52.94      0.36     0.36                             Screen::drawContent(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&)
- 32.35      0.58     0.22                             MapScreen::generateMapTexture()
-  7.35      0.63     0.05                             World::getTileAt(float, float)
-  1.47      0.64     0.01                             Tile::getFlip()
-  1.47      0.65     0.01                             Tile::Tile(int, int, int)
-  1.47      0.66     0.01                             void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
-  0.74      0.67     0.01                             Window::bringToFront(Screen*)
-  0.74      0.67     0.01                             Window::update()
-  0.74      0.68     0.01                             TextBox::setContent(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
-  0.74      0.68     0.01                             TextBox::prepareContent()
+ 37.74      0.40     0.40                             Screen::generateTexture(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&)
+ 17.92      0.59     0.19                             MapScreen::updateMap()
+ 14.15      0.74     0.15                             MapScreen::redrawActiveTiles()
+  3.77      0.78     0.04                             Tile::evict(Character*)
+  2.83      0.81     0.03                             Character::move()
+  1.89      0.83     0.02                             logic_thread_routine(Game*)
+  1.89      0.85     0.02                             Projectile::update()
+  1.89      0.87     0.02                             TextScreen::addContent(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  1.89      0.89     0.02                             Tile::isPassable()
+  1.89      0.91     0.02                             World::getTilesInRadius(int, int, int)
+  1.89      0.93     0.02                             World::getTileAt(float, float)
+  1.89      0.95     0.02                             Character::combat()
+  1.89      0.97     0.02                             Character::getInfo[abi:cxx11]()
+  1.89      0.99     0.02                             void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.94      1.00     0.01                             Item::getAttribute(itemAttribute)
+  0.94      1.01     0.01                             TextBox::getContent[abi:cxx11]()
+  0.94      1.02     0.01                             TextBox::prepareContent()
+  0.94      1.03     0.01                             Container::Container(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&, std::tuple<float, float>, int)
+  0.94      1.04     0.01                             MapScreen::update()
+  0.94      1.05     0.01                             void std::vector<GameObject*, std::allocator<GameObject*> >::emplace_back<GameObject*>(GameObject*&&)
+  0.94      1.06     0.01                             void std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_realloc_insert<std::vector<Tile*, std::allocator<Tile*> >*>(__gnu_cxx::__normal_iterator<std::vector<Tile*, std::allocator<Tile*> >**, std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> > >, std::vector<Tile*, std::allocator<Tile*> >*&&)
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.

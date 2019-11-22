@@ -73,6 +73,9 @@ void Game::setupUI() {
                                mapScreen->w+(2*mapScreen->charW),
                                mapScreen->h+(2*mapScreen->charH));
 
+	textScreen->init_texture();
+	auxScreen->init_texture();
+
 	//Map panel to obscure mapscreen overlap
 	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
 	SDL_Rect fillLeft = {textScreen->x+textScreen->w-6,0,borderSize+5,gameWindow->height};

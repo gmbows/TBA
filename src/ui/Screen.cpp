@@ -144,6 +144,15 @@ MapScreen::MapScreen(int x, int y, int w, int h, bool border) {
 
 }
 
+void Screen::init_texture() {
+	this->screenTexture = SDL_CreateTexture(TBAGame->gameWindow->renderer,
+	   SDL_GetWindowPixelFormat(TBAGame->gameWindow->window),
+		SDL_TEXTUREACCESS_TARGET,
+		//+3 for border size
+	   this->w+2,
+	   this->h+2);
+}	
+
 void Screen::update() {
 
 	this->drawBorder();
@@ -154,7 +163,10 @@ void Screen::drawBorder() {
 
 	if(this->hasBorder) {
 
-		this->bdRect = {this->x,this->y,this->w,this->h};
+		SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->screenTexture);
+		SDL_RenderClear(TBAGame->gameWindow->renderer);
+
+		this->bdRect = {0,0,this->w,this->h};
 
 		//Set drawing color to background color and draw background rectangle
 		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
@@ -165,15 +177,21 @@ void Screen::drawBorder() {
 		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bdColor.r,bdColor.g,bdColor.b,bdColor.a);
 
 		for(int i=0;i<2;i++) {
-			//Draw 3 pixel thick border
-			SDL_Rect tRect = {bdRect.x-i,bdRect.y-i,bdRect.w+(2*i)+1,bdRect.h+(2*i)+1};
+			//Draw 2 pixel thick border
+			SDL_Rect tRect = {bdRect.x+i,bdRect.y+i,bdRect.w+(2*i)+1,bdRect.h+(2*i)+1};
 			SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&tRect);
 			//Pixels are painted at the end of the update function upon exiting
 		}
 	}
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+	SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
 }
 
-void Screen::drawContent(const std::vector<std::string>& screenContent) {
+void Screen::generateTexture(const std::vector<std::string>& screenContent) {
+
+
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->screenTexture);
+	//SDL_RenderClear(TBAGame->gameWindow->renderer);
 
 	//Source rectangle taken from screenFont->fontTexture
 	SDL_Rect sRect;
@@ -200,6 +218,7 @@ void Screen::drawContent(const std::vector<std::string>& screenContent) {
 			this->contentWindowOffset--;
 		}
 	}
+
 	//debug(this->contentWindowStart+this->contentWindowOffset);
 	//debug(this->contentWindowEnd+this->contentWindowOffset);
 	
@@ -230,7 +249,7 @@ void Screen::drawContent(const std::vector<std::string>& screenContent) {
 			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 
 			//Modify display location rectangle based on cursor and font display values << FIX
-			SDL_Rect dRect = {this->offsetX+this->x+(1*cursor[0]),this->offsetY+(this->charH*cursor[1])+this->y+charInfo.yo,sRect.w,sRect.h};
+			SDL_Rect dRect = {this->offsetX+(1*cursor[0]),this->offsetY+(this->charH*cursor[1])+charInfo.yo,sRect.w,sRect.h};
 
 			//SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&dRect);
 			SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
@@ -243,14 +262,29 @@ void Screen::drawContent(const std::vector<std::string>& screenContent) {
 		cursor[1]++;
 		cursor[0] = 0;
 	}
+
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+}
+
+void Screen::drawScreen() {
+	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
+	SDL_Rect dRect = {this->x,this->y,this->w,this->h};
+	
+	//SDL_Rect srect = {windowOffsetX-(this->w/2/this->zoom),windowOffsetY-(this->h/2/this->zoom),this->w/this->zoom,this->h/this->zoom};
+	
+	SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenTexture,NULL,&dRect);
+
 }
 
 void TextScreen::update() {
 
-	this->drawBorder();
-	this->setCommandLine();
-	this->drawContent(extend(this->content,appendToLast(this->commandLines,this->cursorChar)));
-
+	if(extend(this->content,appendToLast(this->commandLines,this->cursorChar)) != this->lastContent) {
+		this->drawBorder();
+		this->setCommandLine();
+		this->lastContent = extend(this->content,appendToLast(this->commandLines,this->cursorChar));
+		this->generateTexture(this->lastContent);
+	}
+	this->drawScreen();
 }
 
 void TextBox::update() {
@@ -260,7 +294,8 @@ void TextBox::update() {
 		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
 		this->prepareContent();
 		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->contentString+"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo()+"\n\nTarget info:\n\t"+TBAGame->playerChar->getTargetInfo());
-		this->drawContent(this->content);
+		this->generateTexture(this->content);
+		this->drawScreen();
 		this->lastUpdate = SDL_GetTicks();
 	}
 }
@@ -301,7 +336,8 @@ void DynamicTextBox::update() {
 	}
 
 	this->drawBorder();
-	this->drawContent(this->content);
+	this->generateTexture(this->content);
+	this->drawScreen();
 }
 
 void MapScreen::drawMap() {
@@ -346,7 +382,7 @@ void MapScreen::trueDrawBorder() {
 
 void MapScreen::update() {
 
-	this->drawBorder();
+	//this->drawBorder();
 	this->updateMap();
 	this->drawMap();
 	this->trueDrawBorder();

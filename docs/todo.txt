@@ -64,6 +64,12 @@ KNOWN BUGS:
 ========
  TODO:
 ========
+	Limit NPC rotation speed (currently snaps instantly)
+	Set projectiles to update 3x3 area (they leave trails atm)
+	Make viewang indicator (now it's just a line)
+	Fix movespeed variations
+	FloatingText:
+		Fix print location when zoomed in
 	Threads:
 		Split logic thread into threads for each component of logic updates (game, ui obj updates)
 		Don't need a thread for graphics

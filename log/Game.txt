@@ -1,10 +1,10 @@
-Nov/20/2019(Wed)12:39:16 : Game.txt initialized
-Nov/20/2019(Wed)12:39:16 : Beginning game startup
+Nov/21/2019(Thu)16:23:05 : Game.txt initialized
+Nov/21/2019(Thu)16:23:05 : Beginning game startup
 
-Nov/20/2019(Wed)12:39:16 : Creating window and screen objects...
-Nov/20/2019(Wed)12:39:16 : Screen objects initialized
-Nov/20/2019(Wed)12:39:16 : Window object initialized
-Nov/20/2019(Wed)12:39:16 : Window object fully initialized, generating font textures
-Nov/20/2019(Wed)12:39:16 : Font textures generated, game startup complete
+Nov/21/2019(Thu)16:23:05 : Creating window and screen objects...
+Nov/21/2019(Thu)16:23:05 : Screen objects initialized
+Nov/21/2019(Thu)16:23:05 : Window object initialized
+Nov/21/2019(Thu)16:23:05 : Window object fully initialized, generating font textures
+Nov/21/2019(Thu)16:23:05 : Font textures generated, game startup complete
 
-Nov/20/2019(Wed)12:39:16 : Entering game loop
+Nov/21/2019(Thu)16:23:05 : Entering game loop

@@ -17,6 +17,9 @@ class Screen {
 		int x,y,h,w;
 		bool hasBorder;
 
+		SDL_Texture *screenTexture;
+		void init_texture();
+
 		//Rectangle representing screen boundaries
 		SDL_Rect bdRect;
 
@@ -53,7 +56,8 @@ class Screen {
 		}
 
 		//Global content draw function (command screen is specialized in update override)
-		void drawContent(const std::vector<std::string>&);
+		void generateTexture(const std::vector<std::string>&);
+		void drawScreen();
 		void shiftContentWindow(int);
 
 		//Global border draw function across all screen classes
@@ -79,6 +83,7 @@ class TextScreen: public Screen {
 		std::string cursorChar = "_";
 	
 		std::vector<std::string> commandLines;
+		std::vector<std::string> lastContent = {};
 
 		std::vector<std::string> commandHistory;
 		int commandIndex;
