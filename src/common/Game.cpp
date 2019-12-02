@@ -200,7 +200,6 @@ std::vector<GameObject*> Game::convert(const std::vector<Character*> &v) {
 	return objs;
 }
 
-
 GameObject* Game::findObject(int id) {
 		for(int i=0;i<this->gameObjects.size();i++) {
 		if(this->gameObjects.at(i)->objectID == id) {
@@ -262,47 +261,41 @@ void Game::popupText(int duration, const std::string& message) {
 //=============
 
 void logic_thread_routine(Game *game) {
-
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
 
 	while(game->gameRunning) {
-		//debug("Updating logic");
-		pthread_mutex_lock(&game->updateLock);
+		// debug("Updating logic");
+		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
 		start = SDL_GetTicks();
 		game->update_logic();
+		// debug("Done updating logic");
 		elapsed = SDL_GetTicks()-start;
-		//std::cout << elapsed << "   " << std::flush;
-		//game->canUpdateGraphics = true;
-		//game->canUpdateLogic = false;
-		//pthread_cond_signal(&game->graphics);
-		pthread_mutex_unlock(&game->updateLock);
-		
+
+		// pthread_mutex_unlock(&game->updateLock);
+
 		real_wait = (1000/game->logicTickRate)-elapsed;
 		if(real_wait <= 0) debug("Falling behind! (logic)");
 		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
 	}
 }
 void graphics_thread_routine(Game *game) {
-
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
 	
 	while(game->gameRunning) {
-		//debug("Updating graphics");
-		pthread_mutex_lock(&game->updateLock);
+		// debug("Updating graphics");
+		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
 		start = SDL_GetTicks();
 		game->update_graphics();
+		// debug("Done updating graphics");
 		elapsed = SDL_GetTicks()-start;
-		//std::cout << elapsed << "       \r" << std::flush;
-		//game->canUpdateGraphics = false;
-		//game->canUpdateLogic = true;
-		//pthread_cond_signal(&game->logic);
-		pthread_mutex_unlock(&game->updateLock);
+		
+		// pthread_mutex_unlock(&game->updateLock);
 
 		real_wait = (1000/game->graphicsTickRate)-elapsed;
 		if(real_wait <= 0) debug("Falling behind! (graphics)");
@@ -344,7 +337,6 @@ void Game::update_logic() {
 }
 
 void Game::update_graphics() {
-
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
 		this->lastGraphicsUpdate = SDL_GetTicks();

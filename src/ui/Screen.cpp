@@ -154,9 +154,7 @@ void Screen::init_texture() {
 }	
 
 void Screen::update() {
-
 	this->drawBorder();
-
 }
 
 void Screen::drawBorder() {
@@ -188,7 +186,6 @@ void Screen::drawBorder() {
 }
 
 void Screen::generateTexture(const std::vector<std::string>& screenContent) {
-
 
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->screenTexture);
 	//SDL_RenderClear(TBAGame->gameWindow->renderer);
@@ -277,7 +274,6 @@ void Screen::drawScreen() {
 }
 
 void TextScreen::update() {
-
 	if(extend(this->content,appendToLast(this->commandLines,this->cursorChar)) != this->lastContent) {
 		this->drawBorder();
 		this->setCommandLine();
@@ -288,7 +284,6 @@ void TextScreen::update() {
 }
 
 void TextBox::update() {
-
 	if(true or this->hasNewContent() or (this->lastUpdate + this->updateInterval <= SDL_GetTicks())) {
 		this->drawBorder();
 		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
@@ -381,7 +376,6 @@ void MapScreen::trueDrawBorder() {
 }
 
 void MapScreen::update() {
-
 	//this->drawBorder();
 	this->updateMap();
 	this->drawMap();
