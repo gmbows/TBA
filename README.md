@@ -6,7 +6,8 @@ A multiplatform text based rpg written in c++
 `->help` or `?` for a list of commands
 #### Keyboard shortcuts
 
-Move: `ctrl + [arrow key]`<br>
+Move: `ctrl + [arrow key up/down]`<br>
+Turn: `ctrl + [arrow key left/right]`<br>
 Place block:  `Left click` <br>
 Pause:   `ctrl + space` or `->pause` <br>
 Autocomplete command: `->partial-command [tab]`<br>
