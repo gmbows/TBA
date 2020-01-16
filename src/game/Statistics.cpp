@@ -18,6 +18,10 @@ void Character::init_stats() {
 	//In format 
 	this->defaultAttackRange = 1*.5;
 	this->defaultMoveSpeed = 2;
+	
+	this->defaultTurnSpeed = 4;
+	this->turnSpeed = this->defaultTurnSpeed;
+	this->defaultFOV = 90;
 
 	this->attackRate = this->defaultAttackRate + ((-500+rand()%1000)/50);
 

@@ -161,7 +161,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<100;i++) {
+	for(int i=0;i<0;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -169,12 +169,13 @@ void Game::setupGame() {
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	newChar = new Character(false,160,"Debug Looter",-1,3);
-	LB = new Character(false,160,"Lost Bladesman",0,3);
+	newChar = new Character(false,160,"Debug Trader",-1,3);
+	LB = new Character(false,160,"Lost Bladesman",0,5);
 	Dog = new Character(false,160,"Wolf",5,5);
-	Dog->equipment->primary = new Item(4);
+	//Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
+	Dog->turnSpeed = playerChar->turnSpeed*4;
 	//newChar->lookAt(LB);
 	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
@@ -184,7 +185,7 @@ void Game::setupGame() {
 	//newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
-	this->gameWorld->createStructure({0,0}, house, 4);
+	this->gameWorld->createStructure({0,0}, bighouse, 4);
 	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 }
 

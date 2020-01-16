@@ -168,14 +168,11 @@ bool attackEC(Command* command, const std::vector<std::string> &args) {
 std::string zoomFunc(Command* command, const std::vector<std::string> &args) {
 	
 	if(command->aux == "out") {
-		TBAGame->gameWindow->mapScreen->charW /= 2;
-		TBAGame->gameWindow->mapScreen->charH /= 2;
+		TBAGame->gameWindow->mapScreen->zoom /= 2;
 	} else if(command->aux == "in") {
-		TBAGame->gameWindow->mapScreen->charW *= 2;
-		TBAGame->gameWindow->mapScreen->charH *= 2;
+		TBAGame->gameWindow->mapScreen->zoom *= 2;
 	} else {
-		TBAGame->gameWindow->mapScreen->charW = 16;
-		TBAGame->gameWindow->mapScreen->charH = 16;
+		TBAGame->gameWindow->mapScreen->zoom = 1;
 		TBAGame->gameWindow->mapScreen->generateMapTiles();
 		return "\nReset zoom";
 	}
@@ -210,8 +207,14 @@ bool sayEC(Command* command, const std::vector<std::string> &args) {
 
 //Hurtme
 std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
-	TBAGame->playerChar->health -= std::stoi(args.at(0));
-	return "\nHurt player for "+args.at(0);
+	int damage = 0;
+	if(args.size() == 0) {
+		damage = 0;
+	} else {
+		damage = std::stoi(args.at(0));
+	}
+	TBAGame->playerChar->health -= damage;
+	return "\nHurt player for "+std::to_string(damage);
 }
 bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
 	return true;
@@ -342,3 +345,23 @@ std::string debugFunc(Command* command, const std::vector<std::string> &args) {
 	return "";
 }
 
+
+//Examine
+std::string examineFunc(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		return "\nStanding on "+TBAGame->playerChar->location->getName();
+	} else {
+		int index = TBAGame->playerChar->inventory->find(join(' ',args));
+		if(index >= 0) {
+			return "\n"+TBAGame->playerChar->inventory->getItem(index)->getInfo();
+		} else if(index == -2) {
+			return "";
+		} else {
+			return "\nItem not found";
+		}
+	}
+}
+
+bool examineEC(Command* command, const std::vector<std::string> &args) {
+	return true;
+}

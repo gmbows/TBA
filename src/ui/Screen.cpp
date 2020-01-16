@@ -149,8 +149,8 @@ void Screen::init_texture() {
 	   SDL_GetWindowPixelFormat(TBAGame->gameWindow->window),
 		SDL_TEXTUREACCESS_TARGET,
 		//+3 for border size
-	   this->w+2,
-	   this->h+2);
+	   this->w+1,
+	   this->h+1);
 }	
 
 void Screen::update() {
@@ -169,7 +169,6 @@ void Screen::drawBorder() {
 		//Set drawing color to background color and draw background rectangle
 		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
 		SDL_RenderFillRect(TBAGame->gameWindow->renderer,&bdRect);
-		//SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,NULL,&bdRect);
 
 		//Set drawing color to border color
 		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bdColor.r,bdColor.g,bdColor.b,bdColor.a);
@@ -219,7 +218,6 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 	//debug(this->contentWindowStart+this->contentWindowOffset);
 	//debug(this->contentWindowEnd+this->contentWindowOffset);
 	
-
 	std::vector<std::string> visibleContent = subVec(screenContent,this->contentWindowStart+this->contentWindowOffset,this->contentWindowEnd+this->contentWindowOffset);
 
 	//visibleContent.push_back("->");
@@ -246,7 +244,7 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 
 			//Modify display location rectangle based on cursor and font display values << FIX
-			SDL_Rect dRect = {this->offsetX+(1*cursor[0]),this->offsetY+(this->charH*cursor[1])+charInfo.yo,sRect.w,sRect.h};
+			SDL_Rect dRect = {this->offsetX+(cursor[0]),this->offsetY+(cursor[1])+charInfo.yo,sRect.w,sRect.h};
 
 			//SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&dRect);
 			SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
@@ -256,7 +254,7 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 		}
 
 		//Advance cursor to next line
-		cursor[1]++;
+		cursor[1] += this->charH;
 		cursor[0] = 0;
 	}
 
@@ -265,7 +263,7 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 
 void Screen::drawScreen() {
 	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
-	SDL_Rect dRect = {this->x,this->y,this->w,this->h};
+	SDL_Rect dRect = {this->x,this->y,this->w+1,this->h+1};
 	
 	//SDL_Rect srect = {windowOffsetX-(this->w/2/this->zoom),windowOffsetY-(this->h/2/this->zoom),this->w/this->zoom,this->h/this->zoom};
 	

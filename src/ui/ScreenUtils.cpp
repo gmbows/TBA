@@ -180,7 +180,12 @@ void MapScreen::redrawActiveTiles() {
 		for(int j=0;j<map.size();j++) {
 			thisTile = this->map.at(i).at(j);
 
-			if(thisTile->isOccupied()) {
+			//Criteria for activity:
+			//	Occcupied by character or object
+
+
+			//Update 3x3 area surrounding tiles occupied by characters
+			if(thisTile->isOccupied() or thisTile->hasObjects()) {
 				charSize = this->charW;
 				int tcursor[2] = {cursor[0],cursor[1]};
 				for(int k=-1;k<=1;k++) {
@@ -319,7 +324,7 @@ void MapScreen::updateMap() {
 					dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
 					SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
-					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+std::cos(occupant->ang*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->ang*CONV_DEGREES)*10);
+					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+std::cos(occupant->viewAng*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->viewAng*CONV_DEGREES)*10);
 				}
 
 				for(int k=0;k<thisTile->objects.size();k++) {
@@ -528,6 +533,3 @@ bool Screen::enclose(int x,int y) {
 	}
 	return false;
 }
-
-
-

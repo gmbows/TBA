@@ -12,7 +12,7 @@
 Window::Window(int w,int h) {
 	windowLog->writeln("New window initialized");
 
-	this->window = SDL_CreateWindow("TBA_Game",
+	this->window = SDL_CreateWindow("TBA",
 													SDL_WINDOWPOS_UNDEFINED,
 													SDL_WINDOWPOS_UNDEFINED,
 													w,h,

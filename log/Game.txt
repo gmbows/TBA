@@ -1,10 +1,10 @@
-Dec/02/2019(Mon)02:58:21 : Game.txt initialized
-Dec/02/2019(Mon)02:58:21 : Beginning game startup
+Jan/15/2020(Wed)22:38:10 : Game.txt initialized
+Jan/15/2020(Wed)22:38:10 : Beginning game startup
 
-Dec/02/2019(Mon)02:58:21 : Creating window and screen objects...
-Dec/02/2019(Mon)02:58:21 : Screen objects initialized
-Dec/02/2019(Mon)02:58:21 : Window object initialized
-Dec/02/2019(Mon)02:58:21 : Window object fully initialized, generating font textures
-Dec/02/2019(Mon)02:58:21 : Font textures generated, game startup complete
+Jan/15/2020(Wed)22:38:10 : Creating window and screen objects...
+Jan/15/2020(Wed)22:38:10 : Screen objects initialized
+Jan/15/2020(Wed)22:38:10 : Window object initialized
+Jan/15/2020(Wed)22:38:10 : Window object fully initialized, generating font textures
+Jan/15/2020(Wed)22:38:10 : Font textures generated, game startup complete
 
-Dec/02/2019(Mon)02:58:22 : Entering game loop
+Jan/15/2020(Wed)22:38:10 : Entering game loop

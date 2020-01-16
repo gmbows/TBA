@@ -64,16 +64,21 @@ class Character: public GameObject {
 
 		float x,y;
 		//Aim angle in degrees
-		float ang = 0;
+		float viewAng = 0;
+		float targetAng = 0;
+		float getTurnSpeed() {return this->turnSpeed;}
+
+		//Movement control
 		bool move_forward = false;
 		bool move_back = false;
+		bool autoMove = false;
 		bool isPlayer;
 		Inventory* inventory;
 		std::string name;
 		Tile* location;
 
 		int displayID;
-		int objectID;
+		// int objectID;
 
 		std::tuple<float,float> getAbsoluteLocation();
 		std::tuple<float,float> getApproximateLocation();
@@ -115,9 +120,14 @@ class Character: public GameObject {
 		int maxHealth;
 		int health;
 
-		//In format 
+		//In meters
 		float defaultAttackRange;
+
+		//In squares per tick
 		int defaultMoveSpeed;
+		int defaultTurnSpeed;
+		int turnSpeed;
+		int defaultFOV;
 
 		unsigned int attackRate;
 		bool isUnarmed();
@@ -141,7 +151,9 @@ class Character: public GameObject {
 		void setLocation(float,float);
 		void setLocomotion();
 		void move();
-		bool resolveMove(float&, float&);
+		//if viewang != targetang, attenuate at turnspeed
+		void turn();
+		void resolveMove(float&, float&);
 		void moveTo(Character*);
 		void moveAway(std::tuple<float,float>);
 

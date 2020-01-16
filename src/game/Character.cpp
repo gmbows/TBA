@@ -47,9 +47,21 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 //	MOVEMENT
 //==========
 
-bool Character::resolveMove(float &newX, float &newY) {
-
-	return true;
+void Character::resolveMove(float &newX, float &newY) {
+	if(newX >= TBAGame->gameWorld->size) {
+		newX = this->x;
+	}
+	if(newY >= TBAGame->gameWorld->size) {
+		newY = this->y;
+	}
+	Tile *testLocY = TBAGame->gameWorld->getTileAt(this->x,newY);
+	Tile *testLocX = TBAGame->gameWorld->getTileAt(newX,this->y);
+	if(!testLocY->isPassable()) {
+		newY = this->y;
+	}
+	if(!testLocX->isPassable()) {
+		newX = this->x;
+	}
 }
 
 void Character::setLocation(float newX,float newY) {
@@ -60,11 +72,15 @@ void Character::setLocation(float newX,float newY) {
 
 void Character::move() {
 
-	float newX = this->x+(std::cos(this->ang*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
-	float newY = this->y+(std::sin(this->ang*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
+	float newX = this->x+(std::cos(this->viewAng*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
+	float newY = this->y+(std::sin(this->viewAng*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
 
-	if(this->move_forward) this->velocity += this->maxMoveSpeed;
-	if(this->move_back) this->velocity -= this->maxMoveSpeed;
+	if(this->autoMove) {
+		this->velocity += this->maxMoveSpeed;
+	} else {
+		if(this->move_forward) this->velocity += this->maxMoveSpeed;
+		if(this->move_back) this->velocity -= this->maxMoveSpeed;
+	}
 
 	if(this->velocity == 0) return;
 
@@ -74,10 +90,7 @@ void Character::move() {
 	//debug(xProx);
 	
 	//If character is trying to move into a new space
-	if(!this->resolveMove(newX,newY)) {
-		//If move cannot be resolved to free space, cancel movement
-		//return;
-	}
+	this->resolveMove(newX,newY);
 
 	this->setLocation(newX,newY);
 
@@ -187,10 +200,10 @@ std::string Character::getStatusString() {
 
 std::string Character::getInfo() {
 	
-
 	std::string info = " \n\n Name:\t"+this->name + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" +
-				"\tAim Angle:"+std::to_string(this->ang) + "\n" +
+				"\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
+				"\tTarget Angle:"+std::to_string(this->targetAng) + "\n" +
 				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
 				if(this->hasTarget()) {
 					info += "\tTarget:\t"+this->getTargetName() + "\n";
@@ -203,7 +216,7 @@ std::string Character::getInfo() {
 
 void Character::kill() {
 	if(this->health > 0) { this->health = 0;}
-	this->direction = {0,0};
+	// this->direction = {0,0};
 	//a warrior's death
 	//this->target = nullptr;
 	this->setStatus(STATUS_DEAD);

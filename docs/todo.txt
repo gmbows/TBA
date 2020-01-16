@@ -64,8 +64,6 @@ KNOWN BUGS:
 ========
  TODO:
 ========
-	Limit NPC rotation speed (currently snaps instantly)
-	Set projectiles to update 3x3 area (they leave trails atm)
 	Make viewang indicator (now it's just a line)
 	Fix movespeed variations
 	FloatingText:
@@ -100,6 +98,8 @@ KNOWN BUGS:
 ========
   DONE:	
 ========
+	Limit NPC rotation speed (currently snaps instantly)
+	Set projectiles to update 3x3 area (they leave trails atm)
 	Screen:
 		Only update tiles that are occupied on map screen
 		Don't need to get entirely new tiles each frame

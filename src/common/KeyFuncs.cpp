@@ -198,6 +198,7 @@ void move(bool m_forward,bool m_back) {
 	if(m_forward ^ m_back) {
 		if(TBAGame->playerChar->isAlive()) {
 			TBAGame->playerChar->addStatus(STATUS_MOVE);
+			TBAGame->playerChar->autoMove = false;
 		}
 	}
 
@@ -210,12 +211,12 @@ void move(bool m_forward,bool m_back) {
 void turn(bool turn_left,bool turn_right) {
 
 		if(turn_left) {
-			TBAGame->playerChar->ang -= 4;
-			//TBAGame->playerChar->ang = TBAGame->playerChar->ang%360;
+			TBAGame->playerChar->viewAng -= 4;
+			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
 		}
 		if(turn_right) {
-			TBAGame->playerChar->ang += 4;
-			//TBAGame->playerChar->ang = TBAGame->playerChar->ang%360;
+			TBAGame->playerChar->viewAng += 4;
+			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
 		}
 }
 
@@ -272,6 +273,8 @@ void debugKey() {
 		decompose(TBAGame->playerChar->target->getLocation(),tx,ty);
 		new Projectile(TBAGame->playerChar,{x,y},(-15+rand()%31)-atan2(ty-y,tx-x)/(3.1415/180),.02);
 	}
+
+	static_cast<Character*>(TBAGame->displayTarget)->setTarget(TBAGame->playerChar);
 
 	/*SDL_Texture* blockTexture = TBAGame->gameWorld->getTileAt(-2,-2)->blocks.at(TBAGame->gameWorld->getTileAt(-2,-2)->blocks.size()-1)->blockTexture;
 	

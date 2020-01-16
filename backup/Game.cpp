@@ -73,6 +73,9 @@ void Game::setupUI() {
                                mapScreen->w+(2*mapScreen->charW),
                                mapScreen->h+(2*mapScreen->charH));
 
+	textScreen->init_texture();
+	auxScreen->init_texture();
+
 	//Map panel to obscure mapscreen overlap
 	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
 	SDL_Rect fillLeft = {textScreen->x+textScreen->w-6,0,borderSize+5,gameWindow->height};
@@ -121,6 +124,7 @@ void Game::setupGame() {
 			new		Command({"search"},searchFunc,searchEC),
 			new		Command({"equip"},equipFunc,equipEC),
 			new		Command({"debug"},debugFunc),
+			new		Command({"examine"},examineFunc,examineEC),
 			////
 		};
 	
@@ -132,7 +136,7 @@ void Game::setupGame() {
 	}
 
 	//Length of one edge of map square
-	int quadSize = 256;
+	int quadSize = 128;
 
 	this->gameWorld = new World(quadSize*2);
 	
@@ -149,7 +153,7 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	new Character(true,160,"Player",0,0);
-	for(int i=0;i<50;i++) {
+	for(int i=0;i<100;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
@@ -157,20 +161,22 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<100;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
-		newChar->equipment->primary = new Item(4);
+		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
-		//newChar->setStatus(STATUS_COMBAT);
+		newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
 	newChar = new Character(false,160,"Debug Looter",-1,3);
 	LB = new Character(false,160,"Lost Bladesman",0,3);
+	Dog = new Character(false,160,"Wolf",5,5);
+	Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
-	Dog = new Character(false,160,"Wolf",5,3);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	newChar->setTarget(LB);
+	//newChar->lookAt(LB);
+	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
 	Dog->setStatus(STATUS_COMBAT);
 	//newChar->equipment->primary = new Item(4);
@@ -193,7 +199,6 @@ std::vector<GameObject*> Game::convert(const std::vector<Character*> &v) {
 	}
 	return objs;
 }
-
 
 GameObject* Game::findObject(int id) {
 		for(int i=0;i<this->gameObjects.size();i++) {
@@ -256,47 +261,41 @@ void Game::popupText(int duration, const std::string& message) {
 //=============
 
 void logic_thread_routine(Game *game) {
-
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
 
 	while(game->gameRunning) {
-		//debug("Updating logic");
-		pthread_mutex_lock(&game->updateLock);
+		// debug("Updating logic");
+		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
 		start = SDL_GetTicks();
 		game->update_logic();
+		// debug("Done updating logic");
 		elapsed = SDL_GetTicks()-start;
-		//std::cout << elapsed << "   " << std::flush;
-		//game->canUpdateGraphics = true;
-		//game->canUpdateLogic = false;
-		//pthread_cond_signal(&game->graphics);
-		pthread_mutex_unlock(&game->updateLock);
-		
+
+		// pthread_mutex_unlock(&game->updateLock);
+
 		real_wait = (1000/game->logicTickRate)-elapsed;
 		if(real_wait <= 0) debug("Falling behind! (logic)");
 		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
 	}
 }
 void graphics_thread_routine(Game *game) {
-
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
 	
 	while(game->gameRunning) {
-		//debug("Updating graphics");
-		pthread_mutex_lock(&game->updateLock);
+		// debug("Updating graphics");
+		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
 		start = SDL_GetTicks();
 		game->update_graphics();
+		// debug("Done updating graphics");
 		elapsed = SDL_GetTicks()-start;
-		//std::cout << elapsed << "       \r" << std::flush;
-		//game->canUpdateGraphics = false;
-		//game->canUpdateLogic = true;
-		//pthread_cond_signal(&game->logic);
-		pthread_mutex_unlock(&game->updateLock);
+		
+		// pthread_mutex_unlock(&game->updateLock);
 
 		real_wait = (1000/game->graphicsTickRate)-elapsed;
 		if(real_wait <= 0) debug("Falling behind! (graphics)");
@@ -338,11 +337,10 @@ void Game::update_logic() {
 }
 
 void Game::update_graphics() {
-
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
 		this->lastGraphicsUpdate = SDL_GetTicks();
-		this->gameWindow->update();
+		this->gameWindow->update(this->debugMode);
 		this->graphicsTicks++;
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}

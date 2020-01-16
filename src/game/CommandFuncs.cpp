@@ -17,28 +17,28 @@
 #include <tuple>
 
 //Dirmap
-std::map<std::string,std::pair<std::string,std::tuple<int,int>>> dirMap = {
+std::map<std::string,std::pair<std::string,int>> dirMap = {
 
-	{"north",{"North",std::make_tuple(0,1)}},
-	{"south",{"South",std::make_tuple(0,-1)}},
-	{"east",{"East",std::make_tuple(1,0)}},
-	{"west",{"West",std::make_tuple(-1,0)}},
-	{"up",{"North",std::make_tuple(0,1)}},
-	{"down",{"South",std::make_tuple(0,-1)}},
-	{"right",{"East",std::make_tuple(1,0)}},
-	{"left",{"West",std::make_tuple(-1,0)}},
-	{"n",{"North",std::make_tuple(0,1)}},
-	{"s",{"South",std::make_tuple(0,-1)}},
-	{"e",{"East",std::make_tuple(1,0)}},
-	{"w",{"West",std::make_tuple(-1,0)}},
-	{"northwest",{"Northwest",std::make_tuple(-1,1)}},
-	{"southwest",{"Southwest",std::make_tuple(-1,-1)}},
-	{"northeast",{"Northeast",std::make_tuple(1,1)}},
-	{"southeast",{"Southeast",std::make_tuple(1,-1)}},
-	{"nw",{"Northwest",std::make_tuple(-1,1)}},
-	{"sw",{"Southwest",std::make_tuple(-1,-1)}},
-	{"ne",{"Northeast",std::make_tuple(1,1)}},
-	{"se",{"Southeast",std::make_tuple(1,-1)}},
+	{"north",{"North",270}},
+	{"south",{"South",90}},
+	{"east",{"East",0}},
+	{"west",{"West",180}},
+	{"up",{"North",270}},
+	{"down",{"South",90}},
+	{"right",{"East",0}},
+	{"left",{"West",180}},
+	{"n",{"North",270}},
+	{"s",{"South",90}},
+	{"e",{"East",0}},
+	{"w",{"West",180}},
+	{"northwest",{"Northwest",225}},
+	{"southwest",{"Southwest",135}},
+	{"northeast",{"Northeast",315}},
+	{"southeast",{"Southeast",45}},
+	{"nw",{"Northwest",225}},
+	{"sw",{"Southwest",135}},
+	{"ne",{"Northeast",315}},
+	{"se",{"Southeast",45}},
 
 };
 
@@ -56,7 +56,8 @@ std::string inventoryFunc(Command* command,const std::vector<std::string>& args)
 //Move + EC
 std::string moveFunc(Command* command, const std::vector<std::string> &args) {
 
-	TBAGame->playerChar->direction = std::get<1>(dirMap.at(args.at(0)));
+	TBAGame->playerChar->targetAng = (float)dirMap.at(args.at(0)).second;
+	TBAGame->playerChar->autoMove = true;
 	TBAGame->playerChar->addStatus(STATUS_MOVE);
 	return "\nMoving "+command->aux;
 
@@ -67,7 +68,7 @@ bool moveEC(Command* command, const std::vector<std::string>& args) {
 		command->error = "Invalid direction";
 		return false;
 	}
-	command->aux = std::get<0>(dirMap.at(args.at(0)));
+	command->aux = dirMap.at(args.at(0)).first;
 	return true;
 
 }
@@ -99,9 +100,12 @@ std::string stopFunc(Command* command, const std::vector<std::string> &args) {
 
 //Help
 std::string helpFunc(Command* command, const std::vector<std::string> &args) {
-
-	return "\n"+join('\n',TBAGame->commandStrings);
-
+	if(args.size() == 0) return "\n"+join('\n',TBAGame->commandStrings);
+	std::string cmd = join(' ',args);
+	if(helpMap.find(cmd) != helpMap.end()) {
+		return "\nUsage: "+join("\n       ",helpMap.at(cmd).first)+"\n\nFunction: "+join("\n          ",helpMap.at(cmd).second);
+	}
+	return "h";
 }
 bool helpEC(Command* command, const std::vector<std::string> &args) {
 
@@ -207,8 +211,14 @@ bool sayEC(Command* command, const std::vector<std::string> &args) {
 
 //Hurtme
 std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
-	TBAGame->playerChar->health -= std::stoi(args.at(0));
-	return "\nHurt player for "+args.at(0);
+	int damage = 0;
+	if(args.size() == 0) {
+		damage = 0;
+	} else {
+		damage = std::stoi(args.at(0));
+	}
+	TBAGame->playerChar->health -= damage;
+	return "\nHurt player for "+std::to_string(damage);
 }
 bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
 	return true;
@@ -343,7 +353,18 @@ std::string debugFunc(Command* command, const std::vector<std::string> &args) {
 //Examine
 std::string examineFunc(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) {
-		return "\nStanding on "+TBAGame->playerChar->location->getName();
+		std::string surface = "\nStanding on "+TBAGame->playerChar->location->getName();
+		std::vector<Character*> nearbyChars = TBAGame->playerChar->getCharactersInRadius();
+		std::vector<GameObject*> nearbyObjs = TBAGame->playerChar->getObjectsInRadius(OBJ_GENERIC);
+		if(nearbyChars.size() == 0 and nearbyChars.size() == 0) return surface;
+		surface += "\nNearby:";
+		for(int i=0;i<nearbyChars.size();i++) {
+			surface += "\n-"+nearbyChars.at(i)->getName();
+		}
+		for(int i=0;i<nearbyObjs.size();i++) {
+			surface += "\n>"+nearbyObjs.at(i)->getName();
+		}
+		return surface;
 	} else {
 		int index = TBAGame->playerChar->inventory->find(join(' ',args));
 		if(index >= 0) {

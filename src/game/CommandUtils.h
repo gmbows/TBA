@@ -1,10 +1,33 @@
 #pragma once
 #include <vector>
 #include <map>
+#include <utility>
 
 #include "GameObject.h"
 #include "Command.h"
 #include "../tools/Utility.h"
+
+std::map<std::string,std::pair<std::vector<std::string>,std::vector<std::string>>> helpMap = {
+	//command,{ {usage1,usage2},{returns}}
+	{"help",{{"help","help [command]"},{"Displays command list","Displays command's usage and function"}}},
+	{"clear",{{"clear"},{"Clears screen"}}},
+	{"inventory",{{"inventory"},{"Displays player inventory"}}},
+	{"search",{{"search"},{"Displays inventory of selected container"}}},
+	{"examine",{{"examine","examine [item]","examine [partial item]"},{"Displays information about surroundings","Displays item info"}}},
+	{"equip",{{"equip [item]","equip [partial item]"},{"Equips item"}}},
+	{"take",{{"take [item name]","take [partial name]"},{"Takes item from selected container"}}},
+	{"put",{{"put [item name]","put [partial name]"},{"Puts item in selected container"}}},
+	{"move",{{"move [direction]"},{"Moves player in direction"}}},
+	{"pause",{{"pause"},{"Pauses game"}}},
+	{"stop",{{"stop"},{"Halts player movement"}}},
+	{"unpause",{{"unpause"},{"Unpauses game"}}},
+	{"attack",{{"attack"},{"Engages player in combat with current target"}}},
+	{"zoom",{{"zoom","zoom [in]","zoom [out]"},{"Changes or resets screen zoom level"}}},
+	{"say",{{"say [text]"},{"Creates player speech"}}},
+	{"exit",{{"exit"},{"Exits game"}}},
+	{"select",{{"select [object]","select [character]"},{"Selects entity"}}},
+	{"target",{{"target [character]"},{"Targets character"}}},
+};
 
 int moveItems(int itemCount,Item *goodItem,Inventory *source, Inventory *destination) {
 	int taken = 0;
@@ -97,9 +120,6 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 
 	} else if(command == "put") {
 
-		tense = "Put";
-		preposition = "in";
-
 		//sourceName = "inventory";
 		targetName = TBAGame->displayTarget->getName();
 
@@ -107,6 +127,14 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 		// source is errorchecked and is a valid container
 		source = TBAGame->playerChar->inventory;
 		destination = TBAGame->displayTarget->getInventory();
+
+		if(TBAGame->displayTarget->type == OBJ_CHARACTER) {
+			tense = "Gave";
+			preposition = "to";
+		} else {
+			tense = "Put";
+			preposition = "in";
+		}
 	}
 
 	//Check if item appears in selected container	

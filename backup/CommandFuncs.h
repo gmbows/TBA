@@ -79,3 +79,6 @@
 	//Debug
 	std::string debugFunc(Command*, const std::vector<std::string>&);
 
+	//Examine
+	std::string examineFunc(Command*, const std::vector<std::string>&);
+	bool examineEC(Command*, const std::vector<std::string>&);

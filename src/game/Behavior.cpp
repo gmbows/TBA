@@ -57,22 +57,22 @@ GameObject* Character::getTarget()  {
 void Character::addStatus(statusIndicator newStatus) {
 	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
 		// Character must be stationary to enter combat
-		this->direction = {0,0};
+		// this->direction = {0,0};
 		this->removeStatus(STATUS_MOVE);
 		this->resetCombatTimer();
 	}
-	this->status = (this->status | newStatus);
 	if(newStatus != STATUS_IDLE) this->removeStatus(STATUS_IDLE);
+	this->status = (this->status | newStatus);
 }
 
 void Character::setStatus(statusIndicator newStatus) {
 	//remove all other statuses and replace with newStatus
 	// really only used for death
 	if(newStatus == STATUS_IDLE) {
-		this->direction = {0,0};
+		// this->direction = {0,0};
 	} else if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
 		// Character must be stationary to enter combat
-		this->direction = {0,0};
+		// this->direction = {0,0};
 		this->resetCombatTimer();// - (this->attackRate/2);
 	}
 	this->status = newStatus;
@@ -171,8 +171,9 @@ GameObject* Character::findObjectInRadius(const std::string &_name) {
 }
 
 void Character::lookAt(Character *c) {
-	this->ang = atan2(c->y-this->y,c->x-this->x)*CONV_RADIANS;
-	//if(this->name == "Wolf") debug(this->ang);
+	int newAng = atan2(c->y-this->y,c->x-this->x)*CONV_RADIANS;
+	if(newAng < 0) newAng = 360+newAng;
+	this->targetAng = newAng;
 }	
 
 std::vector<Character*> Character::getCharactersInRadius() {
@@ -186,7 +187,7 @@ std::vector<Character*> Character::getCharactersInRadius() {
 		if(thisTile->isOccupied()) {
 			//extend(targets,thisTile->occupiers);
 			for(int j=0;j<thisTile->occupiers.size();j++) {
-				if((char*)this != (char*)thisTile->occupiers.at(j)) targets.push_back(thisTile->occupiers.at(j));
+				if((char*)this != (char*)thisTile->occupiers.at(j) and thisTile->occupiers.at(j)->isAlive()) targets.push_back(thisTile->occupiers.at(j));
 			}
 		}
 		//if(thisTile->hasObjects()) extend(objects,thisTile->objects);
@@ -262,12 +263,36 @@ void Character::moveTo(Character *c) {
 void Character::moveAway(std::tuple<float,float> location) {
     int x = (this->x > this->getCharTarget()->x)? 1 : -1;
     int y = (this->y > this->getCharTarget()->y)? -1 : 1;
-    this->direction = {x,y};
+    // this->direction = {x,y};
 }
 
 //==========
 //	 STATUS_MOVE
 //==========
+
+void Character::turn() {
+	if(this->isPlayer and !this->autoMove) return;
+	//if(this->isPlayer) std::cout << std::to_string(this->viewAng)+" "+std::to_string(this->targetAng)+"\r" << std::flush;
+	if((fabs(this->viewAng - this->targetAng)) > this->getTurnSpeed()) {
+
+		//Get sign of shortest angle
+		int sign = this->targetAng - this->viewAng;
+		sign = (sign+180)%360 - 180;
+
+		//Move aim towards target angle
+		this->viewAng += this->getTurnSpeed()*((sign > 0)? 1:-1);
+
+	} else {
+		//If aim is close enough just set to target angle
+		this->viewAng = this->targetAng;
+	}
+
+	//Wrap view angle between 0 and 360 for simplicity
+	if(this->viewAng < 0) {
+		this->viewAng = 360+this->viewAng;
+	}
+	this->viewAng = (int)this->viewAng%360;
+}
 
 void Character::setLocomotion() {
 
@@ -281,7 +306,7 @@ void Character::setLocomotion() {
 		}
 	}
 
-	if(this->velocity < 0.01f) {
+	if(fabs(this->velocity) < 0.5f) {
 		this->removeStatus(STATUS_MOVE);
 		return;
 	}
@@ -338,7 +363,7 @@ void Character::combat() {
 	//====================
 	
 	//Stop moving to prepare attack
-	this->direction = {0,0};
+	// this->direction = {0,0};
 
 	//Failsafe: If character enters preparation phase while attack is ready, reset attack timer to weapon swing time
 
@@ -552,5 +577,6 @@ void Character::update() {
 	*/
 	//Physics
 	this->move();
+	this->turn();
 
 }
