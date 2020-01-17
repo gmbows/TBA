@@ -410,7 +410,7 @@ void DynamicTextBox::setContent(const std::string& content) {
 	this->content.clear();
 
 	//Reset box dimensions based on new content
-	this->w = std::min(this->maxWidth*charW,(this->charW*(int)content.size()) + (this->borderSize*2));
+	this->w = 100;//std::min(this->maxWidth*charW,(this->charW*(int)content.size()) + (this->borderSize*2));
 	this->screenCharWidth = this->w/this->charW;
 
 	this->h = (this->charH*((int)content.size()/this->screenCharWidth+1)) + 6;

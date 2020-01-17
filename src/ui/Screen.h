@@ -53,6 +53,7 @@ class Screen {
 		Screen(){}
 		~Screen() {
 			delete this->screenFont;
+			SDL_DestroyTexture(this->screenTexture);
 		}
 
 		//Global content draw function (command screen is specialized in update override)
@@ -137,12 +138,12 @@ class DynamicTextBox: public TextBox {
 
 		public:
 
-			bool enabled = false;
+			bool active = true;
 			bool toggled = false;
 
 			std::string fallbackText;
 
-			int stopTick;
+			int duration;
 
 			int borderSize = 4;
 			int maxWidth = 60;
@@ -153,7 +154,7 @@ class DynamicTextBox: public TextBox {
 			void addMessage(int, const std::string&);
 			void setToggledContent(const std::string&);
 
-			DynamicTextBox(const std::string&,int,int);
+			DynamicTextBox(const std::string&,int,int,int);
 
 			void setContent(const std::string&);
 

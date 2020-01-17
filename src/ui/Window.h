@@ -21,7 +21,11 @@ class Window {
 		MapScreen *mapScreen;
 		TextBox *auxScreen;
 		Panel *mapPanel;
-		DynamicTextBox *popupBox;
+
+		std::vector<DynamicTextBox*> popupVector;
+		void deleteFirstToggledPopup();
+
+		void createPopup(const std::string&,int duration,bool toggled);
 
 		//Vector containing all screen objects for easy updates
 		std::vector<Screen*> screenVector;
@@ -47,7 +51,7 @@ class Window {
 			delete mapScreen;
 			delete mapPanel;
 			delete auxScreen;
-			delete popupBox;
+			// delete popupBox;
 			delete this->windowLog;
 		}
 

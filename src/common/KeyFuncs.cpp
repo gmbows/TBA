@@ -276,6 +276,11 @@ void debugKey() {
 
 	static_cast<Character*>(TBAGame->displayTarget)->setTarget(TBAGame->playerChar);
 
+	TBAGame->gameWindow->createPopup("Cannot place here",TBAGame->convert(1000),false);
+
+	// TBAGame->gameWindow->popupBox->setToggledContent("Paused");
+	// TBAGame->gameWindow->popupBox->toggled = true;
+
 	/*SDL_Texture* blockTexture = TBAGame->gameWorld->getTileAt(-2,-2)->blocks.at(TBAGame->gameWorld->getTileAt(-2,-2)->blocks.size()-1)->blockTexture;
 	
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,blockTexture);

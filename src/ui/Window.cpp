@@ -41,7 +41,7 @@ Window::Window(int w,int h) {
 void Window::generateScreenFontTextures() {
 
 	this->mapScreen->screenFont->generateFontTexture(this->window,this->renderer);
-	this->popupBox->screenFont->generateFontTexture(this->window,this->renderer);
+	// this->popupBox->screenFont->generateFontTexture(this->window,this->renderer);
 
 	SDL_SetTextureAlphaMod(this->mapScreen->screenFont->fontTexture,255);
 
@@ -68,6 +68,22 @@ void Window::bringToFront(Screen* screen) {
 	}
 }
 
+void Window::deleteFirstToggledPopup() {
+	for(int i=0;i<this->popupVector.size();i++) {
+		if(popupVector.at(i)->toggled) {
+			this->popupVector.erase(this->popupVector.begin()+i);
+		}
+	}
+}
+
+void Window::createPopup(const std::string &message,int duration,bool toggled) {
+	int borderSize = 25;
+	DynamicTextBox *newPopup = new DynamicTextBox(message,duration,this->mapScreen->x+(this->mapScreen->w/2),borderSize+(borderSize/2)+mapScreen->h);
+	newPopup->screenFont->generateFontTexture(this->window,this->renderer);
+	newPopup->toggled = toggled;
+	this->popupVector.push_back(newPopup);
+}
+
 void Window::update(bool gdebug) {
 
 	SDL_SetRenderDrawColor(this->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
@@ -76,9 +92,17 @@ void Window::update(bool gdebug) {
 	if(gdebug == false) this->mapScreen->update();
 	TBAGame->updateGameUIObjects();
 	//this->mapPanel->update();
-	if(this->popupBox->enabled or this->popupBox->toggled) {
-		this->popupBox->update();
-	}
+	 if(this->popupVector.size() > 0) {
+		this->popupVector.at(0)->update();
+		// debug("Updated popup");
+		if(!this->popupVector.at(0)->active) {
+			// debug("Erasing invalid popup");
+			this->popupVector.erase(popupVector.begin());
+			this->popupVector.shrink_to_fit();
+		}
+	 }
+
+	// dumpVec(this->popupVector);
 	
 	//Main drawing functions go here
 	//-------------------

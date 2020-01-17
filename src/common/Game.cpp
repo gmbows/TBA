@@ -49,7 +49,7 @@ void Game::setupUI() {
 	TextScreen *textScreen = new TextScreen(borderSize,borderSize,tScreenW,tScreenH,true);
 	MapScreen *mapScreen = new MapScreen((borderSize*2)+tScreenW,borderSize,mapScreenS,mapScreenS,true);
 	TextBox *auxScreen = new TextBox((borderSize*3)+tScreenW+mapScreenS,borderSize,tScreenW,tScreenH,true);
-	DynamicTextBox *popupBox = new DynamicTextBox("Cannot place building here",mapScreen->x+(mapScreenS/2),borderSize+(borderSize/2)+mapScreenS);
+	 // DynamicTextBox *popupBox = new DynamicTextBox("Cannot place building here",mapScreen->x+(mapScreenS/2),borderSize+(borderSize/2)+mapScreenS);
 	gameLog->writeln("Screen objects initialized");
 
 	this->gameWindow = new Window((borderSize*4)+tScreenW*2+mapScreenS,600);
@@ -64,7 +64,7 @@ void Game::setupUI() {
 	this->gameWindow->textScreen = textScreen;
 	this->gameWindow->mapScreen = mapScreen;
 	this->gameWindow->auxScreen = auxScreen;
-	this->gameWindow->popupBox = popupBox;
+	// this->gameWindow->popupBox = popupBox;
 	this->gameWindow->mapPanel = new Panel();
 
 	mapScreen->mapTexture = SDL_CreateTexture(this->gameWindow->renderer,
@@ -75,6 +75,7 @@ void Game::setupUI() {
 
 	textScreen->init_texture();
 	auxScreen->init_texture();
+	// popupBox->init_texture();
 
 	//Map panel to obscure mapscreen overlap
 	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
@@ -186,7 +187,7 @@ void Game::setupGame() {
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 	this->gameWorld->createStructure({0,0}, bighouse, 4);
-	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 }
 
 //=======================
@@ -242,10 +243,12 @@ void Game::removeUIObject(GameObject* o) {
 bool Game::togglePause() {
 	this->paused = !this->paused;
 	if(this->paused) {
-		this->gameWindow->popupBox->setToggledContent("Paused");
-		this->gameWindow->popupBox->toggled = true;
+		TBAGame->gameWindow->createPopup("Paused",10,true);
+		// this->gameWindow->popupBox->setToggledContent("Paused");
+		// this->gameWindow->popupBox->toggled = true;
 	} else {
-		this->gameWindow->popupBox->toggled = false;
+		// this->gameWindow->popupBox->toggled = false;
+		TBAGame->gameWindow->deleteFirstToggledPopup();
 	}
 	return this->paused;
 }
@@ -253,7 +256,7 @@ bool Game::togglePause() {
 void Game::popupText(int duration, const std::string& message) {
 
 	//Duration in seconds
-	this->gameWindow->popupBox->addMessage(duration*1000,message);
+	// this->gameWindow->popupBox->addMessage(duration*1000,message);
 
 }
 
@@ -271,7 +274,7 @@ void logic_thread_routine(Game *game) {
 		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
 		start = SDL_GetTicks();
-		game->update_logic();
+		if(!game->paused) game->update_logic();
 		// debug("Done updating logic");
 		elapsed = SDL_GetTicks()-start;
 

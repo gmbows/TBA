@@ -75,7 +75,7 @@ bool moveEC(Command* command, const std::vector<std::string>& args) {
 
 //Pause
 std::string pauseFunc(Command* command, const std::vector<std::string> &args) {
-	
+
 	TBAGame->togglePause();
 	return (TBAGame->paused)? "\nPaused" : "\nUnpaused";
 
@@ -328,7 +328,10 @@ std::string equipFunc(Command* command, const std::vector<std::string> &args) {
 	int index = TBAGame->playerChar->inventory->find(itemName);
 	if(index >= 0) {
 		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
-		if(TBAGame->playerChar->equip(goodItem)) return "\nEquipped "+goodItem->name;
+		if(TBAGame->playerChar->equip(goodItem)) {
+			TBAGame->playerChar->resetCombatTimer();
+			return "\nEquipped "+goodItem->name;
+		}
 		return "\nCan't equip this item";
 	} else if(index == -2) {
 		return "";

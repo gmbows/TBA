@@ -87,10 +87,12 @@ TextBox::TextBox(int x, int y, int w, int h, bool border) {
 
 }
 
-DynamicTextBox::DynamicTextBox(const std::string &content,int x, int y) {
+DynamicTextBox::DynamicTextBox(const std::string &content,int _duration,int x, int y) {
 
 	this->x = x;
 	this->y = y;
+
+	this->duration = _duration;
 
 	this->hasBorder = true;
 
@@ -117,6 +119,7 @@ DynamicTextBox::DynamicTextBox(const std::string &content,int x, int y) {
 
 	this->bdRect = {this->x,this->y,this->w,this->h};
 
+	this->init_texture();
 }
 
 MapScreen::MapScreen(int x, int y, int w, int h, bool border) {
@@ -148,7 +151,7 @@ void Screen::init_texture() {
 	this->screenTexture = SDL_CreateTexture(TBAGame->gameWindow->renderer,
 	   SDL_GetWindowPixelFormat(TBAGame->gameWindow->window),
 		SDL_TEXTUREACCESS_TARGET,
-		//+3 for border size
+		//+1 for border size
 	   this->w+1,
 	   this->h+1);
 }	
@@ -179,8 +182,9 @@ void Screen::drawBorder() {
 			SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&tRect);
 			//Pixels are painted at the end of the update function upon exiting
 		}
+		SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
 	}
-	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+	
 	SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
 }
 
@@ -295,42 +299,44 @@ void TextBox::update() {
 
 void DynamicTextBox::setToggledContent(const std::string& message) {
 
-	this->fallbackText = message;
-	if(this->messageQueue.size() == 0) {
-		this->setContent(message);
-	}
+	// this->fallbackText = message;
+	// if(this->messageQueue.size() == 0) {
+		// this->setContent(message);
+	// }
 
 }
 
 void DynamicTextBox::addMessage(int duration, const std::string& message) {
 
-	this->enabled = true;
-	this->messageQueue.push_back(std::make_tuple(message,duration));
-	if(this->messageQueue.size() == 1) {
-		this->setContent(message);
-		this->stopTick = TBAGame->logicTicks+duration;
-	}
+	// this->enabled = true;
+	// this->messageQueue.push_back(std::make_tuple(message,duration));
+	// if(this->messageQueue.size() == 1) {
+		// this->setContent(message);
+		// this->stopTick = TBAGame->logicTicks+duration;
+	// }
 
 }
 
 void DynamicTextBox::update() {
 
-	if(this->enabled and TBAGame->logicTicks >= this->stopTick) {
-		this->messageQueue.erase(this->messageQueue.begin());
-		if(this->messageQueue.size() == 0) {
-			this->enabled = false;
-			if(this->toggled) {
-				this->setContent(this->fallbackText);
-			}
-		} else {
-			this->setContent(std::get<0>(this->messageQueue.at(0)));
-			this->stopTick = TBAGame->logicTicks+std::get<1>(this->messageQueue.at(0));
-		}
-	}
-
+	// if(this->enabled and TBAGame->logicTicks >= this->stopTick) {
+		// this->messageQueue.erase(this->messageQueue.begin());
+		// if(this->messageQueue.size() == 0) {
+			// this->enabled = false;
+			// if(this->toggled) {
+				// this->setContent(this->fallbackText);
+			// }
+		// } else {
+			// this->setContent(std::get<0>(this->messageQueue.at(0)));
+			// this->duration = TBAGame->logicTicks+std::get<1>(this->messageQueue.at(0));
+		// }
+	// }
 	this->drawBorder();
 	this->generateTexture(this->content);
 	this->drawScreen();
+
+	if(!this->toggled) this->duration--;
+	if(this->duration <= 0) this->active = false;
 }
 
 void MapScreen::drawMap() {

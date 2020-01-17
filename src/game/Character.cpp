@@ -25,7 +25,6 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 	this->target = nullptr;
 
 	if(player) {
-		//this->equipment->primary = new Item(2);
 		this->maxHealth = 40;
 		this->attackRate -= 20;
 		TBAGame->playerChar = this;
