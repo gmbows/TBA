@@ -79,7 +79,8 @@ void Window::deleteFirstToggledPopup() {
 void Window::createPopup(const std::string &message,int duration,bool toggled) {
 	int borderSize = 25;
 	DynamicTextBox *newPopup = new DynamicTextBox(message,duration,this->mapScreen->x+(this->mapScreen->w/2),borderSize+(borderSize/2)+mapScreen->h);
-	newPopup->screenFont->generateFontTexture(this->window,this->renderer);
+	// newPopup->screenFont->generateFontTexture(this->window,this->renderer);
+	// newPopup->generateTexture(newPopup->content);
 	newPopup->toggled = toggled;
 	this->popupVector.push_back(newPopup);
 }

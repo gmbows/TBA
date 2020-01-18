@@ -97,7 +97,7 @@ DynamicTextBox::DynamicTextBox(const std::string &content,int _duration,int x, i
 	this->hasBorder = true;
 
 	this->charW = 8;
-	this->charH = 12;	
+	this->charH = 12;
 	this->w = std::min(this->maxWidth*charW,(this->charW*(int)content.size()) + (this->borderSize*2));
 	this->screenCharWidth = this->w/this->charW;
 
@@ -115,11 +115,17 @@ DynamicTextBox::DynamicTextBox(const std::string &content,int _duration,int x, i
 
 	this->setContent(content);
 
-	screenFont = new Font("terminal");
+	this->screenFont = new Font("terminal");
 
 	this->bdRect = {this->x,this->y,this->w,this->h};
 
 	this->init_texture();
+
+	this->screenFont->generateFontTexture(TBAGame->gameWindow->window,TBAGame->gameWindow->renderer);
+
+	this->drawBorder();
+	this->generateTexture(this->content);
+
 }
 
 MapScreen::MapScreen(int x, int y, int w, int h, bool border) {
@@ -331,8 +337,6 @@ void DynamicTextBox::update() {
 			// this->duration = TBAGame->logicTicks+std::get<1>(this->messageQueue.at(0));
 		// }
 	// }
-	this->drawBorder();
-	this->generateTexture(this->content);
 	this->drawScreen();
 
 	if(!this->toggled) this->duration--;

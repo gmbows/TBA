@@ -176,7 +176,7 @@ void Game::setupGame() {
 	//Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	Dog->turnSpeed = playerChar->turnSpeed*4;
+	Dog->turnSpeed = playerChar->turnSpeed*1;
 	//newChar->lookAt(LB);
 	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
@@ -328,24 +328,41 @@ void Game::updateGameUIObjects() {
 void Game::update_logic() {
 
 	//Suspend logic ticks if game is paused
-	if(!this->paused) {
 	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
 			//Update all active game objects
-			this->lastLogicUpdate = SDL_GetTicks();
-			this->updateGameObjects();
-			this->logicTicks++;
-			//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+	this->lastLogicUpdate = SDL_GetTicks();
+	int start = SDL_GetTicks();
+	this->updateGameObjects();
+	this->logicTicks++;
+	// debug("Done updating graphics");
+	int elapsed = SDL_GetTicks()-start;
+	
+	// pthread_mutex_unlock(&game->updateLock);
+
+	int real_wait = (1000/this->logicTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (logic)");
+	SDL_Delay(real_wait);
+	
+	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
 	//	}
-	}
+	
 
 }
 
 void Game::update_graphics() {
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
-		this->lastGraphicsUpdate = SDL_GetTicks();
-		this->gameWindow->update(this->debugMode);
-		this->graphicsTicks++;
+	int start = SDL_GetTicks();
+	this->gameWindow->update(this->debugMode);
+	this->graphicsTicks++;
+	// debug("Done updating graphics");
+	int elapsed = SDL_GetTicks()-start;
+	
+	// pthread_mutex_unlock(&game->updateLock);
+
+	int real_wait = (1000/this->graphicsTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (graphics)");
+	// SDL_Delay(real_wait);
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}
 
@@ -356,6 +373,10 @@ void Game::update() {
 	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
 
 	//Keyboard input delay
-	SDL_Delay(1000/30);
+	// logic_thread_routine(this);
+	// graphics_thread_routine(this);
+	if(!this->paused) this->update_logic();
+	this->update_graphics();
+	// SDL_Delay(1000/30);
 
 }

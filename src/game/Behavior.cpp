@@ -257,7 +257,7 @@ bool Character::combatRetarget() {
 
 void Character::moveTo(Character *c) {
 	this->lookAt(c);
-	this->move_forward = true;
+	if(fabs(this->viewAng - this->targetAng) <= this->defaultFOV) this->move_forward = true;
 }
 
 void Character::moveAway(std::tuple<float,float> location) {

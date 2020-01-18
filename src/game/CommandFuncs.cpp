@@ -93,7 +93,8 @@ std::string unpauseFunc(Command* command, const std::vector<std::string> &args) 
 //Stop
 std::string stopFunc(Command* command, const std::vector<std::string> &args) {
 	
-	TBAGame->playerChar->direction = {0,0};
+	// TBAGame->playerChar->direction = {0,0};
+	TBAGame->playerChar->autoMove = false;
 	return "\nStopped moving";
 
 }

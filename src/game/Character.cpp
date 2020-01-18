@@ -200,10 +200,10 @@ std::string Character::getStatusString() {
 std::string Character::getInfo() {
 	
 	std::string info = " \n\n Name:\t"+this->name + "\n" +
-				"\tStatus:"+this->getStatusString() + "\n" +
-				"\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
-				"\tTarget Angle:"+std::to_string(this->targetAng) + "\n" +
-				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
+				"\tStatus:"+this->getStatusString() + "\n" ;//+
+				// "\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
+				// "\tTarget Angle:"+std::to_string(this->targetAng) + "\n" +
+				// "\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
 				if(this->hasTarget()) {
 					info += "\tTarget:\t"+this->getTargetName() + "\n";
 				}
