@@ -32,7 +32,6 @@ void Font::generateFontTexture(SDL_Window *window, SDL_Renderer *renderer) {
 	fontTexture = SDL_CreateTextureFromSurface(renderer,optimizedSurface);
 
 	SDL_SetTextureBlendMode(fontTexture,SDL_BLENDMODE_BLEND);
-	SDL_SetTextureAlphaMod(fontTexture,200);
 
 	fontLog->writeln("Font texture generation complete");
 	//SDL_SetTextureColorMod(glyphText,210,210,210);

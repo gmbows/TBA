@@ -75,6 +75,7 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 	//Set default itemcount
 	int itemCount = 1;
 	bool takeAll = false;
+	bool pillage = false;
 	std::string itemName;
 
 	//Remove empty strings from args
@@ -87,8 +88,12 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 			args.erase(args.begin() + i);
 			break;
 		} else if(args.at(i) == "*") {
-			takeAll = true;
-			args.erase(args.begin() + i);
+			if(i == 0) {
+				pillage = true;
+			} else {
+				takeAll = true;
+				args.erase(args.begin() + i);
+			}
 			break;
 		}
 	}
@@ -135,6 +140,15 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 			tense = "Put";
 			preposition = "in";
 		}
+	}
+	
+	if(pillage) {
+		std::string items;
+		std::vector<std::string> allItems = source->getContentString();
+		for(int i=0;i<allItems.size();i++) {
+			items += parseInteraction(cmd,{allItems.at(i),"*"});
+		}
+		return items;
 	}
 
 	//Check if item appears in selected container	

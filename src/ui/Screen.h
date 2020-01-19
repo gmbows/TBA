@@ -52,8 +52,10 @@ class Screen {
 		Screen(int,int,int,int,bool);
 		Screen(){}
 		~Screen() {
-			delete this->screenFont;
-			SDL_DestroyTexture(this->screenTexture);
+			// debug("Deleting generic screen...");
+			// delete this->screenFont;
+			// SDL_DestroyTexture(this->screenTexture);
+			// debug("Done deleting generic screen.");
 		}
 
 		//Global content draw function (command screen is specialized in update override)
@@ -188,6 +190,12 @@ class MapScreen: public Screen {
 		int lastMapY = 0;
 
 		MapScreen(int,int,int,int,bool);
+		
+		~MapScreen() {
+			// debug("Deleting map screen...");
+			// SDL_DestroyTexture(this->mapTexture);
+			// debug("Done deleting map screen.");
+		}
 
 		void update();
 

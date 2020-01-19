@@ -81,9 +81,14 @@ void World::genWorld() {
 void World::genWorld_new(SDL_Renderer* renderer) {
 
 	debug("Generating world texture!");
-
+	
+	//=================================
+	//!!!!!SET DEFAULT TILE COLOR/ALPHA HERE !!!!!
+	//=================================
+	SDL_SetTextureColorMod(this->screenFont->fontTexture,200,200,200);
+	
 	SDL_SetRenderTarget(renderer,this->worldTexture);
-
+	
 	//Source rectangle taken from screenFont->fontTexture
 	SDL_Rect sRect;
 	fChar charInfo;
@@ -185,8 +190,16 @@ void World::replaceTile(std::tuple<int,int> location, int tileID) {
 
 	this->cartesianToIndex(indX,indY);
 	
-	delete this->getTileAt(x,y);
-	this->tileVector.at(indY)->at(indX) = new Tile(tileID,x,-y);
+	Tile *oldTile = this->getTileAt(x,y);
+	Tile *newTile = new Tile(tileID,x,-y);
+	
+	//Should probably create a "Clear tile" method if tile needs to be completely cleared after replacement
+	
+	newTile->occupiers = oldTile->occupiers;
+	newTile->objects = oldTile->objects;
+	delete oldTile;
+	
+	this->tileVector.at(indY)->at(indX) = newTile;
 
 }
 

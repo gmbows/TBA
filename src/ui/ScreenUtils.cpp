@@ -155,7 +155,7 @@ void MapScreen::generateMapTiles() {
 void MapScreen::redrawActiveTiles() {
 
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
-
+	
 	//Source rectangle taken from screenFont->fontTexture
 	SDL_Rect sRect;
 	fChar charInfo;
@@ -224,6 +224,8 @@ void MapScreen::redrawActiveTiles() {
 					}
 				}
 			}
+
+			
 
 			//Advance cursor for next character
 			cursor[0] += this->charW;
@@ -340,6 +342,8 @@ void MapScreen::updateMap() {
 
 					sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 
+					SDL_SetTextureColorMod(this->screenFont->fontTexture,255,255,255);
+
 					switch(generic->type) {
 						case OBJ_PROJECTILE:
 							charSize = static_cast<Projectile*>(generic)->displaySize;
@@ -353,6 +357,8 @@ void MapScreen::updateMap() {
 							break;
 					}
 				}
+				
+				SDL_SetTextureColorMod(this->screenFont->fontTexture,200,200,200);
 
 			//Advance cursor for next character
 			cursor[0] += this->charW;
@@ -388,8 +394,7 @@ void TextBox::prepareContent() {
 
 std::string TextBox::getContent() {
 	std::string newContent = 
-		"Player:"+TBAGame->playerChar->inventory->toString();
-		//"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo();
+		TBAGame->playerChar->getName()+":"+TBAGame->playerChar->inventory->toString();
 
 		//Draw display target info
 		/*if(TBAGame->playerChar->hasTarget()) {

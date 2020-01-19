@@ -30,6 +30,8 @@ struct Game {
 
 	World* gameWorld;
 	Character* playerChar;
+	
+	void setPlayer(Character*);
 
 	//Global movespeed scale to translate from int movespeeds to floats
 	const float moveSpeedUnit = .005;
@@ -78,7 +80,7 @@ struct Game {
 	int timeToNextGraphicsUpdate;
 
 	//Amount of times game game window updates per second
-	int graphicsTickRate = 30;
+	int graphicsTickRate = 60;
 
 	//Amount of times game OBJECTS (NPC's, general game state) update per second
 	int logicTickRate = 30;
@@ -102,14 +104,14 @@ struct Game {
 
 	Game() {}
 	~Game() {
-		debug("Closing game                 ");
+		debug("Closing game");
 		delete this->gameWindow;
 		this->gameObjects.clear();
 		this->gameUIObjects.clear();
 		std::vector<GameObject*>().swap(this->gameObjects);
 		std::vector<GameObject*>().swap(this->gameUIObjects);
-		pthread_join(this->logic_thread,NULL);
-		pthread_join(this->graphics_thread,NULL);
+		// pthread_join(this->logic_thread,NULL);
+		// pthread_join(this->graphics_thread,NULL);
 	}
 
 	void setupUI();

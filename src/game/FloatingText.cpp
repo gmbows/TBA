@@ -82,8 +82,7 @@ void FloatingText::update() {
 		this->location = this->trackSubject->getAbsoluteLocation();
 	} else {
 		//Damage numbers stay in location where they were created and bubble
-		//Dialog is always white with alpha 255
-		SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,this->color.r,this->color.g,this->color.b);
+		
 		this->offsetY = this->heightReached*this->completion;
 		this->offsetX = this->offsetXsign*this->offsetXMult*this->completion;
 		this->location = {
@@ -91,9 +90,8 @@ void FloatingText::update() {
 			TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y - this->defaultY))
 		};
 	}
-	//SDL_SetTextureAlphaMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,200);
+	SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,this->color.r,this->color.g,this->color.b);
 	this->drawContent();
-	//Reset text screen font to default
-	SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,255,255,255);
-	//SDL_SetTextureAlphaMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,200);
+	SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,180,180,180);
+
 }

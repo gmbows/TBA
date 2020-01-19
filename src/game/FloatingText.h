@@ -32,7 +32,7 @@ struct FloatingText: public GameObject {
 	bool tracking = false;
 
 	//Damage numbers
-	FloatingText(int _duration,const std::vector<std::string>& _message,std::tuple<float,float> _location,SDL_Colour _color = {200,200,200,255}):
+	FloatingText(int _duration,const std::vector<std::string>& _message,std::tuple<float,float> _location,SDL_Colour _color):
 		duration(_duration), message(_message), location(_location), color(_color), GameObject(UI_FLOATINGTEXT) {
 		this->dialogOffset = 5;
 		this->offsetXMult = rand()%16;
@@ -48,6 +48,7 @@ struct FloatingText: public GameObject {
 		decompose(this->location,this->defaultX,this->defaultY);
 		this->tracking = true;
 		this->created = TBAGame->logicTicks;
+		this->color = {200,200,200,255};
 	}
 
 	bool hasExpired() {

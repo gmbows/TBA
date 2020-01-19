@@ -146,7 +146,6 @@ class Character: public GameObject {
 		float maxMoveSpeed;
 
 		float traction;
-		std::tuple<int,int> direction;
 
 		void setLocation(float,float);
 		void setLocomotion();
@@ -155,7 +154,7 @@ class Character: public GameObject {
 		void turn();
 		void resolveMove(float&, float&);
 		void moveTo(Character*);
-		void moveAway(std::tuple<float,float>);
+		void moveAway(Character*);
 
 		//========
 		//BEHAVIOR
@@ -184,7 +183,7 @@ class Character: public GameObject {
 			return (dist(this->getLocation(),c1->getLocation()) < dist(this->getLocation(),c2->getLocation()))? c1 : c2;
 
 		}
-		void lookAt(Character*);
+		void setTargetAngle(Character*);
 
 		//Status
 		void setStatus(statusIndicator);

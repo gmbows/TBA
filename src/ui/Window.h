@@ -45,14 +45,15 @@ class Window {
 		//Constructor + Destructor
 		Window(int,int);
 		~Window() {
+			debug("Cleaning up game window...");
 			SDL_DestroyRenderer(this->renderer);
 			SDL_DestroyWindow(this->window);
-			delete textScreen;
-			delete mapScreen;
-			delete mapPanel;
-			delete auxScreen;
-			// delete popupBox;
-			delete this->windowLog;
+			delete this->textScreen;
+			delete this->mapScreen;
+			// delete this->mapPanel;
+			// delete this->auxScreen;
+			// delete this->windowLog;
+			debug("Done cleaning up game window.");
 		}
 
 		//Basic screen functions

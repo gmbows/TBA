@@ -84,9 +84,6 @@ void Character::move() {
 	if(this->velocity == 0) return;
 
 	
-	///Tile* thisTile;
-
-	//debug(xProx);
 	
 	//If character is trying to move into a new space
 	this->resolveMove(newX,newY);
@@ -96,18 +93,11 @@ void Character::move() {
 	this->x = newX;
 	this->y = newY;
 
-	//Resistance
-
+	//Velocity decay
 	this->velocity *= .9;
 
 	this->lastMove = TBAGame->logicTicks;
 
-	//if(this->velocityX == 0) {this->setStatus(STATUS_IDLE);}
-	//if(this->velocityY == 0) {this->setStatus(STATUS_IDLE);}
-	
-
-	//this->velocityX = (std::fabs(this->velocityX) < TBAGame->moveSpeedUnit)? 0 : this->velocityX;
-	//this->velocityY = (std::fabs(this->velocityY) < TBAGame->moveSpeedUnit)? 0 : this->velocityY;
 }
 
 //===================
@@ -200,9 +190,9 @@ std::string Character::getStatusString() {
 std::string Character::getInfo() {
 	
 	std::string info = " \n\n Name:\t"+this->name + "\n" +
-				"\tStatus:"+this->getStatusString() + "\n" ;//+
+				"\tStatus:"+this->getStatusString() + "\n" ;
 				// "\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
-				// "\tTarget Angle:"+std::to_string(this->targetAng) + "\n" +
+				// "\tTarget Angle:"+std::to_string(this->targetAng) + "\n" ;
 				// "\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
 				if(this->hasTarget()) {
 					info += "\tTarget:\t"+this->getTargetName() + "\n";
@@ -215,7 +205,8 @@ std::string Character::getInfo() {
 
 void Character::kill() {
 	if(this->health > 0) { this->health = 0;}
-	// this->direction = {0,0};
+	this->move_forward = false;
+	this->move_back = false;
 	//a warrior's death
 	//this->target = nullptr;
 	this->setStatus(STATUS_DEAD);

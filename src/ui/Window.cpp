@@ -39,14 +39,21 @@ Window::Window(int w,int h) {
 }
 
 void Window::generateScreenFontTextures() {
-
+	
+	
 	this->mapScreen->screenFont->generateFontTexture(this->window,this->renderer);
-	// this->popupBox->screenFont->generateFontTexture(this->window,this->renderer);
 
-	SDL_SetTextureAlphaMod(this->mapScreen->screenFont->fontTexture,255);
+	// this->popupBox->screenFont->generateFontTexture(this->window,this->renderer);
+	
+	//=================================
+	//!!!!!SET ACTIVE TILE COLOR/ALPHA HERE !!!!!
+	//=================================
+	SDL_SetTextureColorMod(this->mapScreen->screenFont->fontTexture,200,200,200);
 
 	for(int i=0;i<this->screenVector.size();i++) {
 		screenVector.at(i)->screenFont->generateFontTexture(this->window,this->renderer);
+		// SDL_SetTextureAlphaMod(screenVector.at(i)->screenFont->fontTexture,200);
+		SDL_SetTextureColorMod(this->screenVector.at(i)->screenFont->fontTexture,180,180,180);
 	}	
 }
 

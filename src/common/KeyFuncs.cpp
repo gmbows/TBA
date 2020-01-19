@@ -125,13 +125,13 @@ void click(SDL_MouseButtonEvent& event) {
 			TBAGame->displayTarget = testTarget;
 		}
 	} else {
-		pthread_mutex_lock(&TBAGame->updateLock);
+		// pthread_mutex_lock(&TBAGame->updateLock);
 		if(thisTile->hasBlocks()) {
 			thisTile->blocks.clear();
 		} else {
 			thisTile->addBlock(4);
 		}
-		pthread_mutex_unlock(&TBAGame->updateLock);
+		// pthread_mutex_unlock(&TBAGame->updateLock);
 	}
 
 }
@@ -139,6 +139,8 @@ void click(SDL_MouseButtonEvent& event) {
 void release() {
 	moving = false;
 }
+
+
 
 //==========
 //	  SCREEN
@@ -152,6 +154,14 @@ void move(SDL_Event& event) {
 	}
 	lastMove[0] = event.motion.x;
 	lastMove[1] = event.motion.y;
+	
+	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
+	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
+
+	int tileX = std::round(((float)(event.motion.x-centerX))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+	int tileY = std::round(((float)(event.motion.y-centerY))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+
+
 }
 
 int getTopScreen(int x,int y) {
@@ -165,7 +175,7 @@ int getTopScreen(int x,int y) {
 }
 
 void shiftContentWindow(int i) {
-
+	
 	//Get the topmost screen that the mouse is hovering over and scroll it
 	int topScreenID = getTopScreen(lastMove[0],lastMove[1]);
 	if(topScreenID < 0) return;
@@ -212,12 +222,13 @@ void turn(bool turn_left,bool turn_right) {
 
 		if(turn_left) {
 			TBAGame->playerChar->autoMove = false;
-			TBAGame->playerChar->viewAng -= 4;
+			TBAGame->playerChar->viewAng -= 2;
+			if(TBAGame->playerChar->viewAng < 0) TBAGame->playerChar->viewAng = 360+TBAGame->playerChar->viewAng;
 			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
 		}
 		if(turn_right) {
 			TBAGame->playerChar->autoMove = false;
-			TBAGame->playerChar->viewAng += 4;
+			TBAGame->playerChar->viewAng += 2;
 			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
 		}
 }
@@ -277,8 +288,10 @@ void debugKey() {
 	}
 
 	// static_cast<Character*>(TBAGame->displayTarget)->setTarget(TBAGame->playerChar);
+	
+	TBAGame->setPlayer(static_cast<Character*>(TBAGame->displayTarget));
 
-	TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(3000),false);
+	TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(5000),false);
 
 	// TBAGame->gameWindow->popupBox->setToggledContent("Paused");
 	// TBAGame->gameWindow->popupBox->toggled = true;

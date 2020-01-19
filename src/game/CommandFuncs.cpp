@@ -360,7 +360,7 @@ std::string examineFunc(Command* command, const std::vector<std::string> &args) 
 		std::string surface = "\nStanding on "+TBAGame->playerChar->location->getName();
 		std::vector<Character*> nearbyChars = TBAGame->playerChar->getCharactersInRadius();
 		std::vector<GameObject*> nearbyObjs = TBAGame->playerChar->getObjectsInRadius(OBJ_GENERIC);
-		if(nearbyChars.size() == 0 and nearbyChars.size() == 0) return surface;
+		if(nearbyChars.size() == 0 and nearbyObjs.size() == 0) return surface;
 		surface += "\nNearby:";
 		for(int i=0;i<nearbyChars.size();i++) {
 			surface += "\n-"+nearbyChars.at(i)->getName();

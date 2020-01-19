@@ -25,7 +25,8 @@ Screen::Screen(int x, int y, int w, int h, bool border) {
 	screenFont = new Font("terminal");
 
 	this->bdRect = {this->x,this->y,this->w,this->h};
-
+	
+	
 }
 
 TextScreen::TextScreen(int x, int y, int w, int h, bool border) {
@@ -147,7 +148,7 @@ MapScreen::MapScreen(int x, int y, int w, int h, bool border) {
 	this->screenCharHeight = this->h/this->charH;
 	
 	screenFont = new Font("map_tileset");
-	
+		
 	this->bdRect = {this->x,this->y,this->w,this->h};
 	this->mapTextureRect = {this->x+1,this->y+1,this->w+(2*this->charW),this->h+(2*this->charH)};
 

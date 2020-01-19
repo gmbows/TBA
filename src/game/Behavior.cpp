@@ -42,7 +42,7 @@ void Character::setTarget(GameObject *o) {
 	this->resetCombatTimer();
 	this->target = o;
 	if(o != nullptr and !this->isPlayer) {
-		this->lookAt(this->getCharTarget());
+		this->setTargetAngle(this->getCharTarget());
 	}	
 }
 
@@ -57,7 +57,6 @@ GameObject* Character::getTarget()  {
 void Character::addStatus(statusIndicator newStatus) {
 	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
 		// Character must be stationary to enter combat
-		// this->direction = {0,0};
 		this->removeStatus(STATUS_MOVE);
 		this->resetCombatTimer();
 	}
@@ -170,7 +169,8 @@ GameObject* Character::findObjectInRadius(const std::string &_name) {
 	return nullptr;
 }
 
-void Character::lookAt(Character *c) {
+void Character::setTargetAngle(Character *c) {
+	//Sets target view angle to aim at target
 	int newAng = atan2(c->y-this->y,c->x-this->x)*CONV_RADIANS;
 	if(newAng < 0) newAng = 360+newAng;
 	this->targetAng = newAng;
@@ -256,14 +256,21 @@ bool Character::combatRetarget() {
 }
 
 void Character::moveTo(Character *c) {
-	this->lookAt(c);
-	if(fabs(this->viewAng - this->targetAng) <= this->defaultFOV) this->move_forward = true;
+	//Set target angle to aim at c
+	this->setTargetAngle(c);
+	
+	if(fabs(this->viewAng - this->targetAng) <= this->defaultFOV/2) {
+		this->move_forward = true;
+	} else {
+		this->move_forward = false;
+	}
 }
 
-void Character::moveAway(std::tuple<float,float> location) {
-    int x = (this->x > this->getCharTarget()->x)? 1 : -1;
-    int y = (this->y > this->getCharTarget()->y)? -1 : 1;
-    // this->direction = {x,y};
+void Character::moveAway(Character *c) {
+	
+	this->setTargetAngle(c);
+	this->targetAng = ((int)this->targetAng+180)%360;
+	this->move_forward = true;
 }
 
 //==========
@@ -272,15 +279,24 @@ void Character::moveAway(std::tuple<float,float> location) {
 
 void Character::turn() {
 	if(this->isPlayer and !this->autoMove) return;
-	//if(this->isPlayer) std::cout << std::to_string(this->viewAng)+" "+std::to_string(this->targetAng)+"\r" << std::flush;
 	if((fabs(this->viewAng - this->targetAng)) > this->getTurnSpeed()) {
-
-		//Get sign of shortest angle
-		int sign = this->targetAng - this->viewAng;
-		sign = (sign+180)%360 - 180;
-
-		//Move aim towards target angle
-		this->viewAng += this->getTurnSpeed()*((sign > 0)? 1:-1);
+		
+		int sign;
+		if(this->targetAng > this->viewAng) {
+			if( (360 - this->targetAng + this->viewAng) < this->targetAng-this->viewAng) {
+				sign = -1;
+			} else {
+				sign = 1;
+			}
+		} else {
+			if( (360 - this->viewAng + this->targetAng) < this->viewAng-this->targetAng) {
+				sign = 1;
+			} else {
+				sign = -1;
+			}
+		}
+		
+		this->viewAng += this->getTurnSpeed()*sign;
 
 	} else {
 		//If aim is close enough just set to target angle
@@ -301,7 +317,7 @@ void Character::setLocomotion() {
 			if(this->hasStatus(STATUS_PURSUE)) {
 				this->moveTo(this->getCharTarget());
 			} else if(this->hasStatus(STATUS_ESCAPE)) {
-				this->moveAway({this->getCharTarget()->x,this->getCharTarget()->y});
+				this->moveAway(this->getCharTarget());
 			}
 		}
 	}
@@ -329,7 +345,6 @@ void Character::combat() {
 			this->removeStatus(STATUS_COMBAT);
 			return;
 		}
-		//this->Status(STATUS_IDLE);
 	}
 
 	//============================
@@ -339,9 +354,11 @@ void Character::combat() {
 	if(!this->targetInRange()) {
 		if(this->isPlayer) {
 			//If target is out of range, treat as if character is not in combat
+			// Resetting combat timer here prevents "Running attacks"
+			// (Attacking immediately after entering combat range with pursuit target)
+			// Provides a 1-hit advantage for combat-initiators
+			
 			//this->resetCombatTimer();
-			//TBAGame->displayText("\nTarget out of range");
-			//TBAGame->popupText(.5,"Distance from target: "+std::to_string(2*dist(this->getLocation(),this->getCharTarget()->getLocation()))+"m");
 		} else {
 			// If NPC's target is out of its range, move towards it 
 			this->addStatus(STATUS_PURSUE);
@@ -363,8 +380,6 @@ void Character::combat() {
 	//====================
 	
 	//Stop moving to prepare attack
-	// this->direction = {0,0};
-
 	//Failsafe: If character enters preparation phase while attack is ready, reset attack timer to weapon swing time
 
 	switch(this->getAttackStatus()) {
@@ -398,12 +413,13 @@ void Character::resetCombatTimer() {
 
 attackStatus Character::getAttackStatus() {
 	
+	//Attack rate needs to be weapon/stat dependant
 	if(TBAGame->logicTicks >= this->lastAttack + this->attackRate + this->defaultAttackSpeed) {
 		return ATK_COMPLETE;
 	} else if(TBAGame->logicTicks >= this->lastAttack + this->attackRate) {
 		return ATK_STATUS_ATTACKING;
 	}
-	return ATK_NOT_READY;//(TBAGame->logicTicks >= this->lastAttack + this->attackRate);
+	return ATK_NOT_READY;
 }
 
 itemType Character::getAttackType() {
@@ -529,27 +545,34 @@ void Character::say(const std::string& message) {
 void Character::update() {
 
 	if(!this->isAlive()) {
+		//safeguard against zombies
 		if(!this->hasStatus(STATUS_DEAD)) {
 			this->kill();
 		}
-		return;
 	}
 
-	//Perform status-based action
+	//Perform status-actions
+	
 	if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_MOVE | STATUS_PURSUE)) {
 		this->combat();
 	}
+	
 	if(this->hasStatus(STATUS_PURSUE)) {
+		//Pursuing target until target is in range
+		// At which point we begin combat
 		if(this->targetInRange()) {
-			//this->addStatus(STATUS_COMBAT);
 			this->removeStatus(STATUS_PURSUE);
 			this->move_forward = false;	
 		}
-		this->setLocomotion();
 	}
-	if(this->hasStatus(STATUS_MOVE)) {
-		this->setLocomotion();
-	}
+	
+	// if(this->hasStatus(STATUS_MOVE | STATUS_ESCAPE | STATUS_PURSUE)) {
+		// this->setLocomotion();
+	// }
+
+	//Set movement-based status-actions
+	this->setLocomotion();
+
 	/*
 	switch(this->getStatus()) {
 		case STATUS_DEAD:
@@ -577,6 +600,6 @@ void Character::update() {
 	*/
 	//Physics
 	this->move();
-	this->turn();
+	if(this->viewAng != this->targetAng) this->turn();
 
 }

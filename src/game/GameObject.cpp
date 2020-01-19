@@ -34,6 +34,7 @@ Inventory* GameObject::getInventory() {
 		case OBJ_CONTAINER:
 			return static_cast<Container*>(this)->inventory;
 	}
+	return nullptr;
 }
 
 std::string GameObject::getInvString() {

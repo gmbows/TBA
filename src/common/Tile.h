@@ -28,6 +28,8 @@ struct Tile {
 
 	bool needsUpdate = false;
 	
+	bool highlight = false;
+	
 	//How fast character speed decays
 	float roughness;
 

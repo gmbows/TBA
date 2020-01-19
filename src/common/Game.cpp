@@ -64,7 +64,6 @@ void Game::setupUI() {
 	this->gameWindow->textScreen = textScreen;
 	this->gameWindow->mapScreen = mapScreen;
 	this->gameWindow->auxScreen = auxScreen;
-	// this->gameWindow->popupBox = popupBox;
 	this->gameWindow->mapPanel = new Panel();
 
 	mapScreen->mapTexture = SDL_CreateTexture(this->gameWindow->renderer,
@@ -75,7 +74,6 @@ void Game::setupUI() {
 
 	textScreen->init_texture();
 	auxScreen->init_texture();
-	// popupBox->init_texture();
 
 	//Map panel to obscure mapscreen overlap
 	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
@@ -153,7 +151,7 @@ void Game::setupGame() {
 	this->gameWorld->genWorld_new(this->gameWindow->renderer);
 
 	//Create player and fill inventory with generic items
-	new Character(true,160,"Player",0,0);
+	this->playerChar = new Character(true,160,"Player",0,0);
 	for(int i=0;i<100;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
@@ -240,6 +238,12 @@ void Game::removeUIObject(GameObject* o) {
 //		MISC
 //=============
 
+void Game::setPlayer(Character *c) {
+	this->playerChar->isPlayer = false;
+	this->playerChar = c;
+	this->playerChar->isPlayer = true;
+}
+
 bool Game::togglePause() {
 	this->paused = !this->paused;
 	if(this->paused) {
@@ -308,7 +312,7 @@ void graphics_thread_routine(Game *game) {
 }	
 
 void Game::spawn_threads() {
-	if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
+	// if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
 	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 }
 
@@ -329,19 +333,19 @@ void Game::update_logic() {
 
 	//Suspend logic ticks if game is paused
 	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
-			//Update all active game objects
+	//Update all active game objects
 	this->lastLogicUpdate = SDL_GetTicks();
-	int start = SDL_GetTicks();
+	// int start = SDL_GetTicks();
 	this->updateGameObjects();
 	this->logicTicks++;
 	// debug("Done updating graphics");
-	int elapsed = SDL_GetTicks()-start;
+	// int elapsed = SDL_GetTicks()-start;
 	
 	// pthread_mutex_unlock(&game->updateLock);
 
-	int real_wait = (1000/this->logicTickRate)-elapsed;
-	if(real_wait <= 0) debug("Falling behind! (logic)");
-	SDL_Delay(real_wait);
+	// int real_wait = (1000/this->logicTickRate)-elapsed;
+	// if(real_wait <= 0) debug("Falling behind! (logic)");
+	// SDL_Delay(real_wait);
 	
 	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
 	//	}
@@ -362,7 +366,7 @@ void Game::update_graphics() {
 
 	int real_wait = (1000/this->graphicsTickRate)-elapsed;
 	if(real_wait <= 0) debug("Falling behind! (graphics)");
-	// SDL_Delay(real_wait);
+	SDL_Delay(real_wait);
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}
 
@@ -375,7 +379,7 @@ void Game::update() {
 	//Keyboard input delay
 	// logic_thread_routine(this);
 	// graphics_thread_routine(this);
-	if(!this->paused) this->update_logic();
+	// if(!this->paused) this->update_logic();
 	this->update_graphics();
 	// SDL_Delay(1000/30);
 
