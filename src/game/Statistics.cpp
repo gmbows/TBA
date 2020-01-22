@@ -18,7 +18,7 @@ void Character::init_stats() {
 	this->maxHealth = 10;
 	this->health = this->maxHealth;
 
-	//In format 
+	//In format
 	this->defaultAttackRange = .5;
 	this->defaultMoveSpeed = 2;
 	

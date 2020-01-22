@@ -49,7 +49,7 @@ void Game::setupUI() {
 	TextScreen *textScreen = new TextScreen(borderSize,borderSize,tScreenW,tScreenH,true);
 	MapScreen *mapScreen = new MapScreen((borderSize*2)+tScreenW,borderSize,mapScreenS,mapScreenS,true);
 	TextBox *auxScreen = new TextBox((borderSize*3)+tScreenW+mapScreenS,borderSize,tScreenW,tScreenH,true);
-	DynamicTextBox *popupBox = new DynamicTextBox("Cannot place building here",mapScreen->x+(mapScreenS/2),borderSize+(borderSize/2)+mapScreenS);
+	 // DynamicTextBox *popupBox = new DynamicTextBox("Cannot place building here",mapScreen->x+(mapScreenS/2),borderSize+(borderSize/2)+mapScreenS);
 	gameLog->writeln("Screen objects initialized");
 
 	this->gameWindow = new Window((borderSize*4)+tScreenW*2+mapScreenS,600);
@@ -64,7 +64,6 @@ void Game::setupUI() {
 	this->gameWindow->textScreen = textScreen;
 	this->gameWindow->mapScreen = mapScreen;
 	this->gameWindow->auxScreen = auxScreen;
-	this->gameWindow->popupBox = popupBox;
 	this->gameWindow->mapPanel = new Panel();
 
 	mapScreen->mapTexture = SDL_CreateTexture(this->gameWindow->renderer,
@@ -152,7 +151,7 @@ void Game::setupGame() {
 	this->gameWorld->genWorld_new(this->gameWindow->renderer);
 
 	//Create player and fill inventory with generic items
-	new Character(true,160,"Player",0,0);
+	this->playerChar = new Character(true,160,"Player",0,0);
 	for(int i=0;i<100;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
@@ -161,7 +160,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<100;i++) {
+	for(int i=0;i<0;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -169,12 +168,13 @@ void Game::setupGame() {
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	newChar = new Character(false,160,"Debug Looter",-1,3);
-	LB = new Character(false,160,"Lost Bladesman",0,3);
+	newChar = new Character(false,160,"Debug Trader",-1,3);
+	LB = new Character(false,160,"Lost Bladesman",0,6);
 	Dog = new Character(false,160,"Wolf",5,5);
-	Dog->equipment->primary = new Item(4);
+	//Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
+	Dog->turnSpeed = playerChar->turnSpeed*2;
 	//newChar->lookAt(LB);
 	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
@@ -184,8 +184,8 @@ void Game::setupGame() {
 	//newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
-	this->gameWorld->createStructure({0,0}, house, 4);
-	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+	this->gameWorld->createStructure({0,0}, bighouse, 4);
+	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 }
 
 //=======================
@@ -238,13 +238,21 @@ void Game::removeUIObject(GameObject* o) {
 //		MISC
 //=============
 
+void Game::setPlayer(Character *c) {
+	this->playerChar->isPlayer = false;
+	this->playerChar = c;
+	this->playerChar->isPlayer = true;
+}
+
 bool Game::togglePause() {
 	this->paused = !this->paused;
 	if(this->paused) {
-		this->gameWindow->popupBox->setToggledContent("Paused");
-		this->gameWindow->popupBox->toggled = true;
+		TBAGame->gameWindow->createPopup("Paused",10,true);
+		// this->gameWindow->popupBox->setToggledContent("Paused");
+		// this->gameWindow->popupBox->toggled = true;
 	} else {
-		this->gameWindow->popupBox->toggled = false;
+		// this->gameWindow->popupBox->toggled = false;
+		TBAGame->gameWindow->deleteFirstToggledPopup();
 	}
 	return this->paused;
 }
@@ -252,7 +260,7 @@ bool Game::togglePause() {
 void Game::popupText(int duration, const std::string& message) {
 
 	//Duration in seconds
-	this->gameWindow->popupBox->addMessage(duration*1000,message);
+	// this->gameWindow->popupBox->addMessage(duration*1000,message);
 
 }
 
@@ -270,7 +278,7 @@ void logic_thread_routine(Game *game) {
 		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
 		start = SDL_GetTicks();
-		game->update_logic();
+		if(!game->paused) game->update_logic();
 		// debug("Done updating logic");
 		elapsed = SDL_GetTicks()-start;
 
@@ -304,7 +312,7 @@ void graphics_thread_routine(Game *game) {
 }	
 
 void Game::spawn_threads() {
-	if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
+	// if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
 	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 }
 
@@ -324,24 +332,41 @@ void Game::updateGameUIObjects() {
 void Game::update_logic() {
 
 	//Suspend logic ticks if game is paused
-	if(!this->paused) {
 	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
-			//Update all active game objects
-			this->lastLogicUpdate = SDL_GetTicks();
-			this->updateGameObjects();
-			this->logicTicks++;
-			//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+	//Update all active game objects
+	this->lastLogicUpdate = SDL_GetTicks();
+	// int start = SDL_GetTicks();
+	this->updateGameObjects();
+	this->logicTicks++;
+	// debug("Done updating graphics");
+	// int elapsed = SDL_GetTicks()-start;
+	
+	// pthread_mutex_unlock(&game->updateLock);
+
+	// int real_wait = (1000/this->logicTickRate)-elapsed;
+	// if(real_wait <= 0) debug("Falling behind! (logic)");
+	// SDL_Delay(real_wait);
+	
+	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
 	//	}
-	}
+	
 
 }
 
 void Game::update_graphics() {
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
-		this->lastGraphicsUpdate = SDL_GetTicks();
-		this->gameWindow->update(this->debugMode);
-		this->graphicsTicks++;
+	int start = SDL_GetTicks();
+	this->gameWindow->update(this->debugMode);
+	this->graphicsTicks++;
+	// debug("Done updating graphics");
+	int elapsed = SDL_GetTicks()-start;
+	
+	// pthread_mutex_unlock(&game->updateLock);
+
+	int real_wait = (1000/this->graphicsTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (graphics)");
+	SDL_Delay(real_wait);
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}
 
@@ -352,6 +377,10 @@ void Game::update() {
 	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
 
 	//Keyboard input delay
-	SDL_Delay(1000/30);
+	// logic_thread_routine(this);
+	// graphics_thread_routine(this);
+	// if(!this->paused) this->update_logic();
+	this->update_graphics();
+	// SDL_Delay(1000/30);
 
 }

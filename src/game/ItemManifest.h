@@ -20,6 +20,7 @@ enum itemType: flag {
 	I_EQUIPMENT =		1 << 4,
 	I_WEAPON_MELEE =	1 << 5,
 	I_WEAPON_SWORD =	1 << 6,
+	
 	I_WEAPON_RANGED =	1 << 7,
 	I_WEAPON_BOW =		1 << 8,
 	
@@ -77,6 +78,9 @@ enum itemAttribute {
 	ATTRIB_DAMAGE,
 	ATTRIB_RANGE,
 	ATTRIB_DEFENSE,
+	ATTRIB_CROP_GROWTH_TIME,
+	ATTRIB_CROP_YIELD_ID,
+	ATTRIB_CROP_YIELD_AMOUNT,
 };
 
 extern std::map<itemType,std::vector<itemAttribute>> attributeLookup;

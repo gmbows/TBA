@@ -86,3 +86,7 @@
 	//Help
 	std::string helpFunc(Command*, const std::vector<std::string>&);
 	bool helpEC(Command*, const std::vector<std::string>&);
+
+	//Plant
+	std::string plantFunc(Command*, const std::vector<std::string>&);
+	bool plantEC(Command*, const std::vector<std::string>&);

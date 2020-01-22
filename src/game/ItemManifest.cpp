@@ -2,9 +2,15 @@
 
 std::map<itemType,std::vector<itemAttribute>> attributeLookup {
 
-	{I_WEAPON,{ATTRIB_DAMAGE,ATTRIB_RANGE}},
+	{I_WEAPON,{	ATTRIB_DAMAGE,
+							ATTRIB_RANGE}},
+							
 	{I_ARMOR,{ATTRIB_DEFENSE}},
+	
 	{I_FOOD,{}},
+	{I_PLANTABLE,{	ATTRIB_CROP_GROWTH_TIME,
+								ATTRIB_CROP_YIELD_ID,
+								ATTRIB_CROP_YIELD_AMOUNT,}},
 	{I_CRAFTING,{}},
 	{I_CONTAINER,{}},
 
@@ -17,6 +23,8 @@ std::vector<itemTraits> itemManifest = {
 		//name,weight,size, types...,{Attribute values if applicable}
 	{"ITEM_INVALID","ITEM_DESC_INVALID",0,0,I_END,{}},
 	{"Apple","A shiny red apple.", 1,4,I_FOOD | I_FRUIT | I_INGREDIENT | I_PLANTABLE,{}},
+	{"Wheat","A bundle of dry, golden, wheat", 1,4,I_FOOD | I_FRUIT | I_INGREDIENT,{}},
+	{"Wheat Seed","A handful of small wheat seeds.", 1,4, I_INGREDIENT | I_PLANTABLE,{100,2,3}},
 	{"Copper Coin","A scuffed, bent, copper coin. It a building printed on it.", 1,4,I_CURRENCY | I_METAL,{}},
 	{"Iron Ore","A smooth looking grey rock. Quite heavy.", 3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
 	{"Iron Arrow","A wood-shafted arrow with an iron tip. Could probably do some damage.",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},

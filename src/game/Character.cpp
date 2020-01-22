@@ -47,20 +47,23 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 //==========
 
 void Character::resolveMove(float &newX, float &newY) {
-	if(newX >= TBAGame->gameWorld->size) {
+	if(newX+this->width >= TBAGame->gameWorld->size) {
 		newX = this->x;
 	}
-	if(newY >= TBAGame->gameWorld->size) {
+	if(newY+this->width >= TBAGame->gameWorld->size) {
 		newY = this->y;
 	}
-	Tile *testLocY = TBAGame->gameWorld->getTileAt(this->x,newY);
-	Tile *testLocX = TBAGame->gameWorld->getTileAt(newX,this->y);
-	if(!testLocY->isPassable()) {
+	bool YP = TBAGame->gameWorld->getTileAt(this->x,newY+this->width)->isPassable();
+	bool YN = TBAGame->gameWorld->getTileAt(this->x,newY-this->width)->isPassable();
+	bool XP = TBAGame->gameWorld->getTileAt(newX+this->width,this->y)->isPassable();
+	bool XN = TBAGame->gameWorld->getTileAt(newX-this->width,this->y)->isPassable();
+	if(!(YP & YN)) {
 		newY = this->y;
 	}
-	if(!testLocX->isPassable()) {
+	if(!(XP & XN)) {
 		newX = this->x;
 	}
+
 }
 
 void Character::setLocation(float newX,float newY) {
@@ -81,10 +84,6 @@ void Character::move() {
 		if(this->move_back) this->velocity -= this->maxMoveSpeed;
 	}
 
-	if(this->velocity == 0) return;
-
-	
-	
 	//If character is trying to move into a new space
 	this->resolveMove(newX,newY);
 
@@ -95,6 +94,8 @@ void Character::move() {
 
 	//Velocity decay
 	this->velocity *= .9;
+	
+	if(this->velocity == 0) this->removeStatus(STATUS_MOVE);
 
 	this->lastMove = TBAGame->logicTicks;
 
@@ -142,6 +143,15 @@ bool Character::equip(Item *item) {
 		} else if(item->hasType(I_ARMOR_FEET)) {
 			this->equipment->feet = item;
 		}
+		return true;
+	}
+	return false;
+}
+
+bool Character::plant(Item *item) {
+	//Item is a weapon, placeholder for secondary equipping
+	if(item->hasType(I_PLANTABLE)) {
+		this->location->planted = true;
 		return true;
 	}
 	return false;
@@ -198,8 +208,12 @@ std::string Character::getInfo() {
 					info += "\tTarget:\t"+this->getTargetName() + "\n";
 				}
 				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
-				info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
-				"\tAttack rate: "+std::to_string(this->attackRate);
+				// info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
+				info += "\tAttack rate: "+std::to_string(this->attackRate) + "\n\n" +
+					"\tHead: "+std::to_string(this->limbs.at(0).getHealth()) + "/" + std::to_string(this->limbs.at(0).maxHealth) + "\n"+
+					"\tBody: "+std::to_string(this->limbs.at(1).getHealth()) + "/" + std::to_string(this->limbs.at(1).maxHealth) + "\n"+
+					"\tArms: "+std::to_string(this->limbs.at(2).getHealth()) + "/" + std::to_string(this->limbs.at(2).maxHealth) + "\n"+
+					"\tLegs: "+std::to_string(this->limbs.at(3).getHealth()) + "/" + std::to_string(this->limbs.at(3).maxHealth);
 	return info;
 }
 

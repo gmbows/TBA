@@ -12,6 +12,10 @@ Debug:
 
 Screen:
 	Map:
+		Presently:
+			Objects, Characters are drawn in real time and the tiles around them are updated
+			The original map tiles are drawn ONCE when the texture is created
+			
 		A single, huge world texture should be created at world generation
 		Moving through world just changes crop window
 		Inactive tiles are not redrawn
@@ -51,6 +55,8 @@ Inventory:
 		-Character attributes determine encumbrance effects but do not change storage capacity
 
 Character:
+	Presently:
+		Turn radius and ALL key interactions are dependant on graphic update delay
 	Behavior:
 		Setting status to idle while direction is nonzero means velocity will not decay
 		Setting status to idle must set direction to zero

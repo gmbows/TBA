@@ -11,6 +11,8 @@ struct Tile;
 #include "Statistics.h"
 #include "GameObject.h"
 
+#include "Limb.h"
+
 #include <string>
 #include <tuple>
 #include <map>
@@ -20,18 +22,18 @@ typedef unsigned int flag;
 class GameObject;
 
 enum statusIndicator: flag {
-	STATUS_IDLE = 		1 << 0,
-	STATUS_MOVE = 		1 << 1,
-	STATUS_ATTACK = 	1 << 2,
+	STATUS_IDLE = 			1 << 0,
+	STATUS_MOVE = 			1 << 1,
+	STATUS_ATTACK = 		1 << 2,
 	STATUS_COMBAT =		1 << 3,
-	STATUS_PURSUE = 	1 << 4,
-	STATUS_STUN = 		1 << 5,
-	STATUS_ESCAPE = 	1 << 6,
-	STATUS_PATROL = 	1 << 7,
+	STATUS_PURSUE = 		1 << 4,
+	STATUS_STUN = 			1 << 5,
+	STATUS_ESCAPE = 		1 << 6,
+	STATUS_PATROL = 		1 << 7,
 	STATUS_DYING = 		1 << 8,
 	STATUS_CRIPPLED = 	1 << 9,
-	STATUS_DEAD = 		1 << 10,
-	STATUS_END = 		1 << 11,
+	STATUS_DEAD = 			1 << 10,
+	STATUS_END = 			1 << 11,
 };
 
 inline statusIndicator operator|(statusIndicator f1,statusIndicator f2) {
@@ -82,6 +84,20 @@ class Character: public GameObject {
 
 		std::tuple<float,float> getAbsoluteLocation();
 		std::tuple<float,float> getApproximateLocation();
+		
+		//=============
+		//	  		LIMBS
+		//=============
+		
+		std::vector<Limb> limbs = {
+			Limb(100,LIMB_HEAD),
+			Limb(100,LIMB_TORSO),
+			Limb(100,LIMB_ARMS),
+			Limb(100,LIMB_LEGS),
+		};
+		
+		//Checks limb HP and assigns statuses accordingly
+		void checkLimbs();
 
 		//=============
 		//	  INVENTORY
@@ -89,7 +105,6 @@ class Character: public GameObject {
 
 		std::string getInvString();
 		
-
 		//=============
 		//	  EQUIPMENT
 		//=============
@@ -97,6 +112,7 @@ class Character: public GameObject {
 		Equipment *equipment;
 		std::string inline getEquipString() {return this->equipment->getEquipString();}
 		bool equip(Item*);
+		bool plant(Item*);
 
 		//=============
 		//	  	STATS

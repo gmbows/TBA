@@ -208,6 +208,7 @@ void move(bool m_forward,bool m_back) {
 	if(m_forward ^ m_back) {
 		if(TBAGame->playerChar->isAlive()) {
 			TBAGame->playerChar->addStatus(STATUS_MOVE);
+			TBAGame->playerChar->removeStatus(STATUS_IDLE);
 			TBAGame->playerChar->autoMove = false;
 		}
 	}
@@ -280,16 +281,16 @@ void debugKey() {
 	decompose(TBAGame->playerChar->getLocation(),x,y);
 
 	if(!TBAGame->playerChar->hasTarget()) {
-		// new Projectile(TBAGame->playerChar,{x,y},(-15+rand()%31),.02);
+		new Projectile(TBAGame->playerChar,{x+.2,y+.2},TBAGame->playerChar->viewAng*CONV_DEGREES,.5);
 	} else {
 		float tx,ty;
 		decompose(TBAGame->playerChar->target->getLocation(),tx,ty);
-		// new Projectile(TBAGame->playerChar,{x,y},(-15+rand()%31)-atan2(ty-y,tx-x)/(3.1415/180),.02);
+		new Projectile(TBAGame->playerChar,{x,y},(-15+rand()%31)-atan2(ty-y,tx-x)*CONV_DEGREES,.5);
 	}
 
 	// static_cast<Character*>(TBAGame->displayTarget)->setTarget(TBAGame->playerChar);
 	
-	TBAGame->setPlayer(static_cast<Character*>(TBAGame->displayTarget));
+	// TBAGame->setPlayer(static_cast<Character*>(TBAGame->displayTarget));
 
 	TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(5000),false);
 

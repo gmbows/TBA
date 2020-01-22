@@ -1,6 +1,7 @@
 ========
 IDEAS:
 ========
+		Put last damage inflicted on limb next to limb HP
 		Only autocomplete on wildcard chars (*)
 		Characters
 			Width? Right now a character is only one pixel
@@ -64,6 +65,10 @@ KNOWN BUGS:
 ========
  TODO:
 ========
+	Status command:
+		Shows limb status and maybe stat bonuses
+	Projectiles could use some tweaking/cleaning up
+	Turn/Look command
 	Make viewang indicator (now it's just a line)
 	Fix movespeed variations
 	FloatingText:
@@ -98,6 +103,8 @@ KNOWN BUGS:
 ========
   DONE:	
 ========
+	Fleeing/escaping danger
+	Fix movespeed variations
 	Limit NPC rotation speed (currently snaps instantly)
 	Set projectiles to update 3x3 area (they leave trails atm)
 	Screen:

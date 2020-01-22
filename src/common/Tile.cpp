@@ -37,6 +37,7 @@ std::map<int,std::string> tileNameMap {
 	{2,"Tree"},	//Tree
 	{4,"Stone Brick"},	//Stone brick
 	{8,"Chest"},	//Chest
+	{9,"Seeds"},	//Chest
 	
 };
 

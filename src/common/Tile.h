@@ -30,6 +30,8 @@ struct Tile {
 	
 	bool highlight = false;
 	
+	bool planted = false;
+	
 	//How fast character speed decays
 	float roughness;
 

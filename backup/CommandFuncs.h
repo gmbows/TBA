@@ -82,3 +82,7 @@
 	//Examine
 	std::string examineFunc(Command*, const std::vector<std::string>&);
 	bool examineEC(Command*, const std::vector<std::string>&);
+
+	//Help
+	std::string helpFunc(Command*, const std::vector<std::string>&);
+	bool helpEC(Command*, const std::vector<std::string>&);

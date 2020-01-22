@@ -10,6 +10,8 @@
 class Item {
 
 	public:
+	
+		//item index in manifest vector
 		int id;
 		
 		std::string name;

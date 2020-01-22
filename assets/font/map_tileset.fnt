@@ -8,3 +8,4 @@ char id=5    x=86    y=17    width=16    height=16    xoffset=0     yoffset=0   
 char id=6    x=0     y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//NPC
 char id=7    x=17    y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Arrow
 char id=8    x=34    y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Chest
+char id=9    x=34    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Seeds

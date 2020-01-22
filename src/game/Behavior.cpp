@@ -198,7 +198,7 @@ std::vector<Character*> Character::getCharactersInRadius() {
 std::vector<GameObject*> Character::getObjectsInRadius(objType type = OBJ_GENERIC) {
 	//Find and return all objects with type "type" (or all objects if empty)
 	// within small radius of caller (2)
-	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,2); //placeholder
+	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
 	Tile* thisTile;
 
 	bool noFilter = (type == OBJ_GENERIC);
@@ -296,7 +296,8 @@ void Character::turn() {
 			}
 		}
 		
-		this->viewAng += this->getTurnSpeed()*sign;
+		//																			Slow turn speed as viewAng approaches targetAng
+		this->viewAng += this->getTurnSpeed()*sign*((float)360/(360-fabs(this->viewAng-this->targetAng)));
 
 	} else {
 		//If aim is close enough just set to target angle
@@ -317,6 +318,8 @@ void Character::setLocomotion() {
 			if(this->hasStatus(STATUS_PURSUE)) {
 				this->moveTo(this->getCharTarget());
 			} else if(this->hasStatus(STATUS_ESCAPE)) {
+				//Check awareness range here for targets in combat, targeting and moving towards this character
+				//Using this character's target is a shortcut
 				this->moveAway(this->getCharTarget());
 			}
 		}
@@ -445,7 +448,8 @@ void Character::sendAttack(GameObject *target) {
 			float tx,ty;
 			decompose(this->target->getLocation(),tx,ty);
 			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
-			new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
+			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
+			new Projectile(this,this->getLocation(),((-1+rand()%1)+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
 			break;
 		case I_WEAPON_MELEE:
 			// Send to target to be changed based on damage resistance
@@ -488,14 +492,25 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	}
 
 	//Apply damage resistance calculation
-	this->health -= damage;
+	// this->health -= damage;
+	int targetLimb = rand()%101;
+	if(targetLimb >= 87) {
+		this->limbs.at(0).applyDamage(damage);
+	} else if(targetLimb >= 47) {
+		this->limbs.at(1).applyDamage(damage);
+	} else if(targetLimb >= 27) {
+		this->limbs.at(2).applyDamage(damage);
+	}	else {
+		this->limbs.at(3).applyDamage(damage);
+	}
 
+	this->checkLimbs();
 
 	// Apply knockback
-	int magnitude = damage;
-	float directionX = -(this->getCharTarget()->x-this->x);
-	float directionY = this->getCharTarget()->y-this->y;
-	//this->move({magnitude*directionX,magnitude*directionY});
+	// int magnitude = damage;
+	// float directionX = -(this->getCharTarget()->x-this->x);
+	// float directionY = this->getCharTarget()->y-this->y;
+	// this->move({magnitude*directionX,magnitude*directionY});
 
 	//Damage popups
 	if(this->isPlayer) {
@@ -534,6 +549,14 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 
 }
 
+void Character::checkLimbs() {
+	for(int i=0;i<this->limbs.size();i++) {
+		if((float)this->limbs.at(i).getHealth()/this->limbs.at(i).maxHealth <= .5) {
+			this->addStatus(STATUS_CRIPPLED);
+		}
+	}
+}
+
 void Character::say(const std::string& message) {
 	new FloatingText(3,TBAGame->gameWindow->textScreen->prepareCommandForDisplay(message),this->getApproximateLocation(),this);
 }
@@ -549,57 +572,65 @@ void Character::update() {
 		if(!this->hasStatus(STATUS_DEAD)) {
 			this->kill();
 		}
-	}
+	} else {
 
-	//Perform status-actions
-	
-	if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_MOVE | STATUS_PURSUE)) {
-		this->combat();
-	}
-	
-	if(this->hasStatus(STATUS_PURSUE)) {
-		//Pursuing target until target is in range
-		// At which point we begin combat
-		if(this->targetInRange()) {
-			this->removeStatus(STATUS_PURSUE);
-			this->move_forward = false;	
+		//Perform status-actions
+		
+		//Should eventually have more sophisticated criteria for escape
+		if((float)this->health/this->maxHealth <= .5) {
+			this->removeStatus(STATUS_COMBAT | STATUS_PURSUE);
+			this->addStatus(STATUS_ESCAPE);
 		}
+		
+		if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_MOVE | STATUS_PURSUE)) {
+			this->combat();
+		}
+		
+		if(this->hasStatus(STATUS_PURSUE)) {
+			//Pursuing target until target is in range
+			// At which point we begin combat
+			if(this->targetInRange()) {
+				this->removeStatus(STATUS_PURSUE);
+				this->move_forward = false;	
+			}
+		}
+		
+		// if(this->hasStatus(STATUS_MOVE | STATUS_ESCAPE | STATUS_PURSUE)) {
+			// this->setLocomotion();
+		// }
+
+		//Set movement-based status-actions
+		this->setLocomotion();
+
+		/*
+		switch(this->getStatus()) {
+			case STATUS_DEAD:
+				break;
+			case STATUS_IDLE:
+				//Contemplate
+				//this->decideOnNewAction()
+				break;
+			case STATUS_COMBAT:
+			case STATUS_ATTACK:
+				this->combat();
+				break;
+			case STATUS_PURSUE:
+				if(this->targetInRange()) {
+					this->addStatus(STATUS_COMBAT);
+				}
+				this->setLocomotion();
+				break;
+			case STATUS_MOVE:
+				this->setLocomotion();
+				break;
+			case STATUS_ESCAPE:
+				break;
+		}
+		*/
+		if(this->viewAng != this->targetAng) this->turn();
 	}
 	
-	// if(this->hasStatus(STATUS_MOVE | STATUS_ESCAPE | STATUS_PURSUE)) {
-		// this->setLocomotion();
-	// }
-
-	//Set movement-based status-actions
-	this->setLocomotion();
-
-	/*
-	switch(this->getStatus()) {
-		case STATUS_DEAD:
-			break;
-		case STATUS_IDLE:
-			//Contemplate
-			//this->decideOnNewAction()
-			break;
-		case STATUS_COMBAT:
-		case STATUS_ATTACK:
-			this->combat();
-			break;
-		case STATUS_PURSUE:
-			if(this->targetInRange()) {
-				this->addStatus(STATUS_COMBAT);
-			}
-			this->setLocomotion();
-			break;
-		case STATUS_MOVE:
-			this->setLocomotion();
-			break;
-		case STATUS_ESCAPE:
-			break;
-	}
-	*/
 	//Physics
 	this->move();
-	if(this->viewAng != this->targetAng) this->turn();
 
 }

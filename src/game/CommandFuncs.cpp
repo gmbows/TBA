@@ -101,12 +101,13 @@ std::string stopFunc(Command* command, const std::vector<std::string> &args) {
 
 //Help
 std::string helpFunc(Command* command, const std::vector<std::string> &args) {
-	if(args.size() == 0) return "\n"+join('\n',TBAGame->commandStrings);
+	if(args.size() == 0) 
+		return "\n=====================\nFor information type:\n->help <command>\n=====================\n"+join('\n',TBAGame->commandStrings);
 	std::string cmd = join(' ',args);
 	if(helpMap.find(cmd) != helpMap.end()) {
 		return "\nUsage: "+join("\n       ",helpMap.at(cmd).first)+"\n\nFunction: "+join("\n          ",helpMap.at(cmd).second);
 	}
-	return "h";
+	return "No help entry for this command";
 }
 bool helpEC(Command* command, const std::vector<std::string> &args) {
 
@@ -124,8 +125,10 @@ std::string targetFunc(Command* command, const std::vector<std::string> &args) {
 	//if no arguments were provided, find nearest character within 
 	//player char's awareness radius
 	if(args.size() == 0) {
-		if(!TBAGame->playerChar->getNearestTarget()) return "\nNo valid targets found";
-		return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
+		// if(!TBAGame->playerChar->getNearestTarget()) return "\nNo valid targets found";
+		// return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
+		TBAGame->playerChar->setTarget(nullptr);
+		return "\nReset target";
 	}
 
 	//Otherwise, target object specified by aux string set in EC function
@@ -333,7 +336,7 @@ std::string equipFunc(Command* command, const std::vector<std::string> &args) {
 			TBAGame->playerChar->resetCombatTimer();
 			return "\nEquipped "+goodItem->name;
 		}
-		return "\nCan't equip this item";
+		return "\nCan't equip this item ("+goodItem->name+")";
 	} else if(index == -2) {
 		return "";
 	}
@@ -384,3 +387,40 @@ std::string examineFunc(Command* command, const std::vector<std::string> &args) 
 bool examineEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
+
+//Plant
+std::string plantFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	int index = TBAGame->playerChar->inventory->find(itemName);
+	if(index >= 0) {
+		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+		if(TBAGame->playerChar->plant(goodItem)) {
+			return "\nPlanted "+goodItem->name;
+		}
+		return "\nCan't plant this item ("+goodItem->name+")";
+	} else if(index == -2) {
+		return "";
+	}
+	return "\nItem not found";
+}
+bool plantEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+

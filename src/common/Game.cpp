@@ -124,6 +124,7 @@ void Game::setupGame() {
 			new		Command({"equip"},equipFunc,equipEC),
 			new		Command({"debug"},debugFunc),
 			new		Command({"examine"},examineFunc,examineEC),
+			new		Command({"plant"},plantFunc,plantEC),
 			////
 		};
 	
@@ -169,12 +170,12 @@ void Game::setupGame() {
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
 	newChar = new Character(false,160,"Debug Trader",-1,3);
-	LB = new Character(false,160,"Lost Bladesman",0,5);
+	LB = new Character(false,160,"Lost Bladesman",0,6);
 	Dog = new Character(false,160,"Wolf",5,5);
 	//Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	Dog->turnSpeed = playerChar->turnSpeed*1;
+	Dog->turnSpeed = playerChar->turnSpeed*2;
 	//newChar->lookAt(LB);
 	//newChar->setTarget(LB);
 	Dog->setTarget(LB);

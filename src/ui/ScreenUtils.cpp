@@ -185,7 +185,7 @@ void MapScreen::redrawActiveTiles() {
 
 
 			//Update 3x3 area surrounding tiles occupied by characters
-			if(thisTile->isOccupied() or thisTile->hasObjects()) {
+			if(thisTile->isOccupied() or thisTile->hasObjects() or thisTile->planted) {
 				charSize = this->charW;
 				int tcursor[2] = {cursor[0],cursor[1]};
 				for(int k=-1;k<=1;k++) {
@@ -219,7 +219,9 @@ void MapScreen::redrawActiveTiles() {
 						sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 						dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
+						// if(thisTile->planted) SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
 						SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+						// SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
 
 					}
 				}
@@ -310,6 +312,16 @@ void MapScreen::updateMap() {
 					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
 					thisTile->needsUpdate = false;
 				}
+				
+				if(thisTile->planted) {
+					tileID = 9;
+					charInfo = this->screenFont->fontMap.at(tileID);
+					sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+					dRect = {windowOffsetX,windowOffsetY,charSize,this->charW};
+					SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
+					SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
+					SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+				}
 
 				for(int k=0;k<thisTile->occupiers.size();k++) {
 					
@@ -326,6 +338,7 @@ void MapScreen::updateMap() {
 					dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
 					SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
+					//Draw viewAng indicator
 					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+std::cos(occupant->viewAng*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->viewAng*CONV_DEGREES)*10);
 				}
 

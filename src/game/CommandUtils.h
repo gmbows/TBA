@@ -25,8 +25,9 @@ std::map<std::string,std::pair<std::vector<std::string>,std::vector<std::string>
 	{"zoom",{{"zoom","zoom [in]","zoom [out]"},{"Changes or resets screen zoom level"}}},
 	{"say",{{"say [text]"},{"Creates player speech"}}},
 	{"exit",{{"exit"},{"Exits game"}}},
-	{"select",{{"select [object]","select [character]"},{"Selects entity"}}},
+	{"select",{{"select [nearby object]","select [nearby character]"},{"Selects entity"}}},
 	{"target",{{"target [character]"},{"Targets character"}}},
+	{"plant",{{"plant [seed name]","plant [partial seed name]"},{"Plants seed"}}},
 };
 
 int moveItems(int itemCount,Item *goodItem,Inventory *source, Inventory *destination) {
