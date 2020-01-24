@@ -1,0 +1,1530 @@
+src/common/Clock.h:11:		this->ticks = time;
+src/common/Clock.h:15:		this->ticks += time;
+src/common/Clock.h:19:		this->ticks = 0;
+src/common/Game.cpp:28:	this->gameRunning = true;
+src/common/Game.cpp:29:	this->gameLog = new Log("Game.txt");
+src/common/Game.cpp:31:	gameLog->writeln("Beginning game startup\n");
+src/common/Game.cpp:43:	int quadSize = tileW-1;			
+src/common/Game.cpp:48:	gameLog->writeln("Creating window and screen objects...");
+src/common/Game.cpp:52:	 // DynamicTextBox *popupBox = new DynamicTextBox("Cannot place building here",mapScreen->x+(mapScreenS/2),borderSize+(borderSize/2)+mapScreenS);
+src/common/Game.cpp:53:	gameLog->writeln("Screen objects initialized");
+src/common/Game.cpp:55:	this->gameWindow = new Window((borderSize*4)+tScreenW*2+mapScreenS,600);
+src/common/Game.cpp:56:	gameLog->writeln("Window object initialized");
+src/common/Game.cpp:59:	//std::string b = "There ar\n\n\n\n\n\n\n\n\ne few of us who have not sometimes wakened before dawn, either after one of those dreamless nights that make us almost enamored of death, or one of those nights of horror and misshapen joy, when through the chambers of the brain sweep phantoms more terrible than reality itself, and instinct with that vivid life that lurks in all grotesques, and that lends to Gothic art its enduring vitality, this art being, one might fancy, especially the art of those whose minds have been troubled with the malady of reverie. Gradually white fingers creep through the curtains, crawl into the corners of the room, and crouch there. Outside, there is the stirring of birds among the leaves, or the sound of men going forth to their work, or the sigh and sob of the wind coming down from the hill, and wandering round the silent house, as though it feared to wake the sleepers, and yet must needs call forth sleep from her purple cave. Veil after veil of thin dusky gauze is lifted, and by degrees the forms and colors of things are restored to them, and we watch the dawn remaking the world in its antique pattern. The wan mirrors get back their mimic life. The flameless tapers stand where we had them, and beside them lies the half-cut book that we had been studying, or the wired flower that we had worn at the ball, or the letter that we had been afraid to read, or that we had read too often. Nothing seems to us changed. Out of the unreal shadows of the night comes back the real life that we had known. We have to resume it where we had left off, and there steals over us a terrible sense of the necessity for the continuance of energy in the same wearisome round of stereotyped habits, or a wild longing, it may be, that our eyelids might open some morning upon a world in which things would have fresh shapes and colors, and be changed, or have other secrets, a world in which the past would have little or no place, or survive, at any rate, in no conscious form of obligation or regret,\n\n\n\n\n\n\n\n\n\n the remembrance even of joy having its bitterness, and the memories of pleasure their pain.";
+src/common/Game.cpp:61:	//textScreen->addContent("Type ? for a list of commands");
+src/common/Game.cpp:64:	this->gameWindow->textScreen = textScreen;
+src/common/Game.cpp:65:	this->gameWindow->mapScreen = mapScreen;
+src/common/Game.cpp:66:	this->gameWindow->auxScreen = auxScreen;
+src/common/Game.cpp:67:	this->gameWindow->mapPanel = new Panel();
+src/common/Game.cpp:69:	mapScreen->mapTexture = SDL_CreateTexture(this->gameWindow->renderer,
+src/common/Game.cpp:70:                               SDL_GetWindowPixelFormat( this->gameWindow->window),
+src/common/Game.cpp:72:                               mapScreen->w+(2*mapScreen->charW),
+src/common/Game.cpp:73:                               mapScreen->h+(2*mapScreen->charH));
+src/common/Game.cpp:75:	textScreen->init_texture();
+src/common/Game.cpp:76:	auxScreen->init_texture();
+src/common/Game.cpp:79:	SDL_Rect fillTop = {0,0,this->gameWindow->width,borderSize-1};
+src/common/Game.cpp:80:	SDL_Rect fillLeft = {textScreen->x+textScreen->w-6,0,borderSize+5,gameWindow->height};
+src/common/Game.cpp:81:	SDL_Rect fillRight = {mapScreen->x+mapScreenS+2,0,borderSize-3,gameWindow->height};
+src/common/Game.cpp:85:	this->gameWindow->mapPanel->panelVector = {fillTop,fillLeft,fillRight,fillBottom};
+src/common/Game.cpp:88:	this->gameWindow->screenVector = {textScreen,auxScreen};
+src/common/Game.cpp:90:	gameLog->writeln("Window object fully initialized, generating font textures");
+src/common/Game.cpp:92:	this->gameWindow->generateScreenFontTextures();
+src/common/Game.cpp:94:	gameLog->writeln("Font textures generated, game startup complete\n");
+src/common/Game.cpp:100:	//this->maxWaitTime = 1000/std::max(this->logicTickRate,this->graphicsTickRate);
+src/common/Game.cpp:101:	//this->minWaitTime = 1000/std::min(this->logicTickRate,this->graphicsTickRate);
+src/common/Game.cpp:103:	this->commandList = {
+src/common/Game.cpp:132:	for(int i=0;i<this->commandList.size();i++) {
+src/common/Game.cpp:133:		//for(int j=0;j<this->commandList.at(i)->aliases.size();j++) {
+src/common/Game.cpp:134:		this->commandStrings.push_back(this->commandList.at(i)->aliases.at(0));
+src/common/Game.cpp:141:	this->gameWorld = new World(quadSize*2);
+src/common/Game.cpp:143:	gameWorld->worldTexture = SDL_CreateTexture(this->gameWindow->renderer,
+src/common/Game.cpp:144:                               SDL_GetWindowPixelFormat( this->gameWindow->window),
+src/common/Game.cpp:146:                               gameWorld->size*this->gameWindow->mapScreen->charW,
+src/common/Game.cpp:147:                               gameWorld->size*this->gameWindow->mapScreen->charH);
+src/common/Game.cpp:149:	gameWorld->screenFont->generateFontTexture(this->gameWindow->window,this->gameWindow->renderer);
+src/common/Game.cpp:151:	this->gameWorld->genWorld();
+src/common/Game.cpp:152:	this->gameWorld->genWorld_new(this->gameWindow->renderer);
+src/common/Game.cpp:155:	this->playerChar = new Character(true,160,"Player",0,0);
+src/common/Game.cpp:158:		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
+src/common/Game.cpp:160:	this->displayTarget = this->playerChar;
+src/common/Game.cpp:165:		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
+src/common/Game.cpp:166:		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
+src/common/Game.cpp:167:		newChar->setTarget(this->playerChar);
+src/common/Game.cpp:168:		newChar->setStatus(STATUS_COMBAT);
+src/common/Game.cpp:169:		//newChar->setTarget(this->playerChar);
+src/common/Game.cpp:170:		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
+src/common/Game.cpp:172:	newChar = new Character(false,160,"Debug Trader",-1,3);
+src/common/Game.cpp:175:	//Dog->equipment->primary = new Item(4);
+src/common/Game.cpp:176:	LB->equipment->primary = new Item(5);
+src/common/Game.cpp:177:	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
+src/common/Game.cpp:178:	Dog->turnSpeed = playerChar->turnSpeed*2;
+src/common/Game.cpp:179:	//newChar->lookAt(LB);
+src/common/Game.cpp:180:	//newChar->setTarget(LB);
+src/common/Game.cpp:181:	Dog->setTarget(LB);
+src/common/Game.cpp:182:	Dog->setStatus(STATUS_COMBAT);
+src/common/Game.cpp:183:	//newChar->equipment->primary = new Item(4);
+src/common/Game.cpp:184:	//newChar->setTarget(playerChar);
+src/common/Game.cpp:185:	//newChar->setStatus(STATUS_COMBAT);
+src/common/Game.cpp:186:	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
+src/common/Game.cpp:187:	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
+src/common/Game.cpp:188:	this->gameWorld->createStructure({0,0}, bighouse, 4);
+src/common/Game.cpp:189:	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+src/common/Game.cpp:205:		for(int i=0;i<this->gameObjects.size();i++) {
+src/common/Game.cpp:206:		if(this->gameObjects.at(i)->objectID == id) {
+src/common/Game.cpp:207:			return this->gameObjects.at(i);
+src/common/Game.cpp:214:	for(int i=0;i<this->gameObjects.size();i++) {
+src/common/Game.cpp:215:		if(this->gameObjects.at(i)->getName() == name) {
+src/common/Game.cpp:216:			return this->gameObjects.at(i);
+src/common/Game.cpp:223:	int objectIndex = find(o,this->gameObjects);
+src/common/Game.cpp:225:		this->gameObjects.erase(this->gameObjects.begin()+objectIndex);
+src/common/Game.cpp:226:		this->gameObjects.shrink_to_fit();
+src/common/Game.cpp:231:	int objectIndex = find(o,this->gameUIObjects);
+src/common/Game.cpp:233:		this->gameUIObjects.erase(this->gameUIObjects.begin()+objectIndex);
+src/common/Game.cpp:234:		this->gameUIObjects.shrink_to_fit();
+src/common/Game.cpp:243:	this->playerChar->isPlayer = false;
+src/common/Game.cpp:244:	this->playerChar = c;
+src/common/Game.cpp:245:	this->playerChar->isPlayer = true;
+src/common/Game.cpp:249:	this->paused = !this->paused;
+src/common/Game.cpp:250:	if(this->paused) {
+src/common/Game.cpp:251:		TBAGame->gameWindow->createPopup("Paused",10,true);
+src/common/Game.cpp:252:		// this->gameWindow->popupBox->setToggledContent("Paused");
+src/common/Game.cpp:253:		// this->gameWindow->popupBox->toggled = true;
+src/common/Game.cpp:255:		// this->gameWindow->popupBox->toggled = false;
+src/common/Game.cpp:256:		TBAGame->gameWindow->deleteFirstToggledPopup();
+src/common/Game.cpp:258:	return this->paused;
+src/common/Game.cpp:264:	// this->gameWindow->popupBox->addMessage(duration*1000,message);
+src/common/Game.cpp:277:	while(game->gameRunning) {
+src/common/Game.cpp:279:		// pthread_mutex_lock(&game->updateLock);
+src/common/Game.cpp:280:		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
+src/common/Game.cpp:282:		if(!game->paused) game->update_logic();
+src/common/Game.cpp:284:		elapsed = SDL_GetTicks()-start;
+src/common/Game.cpp:286:		// pthread_mutex_unlock(&game->updateLock);
+src/common/Game.cpp:288:		real_wait = (1000/game->logicTickRate)-elapsed;
+src/common/Game.cpp:298:	while(game->gameRunning) {
+src/common/Game.cpp:300:		// pthread_mutex_lock(&game->updateLock);
+src/common/Game.cpp:301:		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
+src/common/Game.cpp:303:		game->update_graphics();
+src/common/Game.cpp:305:		elapsed = SDL_GetTicks()-start;
+src/common/Game.cpp:307:		// pthread_mutex_unlock(&game->updateLock);
+src/common/Game.cpp:309:		real_wait = (1000/game->graphicsTickRate)-elapsed;
+src/common/Game.cpp:316:	// if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
+src/common/Game.cpp:317:	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+src/common/Game.cpp:321:	for(int i=0;i<this->gameObjects.size();i++) {
+src/common/Game.cpp:322:		this->gameObjects.at(i)->update();
+src/common/Game.cpp:328:	for(int i=0;i<this->gameUIObjects.size();i++) {
+src/common/Game.cpp:329:		this->gameUIObjects.at(i)->update();
+src/common/Game.cpp:336:	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
+src/common/Game.cpp:338:	this->lastLogicUpdate = SDL_GetTicks();
+src/common/Game.cpp:340:	this->updateGameObjects();
+src/common/Game.cpp:341:	this->logicTicks++;
+src/common/Game.cpp:343:	// int elapsed = SDL_GetTicks()-start;
+src/common/Game.cpp:345:	// pthread_mutex_unlock(&game->updateLock);
+src/common/Game.cpp:347:	// int real_wait = (1000/this->logicTickRate)-elapsed;
+src/common/Game.cpp:351:	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
+src/common/Game.cpp:358:	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
+src/common/Game.cpp:361:	this->gameWindow->update(this->debugMode);
+src/common/Game.cpp:362:	this->graphicsTicks++;
+src/common/Game.cpp:364:	int elapsed = SDL_GetTicks()-start;
+src/common/Game.cpp:366:	// pthread_mutex_unlock(&game->updateLock);
+src/common/Game.cpp:368:	int real_wait = (1000/this->graphicsTickRate)-elapsed;
+src/common/Game.cpp:371:		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
+src/common/Game.cpp:378:	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
+src/common/Game.cpp:383:	// if(!this->paused) this->update_logic();
+src/common/Game.cpp:384:	this->update_graphics();
+src/common/Game.h:40:		this->gameWindow->textScreen->addContent(s);
+src/common/Game.h:51:	bool inline hasDisplayTarget() { return !(this->displayTarget == nullptr);}
+src/common/Game.h:52:	void clearDisplayTarget() {this->displayTarget = nullptr;}
+src/common/Game.h:53:	void setDisplayTarget(GameObject *o) {this->displayTarget = o;}
+src/common/Game.h:92:	unsigned int inline convert(unsigned int ms) { return ms/this->logicTickRate;} 
+src/common/Game.h:108:		delete this->gameWindow;
+src/common/Game.h:109:		this->gameObjects.clear();
+src/common/Game.h:110:		this->gameUIObjects.clear();
+src/common/Game.h:111:		std::vector<GameObject*>().swap(this->gameObjects);
+src/common/Game.h:112:		std::vector<GameObject*>().swap(this->gameUIObjects);
+src/common/Game.h:113:		// pthread_join(this->logic_thread,NULL);
+src/common/Game.h:114:		// pthread_join(this->graphics_thread,NULL);
+src/common/KeyFuncs.cpp:32:	TBAGame->gameWindow->textScreen->commandAppend(c);
+src/common/KeyFuncs.cpp:40:	TBAGame->gameWindow->textScreen->sendCommand();
+src/common/KeyFuncs.cpp:44:	TBAGame->gameWindow->textScreen->swapCommand(i);
+src/common/KeyFuncs.cpp:49:	TBAGame->gameWindow->textScreen->deleteLastCharacter();
+src/common/KeyFuncs.cpp:57:	if(autocomplete(TBAGame->gameWindow->textScreen->command,TBAGame->commandStrings)) {
+src/common/KeyFuncs.cpp:58:		TBAGame->gameWindow->textScreen->commandAppend(' ');
+src/common/KeyFuncs.cpp:60:		//TBAGame->gameWindow->textScreen->setCommand(TBAGame->gameWindow->textScreen->command);
+src/common/KeyFuncs.cpp:61:		TBAGame->gameWindow->textScreen->setCommandLine();
+src/common/KeyFuncs.cpp:67:	TBAGame->togglePause();
+src/common/KeyFuncs.cpp:72:	TBAGame->gameWindow->textScreen->content.clear();
+src/common/KeyFuncs.cpp:76:	TBAGame->gameWindow->textScreen->command = "";
+src/common/KeyFuncs.cpp:81:	TBAGame->gameWindow->textScreen->commandAppend(clipboard);
+src/common/KeyFuncs.cpp:92:	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
+src/common/KeyFuncs.cpp:93:	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
+src/common/KeyFuncs.cpp:95:	int tileX = std::round(((float)(event.x-centerX))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+src/common/KeyFuncs.cpp:96:	int tileY = std::round(((float)(event.y-centerY))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+src/common/KeyFuncs.cpp:100:	Tile* thisTile = TBAGame->gameWorld->getTileAt(tileX,tileY);
+src/common/KeyFuncs.cpp:103:		for(int i=TBAGame->gameWindow->screenVector.size()-1;i>=0;i--) {
+src/common/KeyFuncs.cpp:104:			if(TBAGame->gameWindow->screenVector.at(i)->enclose(event.x,event.y)) {
+src/common/KeyFuncs.cpp:106:				activeScreen = TBAGame->gameWindow->screenVector.size()-1;
+src/common/KeyFuncs.cpp:107:				TBAGame->gameWindow->bringToFront(TBAGame->gameWindow->screenVector.at(i));
+src/common/KeyFuncs.cpp:113:		if(TBAGame->gameWindow->mapScreen->enclose(event.x,event.y)) {
+src/common/KeyFuncs.cpp:117:			if(thisTile->isOccupied()) {
+src/common/KeyFuncs.cpp:118:				testTarget = thisTile->occupiers.at(0);
+src/common/KeyFuncs.cpp:119:				if((char*)TBAGame->displayTarget == (char*)testTarget) {
+src/common/KeyFuncs.cpp:120:					testTarget = static_cast<GameObject*>(thisTile->getNextOccupant(static_cast<Character*>(testTarget)));
+src/common/KeyFuncs.cpp:122:			} else if(thisTile->hasObjects()) {
+src/common/KeyFuncs.cpp:123:				testTarget = thisTile->objects.at(0);
+src/common/KeyFuncs.cpp:125:			TBAGame->displayTarget = testTarget;
+src/common/KeyFuncs.cpp:128:		// pthread_mutex_lock(&TBAGame->updateLock);
+src/common/KeyFuncs.cpp:129:		if(thisTile->hasBlocks()) {
+src/common/KeyFuncs.cpp:130:			thisTile->blocks.clear();
+src/common/KeyFuncs.cpp:132:			thisTile->addBlock(4);
+src/common/KeyFuncs.cpp:134:		// pthread_mutex_unlock(&TBAGame->updateLock);
+src/common/KeyFuncs.cpp:152:		TBAGame->gameWindow->screenVector.at(activeScreen)->x += event.motion.x-lastMove[0];
+src/common/KeyFuncs.cpp:153:		TBAGame->gameWindow->screenVector.at(activeScreen)->y += event.motion.y-lastMove[1];
+src/common/KeyFuncs.cpp:158:	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
+src/common/KeyFuncs.cpp:159:	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
+src/common/KeyFuncs.cpp:161:	int tileX = std::round(((float)(event.motion.x-centerX))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+src/common/KeyFuncs.cpp:162:	int tileY = std::round(((float)(event.motion.y-centerY))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
+src/common/KeyFuncs.cpp:168:	int topScreenID = -1;
+src/common/KeyFuncs.cpp:169:	for(int i=0;i<TBAGame->gameWindow->screenVector.size();i++) {
+src/common/KeyFuncs.cpp:170:		if(TBAGame->gameWindow->screenVector.at(i)->enclose(x,y)) {
+src/common/KeyFuncs.cpp:182:	TBAGame->gameWindow->screenVector.at(topScreenID)->shiftContentWindow(i);
+src/common/KeyFuncs.cpp:187:	TBAGame->gameWindow->textScreen->addContent(s);
+src/common/KeyFuncs.cpp:191:	TBAGame->gameWindow->screenVector.at(screenPriority)->x = TBAGame->gameWindow->screenVector.at(screenPriority)->defaultX;
+src/common/KeyFuncs.cpp:192:	TBAGame->gameWindow->screenVector.at(screenPriority)->y = TBAGame->gameWindow->screenVector.at(screenPriority)->defaultY;
+src/common/KeyFuncs.cpp:196:	int screenCount = TBAGame->gameWindow->screenVector.size();
+src/common/KeyFuncs.cpp:209:		if(TBAGame->playerChar->isAlive()) {
+src/common/KeyFuncs.cpp:210:			TBAGame->playerChar->addStatus(STATUS_MOVE);
+src/common/KeyFuncs.cpp:211:			TBAGame->playerChar->removeStatus(STATUS_IDLE);
+src/common/KeyFuncs.cpp:212:			TBAGame->playerChar->autoMove = false;
+src/common/KeyFuncs.cpp:216:	if(TBAGame->playerChar->isAlive()) {
+src/common/KeyFuncs.cpp:217:		TBAGame->playerChar->move_forward = m_forward;
+src/common/KeyFuncs.cpp:218:		TBAGame->playerChar->move_back = m_back;
+src/common/KeyFuncs.cpp:225:			TBAGame->playerChar->autoMove = false;
+src/common/KeyFuncs.cpp:226:			TBAGame->playerChar->viewAng -= 2;
+src/common/KeyFuncs.cpp:227:			if(TBAGame->playerChar->viewAng < 0) TBAGame->playerChar->viewAng = 360+TBAGame->playerChar->viewAng;
+src/common/KeyFuncs.cpp:228:			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
+src/common/KeyFuncs.cpp:231:			TBAGame->playerChar->autoMove = false;
+src/common/KeyFuncs.cpp:232:			TBAGame->playerChar->viewAng += 2;
+src/common/KeyFuncs.cpp:233:			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
+src/common/KeyFuncs.cpp:241:int alpha = -1;
+src/common/KeyFuncs.cpp:248:	/*TBAGame->gameObjects.at(0)->cleanup();
+src/common/KeyFuncs.cpp:249:	TBAGame->gameObjects.erase(TBAGame->gameObjects.begin());
+src/common/KeyFuncs.cpp:250:	TBAGame->gameObjects.shrink_to_fit();*/
+src/common/KeyFuncs.cpp:252:	//TBAGame->popupText(1,"Building is too close to existing settlement");
+src/common/KeyFuncs.cpp:255:	//TBAGame->playerChar->setStatus(STATUS_ATTACK);
+src/common/KeyFuncs.cpp:258:	//TBAGame->gameWindow->mapScreen->charW-=2;
+src/common/KeyFuncs.cpp:259:	//TBAGame->gameWindow->mapScreen->charH-=2;
+src/common/KeyFuncs.cpp:262:	//TBAGame->playerChar->maxMoveSpeed++;
+src/common/KeyFuncs.cpp:263:	//debug(TBAGame->playerChar->maxMoveSpeed);
+src/common/KeyFuncs.cpp:266:	//TBAGame->playerChar->move({200,150});
+src/common/KeyFuncs.cpp:268:	//TBAGame->playerChar->isPlayer = false;
+src/common/KeyFuncs.cpp:269:	//TBAGame->playerChar = static_cast<Character*>(TBAGame->gameObjects.at(1));
+src/common/KeyFuncs.cpp:270:	//TBAGame->playerChar->isPlayer = true;
+src/common/KeyFuncs.cpp:275:	//debug(TBAGame->gameObjects.size());
+src/common/KeyFuncs.cpp:278:	//TBAGame->playerChar->target->receiveAttack(0,TBAGame->playerChar);
+src/common/KeyFuncs.cpp:281:	decompose(TBAGame->playerChar->getLocation(),x,y);
+src/common/KeyFuncs.cpp:283:	if(!TBAGame->playerChar->hasTarget()) {
+src/common/KeyFuncs.cpp:284:		new Projectile(TBAGame->playerChar,{x+.2,y+.2},TBAGame->playerChar->viewAng*CONV_DEGREES,.5);
+src/common/KeyFuncs.cpp:287:		decompose(TBAGame->playerChar->target->getLocation(),tx,ty);
+src/common/KeyFuncs.cpp:288:		new Projectile(TBAGame->playerChar,{x,y},(-15+rand()%31)-atan2(ty-y,tx-x)*CONV_DEGREES,.5);
+src/common/KeyFuncs.cpp:291:	// static_cast<Character*>(TBAGame->displayTarget)->setTarget(TBAGame->playerChar);
+src/common/KeyFuncs.cpp:293:	// TBAGame->setPlayer(static_cast<Character*>(TBAGame->displayTarget));
+src/common/KeyFuncs.cpp:295:	TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(5000),false);
+src/common/KeyFuncs.cpp:297:	// TBAGame->gameWindow->popupBox->setToggledContent("Paused");
+src/common/KeyFuncs.cpp:298:	// TBAGame->gameWindow->popupBox->toggled = true;
+src/common/KeyFuncs.cpp:300:	/*SDL_Texture* blockTexture = TBAGame->gameWorld->getTileAt(-2,-2)->blocks.at(TBAGame->gameWorld->getTileAt(-2,-2)->blocks.size()-1)->blockTexture;
+src/common/KeyFuncs.cpp:302:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,blockTexture);
+src/common/KeyFuncs.cpp:304:	fChar charInfo = TBAGame->gameWindow->mapScreen->screenFont->fontMap.at(TBAGame->gameWorld->getTileAt(-2,-2)->id);
+src/common/KeyFuncs.cpp:306:	SDL_Rect dRect = {-3,-3,6,16};
+src/common/KeyFuncs.cpp:308:	SDL_RenderCopyEx(TBAGame->gameWindow->renderer,TBAGame->gameWindow->mapScreen->screenFont->fontTexture,&sRect,&dRect,45,NULL,SDL_FLIP_NONE);
+src/common/KeyFuncs.cpp:310:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+src/common/KeyFuncs.cpp:312:	//TBAGame->graphicsTickRate = (++alpha%2 == 0)? 60 : 144;
+src/common/KeyFuncs.cpp:314:	/*(std::vector<Tile*> tiles = TBAGame->gameWorld->getTilesInRadius(std::round(TBAGame->playerChar->x),std::round(TBAGame->playerChar->y),5);
+src/common/KeyFuncs.cpp:316:		tiles.at(i)->id = -1;
+src/common/KeyFuncs.cpp:319:	//SDL_SetTextureAlphaMod(TBAGame->gameWindow->mapScreen->screenFont->fontTexture,--alpha);
+src/common/KeyFuncs.cpp:320:	//SDL_SetTextureColorMod(TBAGame->gameWindow->mapScreen->screenFont->fontTexture,255,alpha/2,alpha);
+src/common/Keys.cpp:19:	{48,41}, //0-9
+src/common/Keys.cpp:36:	{96,126}, //Backtick -> tilde
+src/common/Keys.cpp:53:				this->gameRunning = false;
+src/common/Keys.cpp:61:						this->gameRunning = false;
+src/common/Keys.cpp:140:									swapCommand(-1);
+src/common/Keys.cpp:151:								keycode = keycode - 32;
+src/common/Tile.cpp:17:	{-1,{1,false,false}},	//Invalid
+src/common/Tile.cpp:34:	{-1,"Invalid"},	//Invalid
+src/common/Tile.cpp:45:	return tileNameMap.at(this->id);
+src/common/Tile.cpp:52:		this->id = -1;
+src/common/Tile.cpp:53:		tid = -1;
+src/common/Tile.cpp:56:	this->roughness = std::get<0>(tileMap.at(tid));
+src/common/Tile.cpp:57:	this->passable = std::get<1>(tileMap.at(tid));
+src/common/Tile.cpp:58:	this->randomized = std::get<2>(tileMap.at(tid));
+src/common/Tile.cpp:60:	if(tid == -1) {
+src/common/Tile.cpp:61:		this->invalid = true;
+src/common/Tile.cpp:65:		this->rotation = 90*(rand()%4);
+src/common/Tile.cpp:68:				this->flip = SDL_FLIP_NONE;
+src/common/Tile.cpp:71:				this->flip = SDL_FLIP_HORIZONTAL;
+src/common/Tile.cpp:74:				this->flip = SDL_FLIP_VERTICAL;
+src/common/Tile.cpp:78:		this->rotation = 0;
+src/common/Tile.cpp:79:		this->flip = SDL_FLIP_NONE;
+src/common/Tile.cpp:84:	this->occupiers.push_back(c);
+src/common/Tile.cpp:88:	this->needsUpdate = true;
+src/common/Tile.cpp:89:	this->blocks.push_back(new Block(bid));
+src/common/Tile.cpp:93:	this->needsUpdate = true;
+src/common/Tile.cpp:94:	this->blocks.push_back(block);
+src/common/Tile.cpp:98:	int i = find(occupant, this->occupiers);
+src/common/Tile.cpp:101:		this->occupiers.erase(this->occupiers.begin() + i);
+src/common/Tile.cpp:102:		if(this->occupiers.size() > 1) {
+src/common/Tile.cpp:103:			this->occupiers.shrink_to_fit();
+src/common/Tile.cpp:109:	this->needsUpdate = true;
+src/common/Tile.cpp:110:	int i = find(generic, this->objects);
+src/common/Tile.cpp:112:		this->objects.erase(this->objects.begin() + i);
+src/common/Tile.cpp:113:		if(this->objects.size() > 1) {
+src/common/Tile.cpp:114:			this->objects.shrink_to_fit();
+src/common/Tile.cpp:121:	int charIndex = find(c,this->occupiers);
+src/common/Tile.cpp:127:	if(charIndex < this->occupiers.size()-1) {
+src/common/Tile.cpp:128:		return this->occupiers.at(charIndex+1);
+src/common/Tile.cpp:130:		return this->occupiers.at(0);
+src/common/Tile.cpp:136:	if(this->hasBlocks()) {
+src/common/Tile.cpp:137:		return this->blocks.at(this->blocks.size()-1)->rotation;
+src/common/Tile.cpp:139:	return this->rotation;
+src/common/Tile.cpp:143:	if(this->hasBlocks()) {
+src/common/Tile.cpp:144:		return this->blocks.at(this->blocks.size()-1)->blockTexture;
+src/common/Tile.cpp:151:	if(this->hasBlocks()) {
+src/common/Tile.cpp:152:		return this->blocks.at(this->blocks.size()-1)->passable;
+src/common/Tile.cpp:153:	} else if(this->hasObjects()) {
+src/common/Tile.cpp:154:		for(int i=0;i<this->objects.size();i++) {
+src/common/Tile.cpp:155:			if(this->objects.at(i)->type == OBJ_CONTAINER) {
+src/common/Tile.cpp:160:	return this->passable;
+src/common/Tile.cpp:164:	if(this->hasBlocks()) {
+src/common/Tile.cpp:165:		return this->blocks.at(this->blocks.size()-1)->flip;
+src/common/Tile.cpp:167:	return this->flip;
+src/common/Tile.h:44:	bool inline isOccupied() {return this->occupiers.size() > 0;}
+src/common/Tile.h:54:	bool inline hasObjects() {return this->objects.size() > 0;}
+src/common/Tile.h:55:	void addObject(GameObject* o) {this->objects.push_back(o);}
+src/common/Tile.h:64:	bool inline hasBlocks() {return this->blocks.size() > 0;}
+src/common/Tile.h:76:	int inline getDisplayID() {return ((this->blocks.size() == 0)? this->id : this->blocks.at(this->blocks.size()-1)->id); }
+src/common/Tile.h:82:		this->occupiers.clear();
+src/common/Tile.h:83:		this->objects.clear();
+src/common/Tile.h:84:		this->blocks.clear();
+src/common/Tile.h:85:		std::vector<Character*>().swap(this->occupiers);
+src/common/Tile.h:86:		std::vector<GameObject*>().swap(this->objects);
+src/common/Tile.h:87:		std::vector<Block*>().swap(this->blocks);
+src/defunct/Attributes.cpp:14:		this->attributeValues.insert({attribEnums.at(i),attribValues.at(i)});
+src/defunct/Attributes.cpp:19:	return (this->attributeValues.find(attrib) != this->attributeValues.end());
+src/defunct/Attributes.cpp:24:	if(this->hasAttribute(attrib)) {
+src/defunct/Attributes.cpp:25:		return this->attributeValues.at(attrib);
+src/defunct/Attributes.cpp:27:	return -1;
+src/defunct/Defunct.h:8:	if(this->content.size() == 0) {
+src/defunct/Defunct.h:9:		this->content.push_back("");
+src/defunct/Defunct.h:12:	int lineIndex = this->content.size()-1;
+src/defunct/Defunct.h:13:	std::string thisLine = this->content.at(lineIndex);
+src/defunct/Defunct.h:18:		lineIndex = this->content.size()-1;
+src/defunct/Defunct.h:22:		if(thisLine.size()+newWord.size() > this->screenCharWidth) {
+src/defunct/Defunct.h:24:			this->setLastLine(thisLine);
+src/defunct/Defunct.h:27:			this->content.push_back("");
+src/defunct/Defunct.h:34:	this->setLastLine(thisLine);
+src/defunct/Defunct.h:43:	int lineIndex = this->content.size()-1;
+src/defunct/Defunct.h:44:	int midline = this->screenCharWidth/2;
+src/defunct/Defunct.h:47:	this->content.at(lineIndex) = "";
+src/defunct/Defunct.h:53:			this->content.push_back("");
+src/defunct/Defunct.h:56:			cursorX = this->content.at(lineIndex).size();
+src/defunct/Defunct.h:59:				this->content.at(lineIndex) += ' ';
+src/defunct/Defunct.h:63:					this->content.at(lineIndex) += ' ';
+src/defunct/Defunct.h:64:					cursorX = this->content.at(lineIndex).size();
+src/defunct/Defunct.h:68:				this->content.push_back(" ");
+src/defunct/Defunct.h:73:				this->content.at(lineIndex) += ' ';
+src/defunct/Defunct.h:75:				this->content.at(lineIndex) += goodLine[i];
+src/defunct/Defunct.h:84:	//int dx = this->lastMapX-TBAGame->playerChar->x;
+src/defunct/Defunct.h:85:	//int dy = this->lastMapY-TBAGame->playerChar->y;
+src/defunct/Defunct.h:87:	int x = TBAGame->playerChar->x;
+src/defunct/Defunct.h:88:	int y = TBAGame->playerChar->y;
+src/defunct/Defunct.h:90:	this->map = TBAGame->gameWorld->getMapAt(this->screenCharWidth+2,x,y);
+src/defunct/Defunct.h:91:	this->lastMapX = x;
+src/defunct/Defunct.h:92:	this->lastMapY = y;
+src/defunct/Defunct.h:93:	//Source rectangle taken from screenFont->fontTexture
+src/defunct/Defunct.h:101:	//std::vector<std::vector<Tile*>> visibleContent = subVec(this->map,0,this->map.size());
+src/defunct/Defunct.h:103:	//visibleContent.push_back("->");
+src/defunct/Defunct.h:110:	int offsetX = -this->charW;
+src/defunct/Defunct.h:111:	int offsetY = -this->charW;
+src/defunct/Defunct.h:115:	int index = -1;
+src/defunct/Defunct.h:121:			thisTile = this->map.at(i).at(j);
+src/defunct/Defunct.h:125:			tileID = thisTile->id;
+src/defunct/Defunct.h:127:			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+src/defunct/Defunct.h:132:			charInfo = this->screenFont->fontMap.at(tileID);
+src/defunct/Defunct.h:138:			SDL_Rect dRect = {offsetX+this->x+(1*cursor[0]),offsetY+(charH*cursor[1])+this->y+charInfo.yo,sRect.w,sRect.h};
+src/defunct/Defunct.h:140:			//SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
+src/defunct/Defunct.h:141:			SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->rotation,NULL,thisTile->flip);
+src/defunct/Defunct.h:143:			if(thisTile->occupied) {
+src/defunct/Defunct.h:144:				occupierTileID = thisTile->occupier->displayID;
+src/defunct/Defunct.h:146:				charInfo = this->screenFont->fontMap.at(occupierTileID);
+src/defunct/Defunct.h:152:				SDL_Rect dRect = {offsetX+this->x+(1*cursor[0]),offsetY+(charH*cursor[1])+this->y+charInfo.yo,sRect.w,sRect.h};
+src/defunct/Defunct.h:154:				//SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
+src/defunct/Defunct.h:155:				SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,0,NULL,SDL_FLIP_NONE);
+src/defunct/MiscUtils.cpp:9:	switch(this->type) {
+src/defunct/MiscUtils.cpp:11:			return static_cast<Character*>(this)->inventory;
+src/defunct/MiscUtils.cpp:13:			return static_cast<Container*>(this)->inventory;
+src/game/Behavior.cpp:29:	if(!this->hasTarget()) {return "None";}
+src/game/Behavior.cpp:30:	return this->getCharTarget()->getInfo();
+src/game/Behavior.cpp:36:	if(!this->hasTarget()) {return "None";}
+src/game/Behavior.cpp:38:	return this->target->getName();
+src/game/Behavior.cpp:42:	this->resetCombatTimer();
+src/game/Behavior.cpp:43:	this->target = o;
+src/game/Behavior.cpp:44:	if(o != nullptr and !this->isPlayer) {
+src/game/Behavior.cpp:45:		this->setTargetAngle(this->getCharTarget());
+src/game/Behavior.cpp:50:	return static_cast<Character*>(this->target);
+src/game/Behavior.cpp:54:	return this->target;
+src/game/Behavior.cpp:58:	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
+src/game/Behavior.cpp:60:		this->removeStatus(STATUS_MOVE);
+src/game/Behavior.cpp:61:		this->resetCombatTimer();
+src/game/Behavior.cpp:63:	if(newStatus != STATUS_IDLE) this->removeStatus(STATUS_IDLE);
+src/game/Behavior.cpp:64:	this->status = (this->status | newStatus);
+src/game/Behavior.cpp:71:		// this->direction = {0,0};
+src/game/Behavior.cpp:72:	} else if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
+src/game/Behavior.cpp:74:		// this->direction = {0,0};
+src/game/Behavior.cpp:75:		this->resetCombatTimer();// - (this->attackRate/2);
+src/game/Behavior.cpp:77:	this->status = newStatus;
+src/game/Behavior.cpp:81:	if(!this->hasTarget()) {
+src/game/Behavior.cpp:85:	if(this->getAttackRange() < 0) {
+src/game/Behavior.cpp:88:	return dist(this->getLocation(),this->getCharTarget()->getLocation()) <= this->getAttackRange();
+src/game/Behavior.cpp:94:	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10);
+src/game/Behavior.cpp:102:		if(thisTile->isOccupied()) {
+src/game/Behavior.cpp:103:			for(int j=0;j<thisTile->occupiers.size();j++) {
+src/game/Behavior.cpp:105:				occupant = thisTile->occupiers.at(j);
+src/game/Behavior.cpp:112:				if(occupant->isAlive() and !occupant->isPlayer) {
+src/game/Behavior.cpp:117:					if(dist(this->getLocation(),occupant->getLocation()) < dist(this->getLocation(),bestTarget->getLocation())) {
+src/game/Behavior.cpp:127:		this->setTarget(bestTarget);
+src/game/Behavior.cpp:136:	std::vector<Tile*> tileSet = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder until awareness stat
+src/game/Behavior.cpp:139:		if(tileSet.at(i)->isOccupied()) {
+src/game/Behavior.cpp:140:			for(int j=0;j<tileSet.at(i)->occupiers.size();j++) {
+src/game/Behavior.cpp:141:				testObj = tileSet.at(i)->occupiers.at(j);
+src/game/Behavior.cpp:142:				if(startsWith(toLower(testObj->getName()),toLower(_name))) {
+src/game/Behavior.cpp:143:					this->setTarget(testObj);
+src/game/Behavior.cpp:155:	std::vector<Tile*> tileSet = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder until awareness stat
+src/game/Behavior.cpp:159:		if(tileSet.at(i)->hasObjects() or tileSet.at(i)->isOccupied()) {
+src/game/Behavior.cpp:160:			allObjs = extend(tileSet.at(i)->objects,TBAGame->convert(tileSet.at(i)->occupiers));
+src/game/Behavior.cpp:163:				if(startsWith(toLower(testObj->getName()),toLower(_name))) {
+src/game/Behavior.cpp:174:	int newAng = atan2(c->y-this->y,c->x-this->x)*CONV_RADIANS;
+src/game/Behavior.cpp:176:	this->targetAng = newAng;
+src/game/Behavior.cpp:180:	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
+src/game/Behavior.cpp:187:		if(thisTile->isOccupied()) {
+src/game/Behavior.cpp:188:			//extend(targets,thisTile->occupiers);
+src/game/Behavior.cpp:189:			for(int j=0;j<thisTile->occupiers.size();j++) {
+src/game/Behavior.cpp:190:				if((char*)this != (char*)thisTile->occupiers.at(j) and thisTile->occupiers.at(j)->isAlive()) targets.push_back(thisTile->occupiers.at(j));
+src/game/Behavior.cpp:193:		//if(thisTile->hasObjects()) extend(objects,thisTile->objects);
+src/game/Behavior.cpp:201:	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
+src/game/Behavior.cpp:210:		if(thisTile->hasObjects()) {
+src/game/Behavior.cpp:211:			//extend(objects,thisTile->occupiers);
+src/game/Behavior.cpp:212:			for(int j=0;j<thisTile->objects.size();j++) {
+src/game/Behavior.cpp:213:				if(noFilter or thisTile->objects.at(j)->type == type) objects.push_back(thisTile->objects.at(j));
+src/game/Behavior.cpp:216:		//if(thisTile->hasObjects()) extend(objects,thisTile->objects);
+src/game/Behavior.cpp:224:	std::vector<Character*> targets = this->getCharactersInRadius();
+src/game/Behavior.cpp:239:			occupant->isAlive(),
+src/game/Behavior.cpp:240:			occupant->hasTarget(),
+src/game/Behavior.cpp:241:			(char*)occupant->getCharTarget() == (char*)this,
+src/game/Behavior.cpp:242:			occupant->hasStatus(STATUS_COMBAT),
+src/game/Behavior.cpp:246:			if(!this->hasTarget()) {
+src/game/Behavior.cpp:247:				this->setTarget(occupant);
+src/game/Behavior.cpp:250:				this->setTarget(closer(this->getCharTarget(),occupant));
+src/game/Behavior.cpp:255:	return this->hasTarget();
+src/game/Behavior.cpp:260:	this->setTargetAngle(c);
+src/game/Behavior.cpp:262:	if(fabs(this->viewAng - this->targetAng) <= this->defaultFOV/2) {
+src/game/Behavior.cpp:263:		this->move_forward = true;
+src/game/Behavior.cpp:265:		this->move_forward = false;
+src/game/Behavior.cpp:271:	this->setTargetAngle(c);
+src/game/Behavior.cpp:272:	this->targetAng = ((int)this->targetAng+180)%360;
+src/game/Behavior.cpp:273:	this->move_forward = true;
+src/game/Behavior.cpp:281:	if(this->isPlayer and !this->autoMove) return;
+src/game/Behavior.cpp:282:	if((fabs(this->viewAng - this->targetAng)) > this->getTurnSpeed()) {
+src/game/Behavior.cpp:285:		if(this->targetAng > this->viewAng) {
+src/game/Behavior.cpp:286:			if( (360 - this->targetAng + this->viewAng) < this->targetAng-this->viewAng) {
+src/game/Behavior.cpp:287:				sign = -1;
+src/game/Behavior.cpp:292:			if( (360 - this->viewAng + this->targetAng) < this->viewAng-this->targetAng) {
+src/game/Behavior.cpp:295:				sign = -1;
+src/game/Behavior.cpp:300:		this->viewAng += this->getTurnSpeed()*sign*((float)360/(360-fabs(this->viewAng-this->targetAng)));
+src/game/Behavior.cpp:304:		this->viewAng = this->targetAng;
+src/game/Behavior.cpp:308:	if(this->viewAng < 0) {
+src/game/Behavior.cpp:309:		this->viewAng = 360+this->viewAng;
+src/game/Behavior.cpp:311:	this->viewAng = (int)this->viewAng%360;
+src/game/Behavior.cpp:316:	if(!this->isPlayer) {
+src/game/Behavior.cpp:317:		if(this->hasTarget()) {
+src/game/Behavior.cpp:318:			if(this->hasStatus(STATUS_PURSUE)) {
+src/game/Behavior.cpp:319:				this->moveTo(this->getCharTarget());
+src/game/Behavior.cpp:320:			} else if(this->hasStatus(STATUS_ESCAPE)) {
+src/game/Behavior.cpp:323:				this->moveAway(this->getCharTarget());
+src/game/Behavior.cpp:328:	if(fabs(this->velocity) < 0.5f) {
+src/game/Behavior.cpp:329:		this->removeStatus(STATUS_MOVE);
+src/game/Behavior.cpp:346:	if(!this->hasTarget()) {
+src/game/Behavior.cpp:347:		if(!this->combatRetarget()) {
+src/game/Behavior.cpp:348:			this->removeStatus(STATUS_COMBAT);
+src/game/Behavior.cpp:357:	if(!this->targetInRange()) {
+src/game/Behavior.cpp:358:		if(this->isPlayer) {
+src/game/Behavior.cpp:362:			// Provides a 1-hit advantage for combat-initiators
+src/game/Behavior.cpp:364:			//this->resetCombatTimer();
+src/game/Behavior.cpp:367:			this->addStatus(STATUS_PURSUE);
+src/game/Behavior.cpp:372:	if(!this->getCharTarget()->isAlive()) {
+src/game/Behavior.cpp:373:		if(this->isPlayer) {
+src/game/Behavior.cpp:378:		this->removeStatus(STATUS_COMBAT);
+src/game/Behavior.cpp:388:	switch(this->getAttackStatus()) {
+src/game/Behavior.cpp:391:			this->addStatus(STATUS_COMBAT);
+src/game/Behavior.cpp:396:			this->addStatus(STATUS_ATTACK);
+src/game/Behavior.cpp:400:			this->removeStatus(STATUS_ATTACK);
+src/game/Behavior.cpp:409:	this->sendAttack(this->target);
+src/game/Behavior.cpp:414:	this->lastAttack = TBAGame->logicTicks;
+src/game/Behavior.cpp:420:	if(TBAGame->logicTicks >= this->lastAttack + this->attackRate + this->defaultAttackSpeed) {
+src/game/Behavior.cpp:422:	} else if(TBAGame->logicTicks >= this->lastAttack + this->attackRate) {
+src/game/Behavior.cpp:429:	if(this->equipment->primary == nullptr) {
+src/game/Behavior.cpp:432:	if(this->equipment->primary->hasType(I_WEAPON_MELEE)) return I_WEAPON_MELEE;
+src/game/Behavior.cpp:442:	int damage = this->getAttackDamage();
+src/game/Behavior.cpp:444:	switch(this->getAttackType()) {
+src/game/Behavior.cpp:447:			decompose(this->getLocation(),x,y);
+src/game/Behavior.cpp:449:			decompose(this->target->getLocation(),tx,ty);
+src/game/Behavior.cpp:451:			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
+src/game/Behavior.cpp:452:			new Projectile(this,this->getLocation(),((-1+rand()%1)+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
+src/game/Behavior.cpp:456:			static_cast<Character*>(target)->receiveAttack(damage,this);
+src/game/Behavior.cpp:461:	this->lastAttack = TBAGame->logicTicks;
+src/game/Behavior.cpp:470:	if(!this->hasStatus(STATUS_COMBAT)) {
+src/game/Behavior.cpp:471:		this->addStatus(STATUS_COMBAT);
+src/game/Behavior.cpp:474:	switch(this->getStatus()) {
+src/game/Behavior.cpp:480:			this->setStatus(STATUS_COMBAT);
+src/game/Behavior.cpp:490:	if(this->getCharTarget() == nullptr or !this->targetInRange() or !this->getCharTarget()->isAlive() or (char*)this->getCharTarget()->getCharTarget() != (char*)this) {
+src/game/Behavior.cpp:491:		this->setTarget(static_cast<Character*>(attacker));
+src/game/Behavior.cpp:495:	// this->health -= damage;
+src/game/Behavior.cpp:498:		this->limbs.at(0).applyDamage(damage);
+src/game/Behavior.cpp:500:		this->limbs.at(1).applyDamage(damage);
+src/game/Behavior.cpp:502:		this->limbs.at(2).applyDamage(damage);
+src/game/Behavior.cpp:504:		this->limbs.at(3).applyDamage(damage);
+src/game/Behavior.cpp:507:	this->checkLimbs();
+src/game/Behavior.cpp:511:	// float directionX = -(this->getCharTarget()->x-this->x);
+src/game/Behavior.cpp:512:	// float directionY = this->getCharTarget()->y-this->y;
+src/game/Behavior.cpp:513:	// this->move({magnitude*directionX,magnitude*directionY});
+src/game/Behavior.cpp:516:	if(this->isPlayer) {
+src/game/Behavior.cpp:517:		new FloatingText(3,{std::to_string(damage)},{this->location->x,-this->location->y},{160,20,20,255});
+src/game/Behavior.cpp:518:		TBAGame->displayText("\nReceived "+std::to_string(damage)+" damage from "+attacker->getName());
+src/game/Behavior.cpp:520:		new FloatingText(3,{std::to_string(damage)},{this->location->x,-this->location->y},{20,160,20,255});
+src/game/Behavior.cpp:521:		//new FloatingText(3,{"Blessings of King upon you"},this->getAbsoluteLocation(),this);
+src/game/Behavior.cpp:524:	if(static_cast<Character*>(attacker)->isPlayer) {
+src/game/Behavior.cpp:525:		TBAGame->displayText("\nDealt "+std::to_string(damage)+" damage to "+this->getName());
+src/game/Behavior.cpp:533:	if(this->health <= 0) {
+src/game/Behavior.cpp:534:		if(static_cast<Character*>(attacker)->isPlayer) TBAGame->displayText("\nKilled "+this->getName());
+src/game/Behavior.cpp:535:		this->kill();
+src/game/Behavior.cpp:536:		static_cast<Character*>(attacker)->setTarget(nullptr);
+src/game/Behavior.cpp:537:		static_cast<Character*>(attacker)->say("It's a shame, really");
+src/game/Behavior.cpp:544:		if(!static_cast<Character*>(attacker)->combatRetarget()) {
+src/game/Behavior.cpp:545:			//static_cast<Character*>(attacker)->setStatus(STATUS_IDLE);
+src/game/Behavior.cpp:553:	for(int i=0;i<this->limbs.size();i++) {
+src/game/Behavior.cpp:554:		if((float)this->limbs.at(i).getHealth()/this->limbs.at(i).maxHealth <= .5) {
+src/game/Behavior.cpp:555:			this->addStatus(STATUS_CRIPPLED);
+src/game/Behavior.cpp:561:	new FloatingText(3,TBAGame->gameWindow->textScreen->prepareCommandForDisplay(message),this->getApproximateLocation(),this);
+src/game/Behavior.cpp:570:	if(!this->isAlive()) {
+src/game/Behavior.cpp:572:		if(!this->hasStatus(STATUS_DEAD)) {
+src/game/Behavior.cpp:573:			this->kill();
+src/game/Behavior.cpp:577:		//Perform status-actions
+src/game/Behavior.cpp:580:		if((float)this->health/this->maxHealth <= .5) {
+src/game/Behavior.cpp:581:			this->removeStatus(STATUS_COMBAT | STATUS_PURSUE);
+src/game/Behavior.cpp:582:			this->addStatus(STATUS_ESCAPE);
+src/game/Behavior.cpp:585:		if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_MOVE | STATUS_PURSUE)) {
+src/game/Behavior.cpp:586:			this->combat();
+src/game/Behavior.cpp:589:		if(this->hasStatus(STATUS_PURSUE)) {
+src/game/Behavior.cpp:592:			if(this->targetInRange()) {
+src/game/Behavior.cpp:593:				this->removeStatus(STATUS_PURSUE);
+src/game/Behavior.cpp:594:				this->move_forward = false;	
+src/game/Behavior.cpp:598:		// if(this->hasStatus(STATUS_MOVE | STATUS_ESCAPE | STATUS_PURSUE)) {
+src/game/Behavior.cpp:599:			// this->setLocomotion();
+src/game/Behavior.cpp:602:		//Set movement-based status-actions
+src/game/Behavior.cpp:603:		this->setLocomotion();
+src/game/Behavior.cpp:606:		switch(this->getStatus()) {
+src/game/Behavior.cpp:611:				//this->decideOnNewAction()
+src/game/Behavior.cpp:615:				this->combat();
+src/game/Behavior.cpp:618:				if(this->targetInRange()) {
+src/game/Behavior.cpp:619:					this->addStatus(STATUS_COMBAT);
+src/game/Behavior.cpp:621:				this->setLocomotion();
+src/game/Behavior.cpp:624:				this->setLocomotion();
+src/game/Behavior.cpp:630:		if(this->viewAng != this->targetAng) this->turn();
+src/game/Behavior.cpp:634:	this->move();
+src/game/Block.cpp:9:		this->flip = SDL_FLIP_NONE;
+src/game/Block.cpp:11:		this->blockTexture = SDL_CreateTexture(TBAGame->gameWindow->renderer,
+src/game/Block.cpp:12:                               SDL_GetWindowPixelFormat(TBAGame->gameWindow->window),
+src/game/Block.cpp:14:                               TBAGame->gameWindow->mapScreen->charW,
+src/game/Block.cpp:15:                               TBAGame->gameWindow->mapScreen->charH);
+src/game/Block.cpp:17:		fChar charInfo = TBAGame->gameWindow->mapScreen->screenFont->fontMap.at(this->id);
+src/game/Block.cpp:21:		SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->blockTexture);
+src/game/Block.cpp:23:		SDL_RenderCopyEx(TBAGame->gameWindow->renderer,TBAGame->gameWindow->mapScreen->screenFont->fontTexture,&sRect,NULL,0,NULL,SDL_FLIP_NONE);
+src/game/Block.cpp:25:		SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+src/game/Block.cpp:27:		this->passable = std::get<1>(tileMap.at(_id));
+src/game/Block.h:22:			this->flipType = f;
+src/game/Block.h:23:			switch(this->flipType) {
+src/game/Block.h:25:					this->flip = SDL_FLIP_NONE;
+src/game/Block.h:28:					this->rotation = 0;
+src/game/Block.h:29:					this->flip = SDL_FLIP_HORIZONTAL;
+src/game/Block.h:32:					this->flip = SDL_FLIP_VERTICAL;
+src/game/Block.h:35:					this->flip = SDL_FLIP_NONE;
+src/game/Block.h:36:					this->rotation = 180;
+src/game/Character.cpp:17:	this->location = TBAGame->gameWorld->getTileAt(_x,_y);
+src/game/Character.cpp:19:	this->stats = new StatSet();
+src/game/Character.cpp:20:	this->equipment = new Equipment();
+src/game/Character.cpp:22:	this->init_stats();
+src/game/Character.cpp:24:	this->setStatus(STATUS_IDLE);
+src/game/Character.cpp:25:	this->target = nullptr;
+src/game/Character.cpp:28:		this->maxHealth = 40;
+src/game/Character.cpp:29:		this->attackRate -= 20;
+src/game/Character.cpp:30:		TBAGame->playerChar = this;
+src/game/Character.cpp:31:		this->maxMoveSpeed = .5;
+src/game/Character.cpp:32:		this->displayID=3;
+src/game/Character.cpp:33:		this->traction = 2;
+src/game/Character.cpp:36:		this->maxMoveSpeed = .3+(.1*((rand()%2)-1)); //10+-5
+src/game/Character.cpp:37:		this->displayID=6;
+src/game/Character.cpp:38:		this->traction = 1;
+src/game/Character.cpp:40:	this->health = this->maxHealth;
+src/game/Character.cpp:41:	this->inventory = new Inventory(capacity);
+src/game/Character.cpp:42:	this->setLocation(x,y);
+src/game/Character.cpp:50:	if(newX+this->width >= TBAGame->gameWorld->size) {
+src/game/Character.cpp:51:		newX = this->x;
+src/game/Character.cpp:53:	if(newY+this->width >= TBAGame->gameWorld->size) {
+src/game/Character.cpp:54:		newY = this->y;
+src/game/Character.cpp:56:	bool YP = TBAGame->gameWorld->getTileAt(this->x,newY+this->width)->isPassable();
+src/game/Character.cpp:57:	bool YN = TBAGame->gameWorld->getTileAt(this->x,newY-this->width)->isPassable();
+src/game/Character.cpp:58:	bool XP = TBAGame->gameWorld->getTileAt(newX+this->width,this->y)->isPassable();
+src/game/Character.cpp:59:	bool XN = TBAGame->gameWorld->getTileAt(newX-this->width,this->y)->isPassable();
+src/game/Character.cpp:61:		newY = this->y;
+src/game/Character.cpp:64:		newX = this->x;
+src/game/Character.cpp:70:	this->location->evict(this);
+src/game/Character.cpp:71:	this->location = TBAGame->gameWorld->getTileAt(newX,newY);
+src/game/Character.cpp:72:	this->location->occupyWith(this);
+src/game/Character.cpp:77:	float newX = this->x+(std::cos(this->viewAng*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
+src/game/Character.cpp:78:	float newY = this->y+(std::sin(this->viewAng*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
+src/game/Character.cpp:80:	if(this->autoMove) {
+src/game/Character.cpp:81:		this->velocity += this->maxMoveSpeed;
+src/game/Character.cpp:83:		if(this->move_forward) this->velocity += this->maxMoveSpeed;
+src/game/Character.cpp:84:		if(this->move_back) this->velocity -= this->maxMoveSpeed;
+src/game/Character.cpp:88:	this->resolveMove(newX,newY);
+src/game/Character.cpp:90:	this->setLocation(newX,newY);
+src/game/Character.cpp:92:	this->x = newX;
+src/game/Character.cpp:93:	this->y = newY;
+src/game/Character.cpp:96:	this->velocity *= .9;
+src/game/Character.cpp:98:	if(this->velocity == 0) this->removeStatus(STATUS_MOVE);
+src/game/Character.cpp:100:	this->lastMove = TBAGame->logicTicks;
+src/game/Character.cpp:109:	return (this->equipment->primary == nullptr and this->equipment->secondary == nullptr);
+src/game/Character.cpp:113:	if(this->isUnarmed()) {
+src/game/Character.cpp:114:		return this->defaultAttackDamage;
+src/game/Character.cpp:116:	return this->equipment->primary->getAttribute(ATTRIB_DAMAGE);
+src/game/Character.cpp:120:	if(this->isUnarmed()) {
+src/game/Character.cpp:121:		return this->defaultAttackRange;
+src/game/Character.cpp:123:	return this->equipment->primary->getAttribute(ATTRIB_RANGE);
+src/game/Character.cpp:127:	return this->name+":"+this->inventory->toString();
+src/game/Character.cpp:132:	if(item->hasType(I_WEAPON)) {
+src/game/Character.cpp:133:		this->equipment->primary = item;
+src/game/Character.cpp:136:	if(item->hasType(I_ARMOR)) {
+src/game/Character.cpp:137:		if(item->hasType(I_ARMOR_HEAD)) {
+src/game/Character.cpp:138:			this->equipment->head = item;
+src/game/Character.cpp:139:		} else if(item->hasType(I_ARMOR_BODY)) {
+src/game/Character.cpp:140:			this->equipment->body = item;
+src/game/Character.cpp:141:		} else if(item->hasType(I_ARMOR_LEGS)) {
+src/game/Character.cpp:142:			this->equipment->legs = item;
+src/game/Character.cpp:143:		} else if(item->hasType(I_ARMOR_FEET)) {
+src/game/Character.cpp:144:			this->equipment->feet = item;
+src/game/Character.cpp:153:	if(item->hasType(I_PLANTABLE)) {
+src/game/Character.cpp:154:		this->location->planted = true;
+src/game/Character.cpp:166:	float x = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x - this->location->x));
+src/game/Character.cpp:167:	float y = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y + this->location->y));
+src/game/Character.cpp:175:	float x = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x - this->x));
+src/game/Character.cpp:176:	float y = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y - this->y));
+src/game/Character.cpp:189:		if(this->hasStatus((statusIndicator)statFlag)) {
+src/game/Character.cpp:202:	std::string info = " \n\n Name:\t"+this->name + "\n" +
+src/game/Character.cpp:203:				"\tStatus:"+this->getStatusString() + "\n" ;
+src/game/Character.cpp:204:				// "\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
+src/game/Character.cpp:205:				// "\tTarget Angle:"+std::to_string(this->targetAng) + "\n" ;
+src/game/Character.cpp:206:				// "\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
+src/game/Character.cpp:207:				if(this->hasTarget()) {
+src/game/Character.cpp:208:					info += "\tTarget:\t"+this->getTargetName() + "\n";
+src/game/Character.cpp:210:				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
+src/game/Character.cpp:211:				// info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
+src/game/Character.cpp:212:				info += "\tAttack rate: "+std::to_string(this->attackRate) + "\n\n" +
+src/game/Character.cpp:213:					"\tHead: "+std::to_string(this->limbs.at(0).getHealth()) + "/" + std::to_string(this->limbs.at(0).maxHealth) + "\n"+
+src/game/Character.cpp:214:					"\tBody: "+std::to_string(this->limbs.at(1).getHealth()) + "/" + std::to_string(this->limbs.at(1).maxHealth) + "\n"+
+src/game/Character.cpp:215:					"\tArms: "+std::to_string(this->limbs.at(2).getHealth()) + "/" + std::to_string(this->limbs.at(2).maxHealth) + "\n"+
+src/game/Character.cpp:216:					"\tLegs: "+std::to_string(this->limbs.at(3).getHealth()) + "/" + std::to_string(this->limbs.at(3).maxHealth);
+src/game/Character.cpp:221:	if(this->health > 0) { this->health = 0;}
+src/game/Character.cpp:222:	this->move_forward = false;
+src/game/Character.cpp:223:	this->move_back = false;
+src/game/Character.cpp:225:	//this->target = nullptr;
+src/game/Character.cpp:226:	this->setStatus(STATUS_DEAD);
+src/game/Character.cpp:230:	this->location->evict(this);
+src/game/Character.cpp:231:	this->target = nullptr;
+src/game/Character.cpp:232:	this->location = nullptr;
+src/game/Character.cpp:233:	delete this->inventory;
+src/game/Character.cpp:234:	if(this->isPlayer) {
+src/game/Character.cpp:237:	TBAGame->removeObject(this);
+src/game/Character.h:71:		float getTurnSpeed() {return this->turnSpeed;}
+src/game/Character.h:113:		std::string inline getEquipString() {return this->equipment->getEquipString();}
+src/game/Character.h:185:		bool inline hasTarget() {return !(this->target == nullptr);}
+src/game/Character.h:199:			return (dist(this->getLocation(),c1->getLocation()) < dist(this->getLocation(),c2->getLocation()))? c1 : c2;
+src/game/Character.h:209:			this->status = (this->status & ~_s);
+src/game/Character.h:210:			if(this->status == 0) this->addStatus(STATUS_IDLE);
+src/game/Character.h:213:		inline flag getStatus() { return this->status; }
+src/game/Character.h:214:		inline bool hasStatus(statusIndicator _s) { return (this->status & _s) > 0;}
+src/game/Character.h:215:		bool inline isAlive() {return (this->health > 0);}
+src/game/Character.h:242:		virtual inline std::string getName() {return this->name;}
+src/game/Character.h:244:		virtual inline int getID() {return this->objectID;}
+src/game/Character.h:245:		std::tuple<float,float> getLocation() {return {this->x,this->y}; }
+src/game/Character.h:248:			delete this->equipment;
+src/game/Character.h:249:			delete this->inventory;
+src/game/Character.h:250:			//this->location->evict(this);
+src/game/Command.cpp:19:	if(this->ECfunction == nullptr) {
+src/game/Command.cpp:20:		return this->function(this,args);
+src/game/Command.cpp:22:		if(this->ECfunction(this,args)) {
+src/game/Command.cpp:24:			return this->function(this,args);
+src/game/Command.cpp:27:			return "\n"+this->error;
+src/game/CommandFuncs.cpp:47:	TBAGame->gameWindow->textScreen->content.clear();
+src/game/CommandFuncs.cpp:53:	return "\n"+TBAGame->playerChar->getInvString();
+src/game/CommandFuncs.cpp:59:	TBAGame->playerChar->targetAng = (float)dirMap.at(args.at(0)).second;
+src/game/CommandFuncs.cpp:60:	TBAGame->playerChar->autoMove = true;
+src/game/CommandFuncs.cpp:61:	TBAGame->playerChar->addStatus(STATUS_MOVE);
+src/game/CommandFuncs.cpp:62:	return "\nMoving "+command->aux;
+src/game/CommandFuncs.cpp:68:		command->error = "Invalid direction";
+src/game/CommandFuncs.cpp:71:	command->aux = dirMap.at(args.at(0)).first;
+src/game/CommandFuncs.cpp:79:	TBAGame->togglePause();
+src/game/CommandFuncs.cpp:80:	return (TBAGame->paused)? "\nPaused" : "\nUnpaused";
+src/game/CommandFuncs.cpp:86:	if(TBAGame->paused) {
+src/game/CommandFuncs.cpp:87:		TBAGame->togglePause();
+src/game/CommandFuncs.cpp:96:	// TBAGame->playerChar->direction = {0,0};
+src/game/CommandFuncs.cpp:97:	TBAGame->playerChar->autoMove = false;
+src/game/CommandFuncs.cpp:105:		return "\n=====================\nFor information type:\n->help <command>\n=====================\n"+join('\n',TBAGame->commandStrings);
+src/game/CommandFuncs.cpp:115:		if(!contains(TBAGame->commandStrings,args.at(0))) {
+src/game/CommandFuncs.cpp:116:			command->error = args.at(0)+": command not found";
+src/game/CommandFuncs.cpp:128:		// if(!TBAGame->playerChar->getNearestTarget()) return "\nNo valid targets found";
+src/game/CommandFuncs.cpp:129:		// return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
+src/game/CommandFuncs.cpp:130:		TBAGame->playerChar->setTarget(nullptr);
+src/game/CommandFuncs.cpp:135:	//TBAGame->playerChar->setTarget(TBAGame->findObject(command->aux));	
+src/game/CommandFuncs.cpp:136:	TBAGame->playerChar->findTargetInRadius(command->aux);
+src/game/CommandFuncs.cpp:137:	return "\n"+TBAGame->playerChar->getName()+" targets "+TBAGame->playerChar->getTargetName();
+src/game/CommandFuncs.cpp:141:		command->aux = "None";
+src/game/CommandFuncs.cpp:146:	if(!TBAGame->playerChar->findTargetInRadius(targetName)) {
+src/game/CommandFuncs.cpp:147:		command->error = "Target not found";
+src/game/CommandFuncs.cpp:151:	command->aux = targetName;
+src/game/CommandFuncs.cpp:158:	TBAGame->playerChar->setStatus(STATUS_COMBAT);
+src/game/CommandFuncs.cpp:159:	return "\nAttacking "+TBAGame->playerChar->getTargetName();
+src/game/CommandFuncs.cpp:165:		Character* newTarget = static_cast<Character*>(TBAGame->findObject(targetName));
+src/game/CommandFuncs.cpp:167:			command->error = "Target not found";
+src/game/CommandFuncs.cpp:170:		TBAGame->playerChar->setTarget(newTarget);
+src/game/CommandFuncs.cpp:178:	if(command->aux == "out") {
+src/game/CommandFuncs.cpp:179:		TBAGame->gameWindow->mapScreen->zoom /= 2;
+src/game/CommandFuncs.cpp:180:	} else if(command->aux == "in") {
+src/game/CommandFuncs.cpp:181:		TBAGame->gameWindow->mapScreen->zoom *= 2;
+src/game/CommandFuncs.cpp:183:		TBAGame->gameWindow->mapScreen->zoom = 1;
+src/game/CommandFuncs.cpp:184:		TBAGame->gameWindow->mapScreen->generateMapTiles();
+src/game/CommandFuncs.cpp:187:	TBAGame->gameWindow->mapScreen->generateMapTiles();
+src/game/CommandFuncs.cpp:188:	return "\nZoomed "+toLower(command->aux);
+src/game/CommandFuncs.cpp:192:		command->aux = "";
+src/game/CommandFuncs.cpp:196:		command->error = "Invalid zoom direction";
+src/game/CommandFuncs.cpp:199:	command->aux = args.at(0);
+src/game/CommandFuncs.cpp:205:	TBAGame->playerChar->say(join(' ',args));
+src/game/CommandFuncs.cpp:210:		command->error = "";
+src/game/CommandFuncs.cpp:224:	TBAGame->playerChar->health -= damage;
+src/game/CommandFuncs.cpp:233:	TBAGame->gameRunning = false;
+src/game/CommandFuncs.cpp:245:		command->error = "No item specified";
+src/game/CommandFuncs.cpp:249:	if(!TBAGame->hasDisplayTarget()) {
+src/game/CommandFuncs.cpp:250:		command->error = "No container selected";
+src/game/CommandFuncs.cpp:253:	if(TBAGame->displayTarget->type != OBJ_CONTAINER and TBAGame->displayTarget->type != OBJ_CHARACTER) {
+src/game/CommandFuncs.cpp:254:		command->error = "Cannot take item from "+TBAGame->displayTarget->getName();
+src/game/CommandFuncs.cpp:263:		if(TBAGame->hasDisplayTarget()) {
+src/game/CommandFuncs.cpp:264:			std::string name = TBAGame->displayTarget->getName();
+src/game/CommandFuncs.cpp:265:			TBAGame->clearDisplayTarget();
+src/game/CommandFuncs.cpp:271:	GameObject *newDisplayTarget = TBAGame->playerChar->findObjectInRadius(objName);
+src/game/CommandFuncs.cpp:275:		TBAGame->setDisplayTarget(newDisplayTarget);
+src/game/CommandFuncs.cpp:277:	return "\nSelected "+newDisplayTarget->getName();
+src/game/CommandFuncs.cpp:289:		command->error = "No item specified";
+src/game/CommandFuncs.cpp:293:	if(!TBAGame->hasDisplayTarget()) {
+src/game/CommandFuncs.cpp:294:		command->error = "No target selected";
+src/game/CommandFuncs.cpp:297:	if(!TBAGame->displayTarget->hasInventory()) {
+src/game/CommandFuncs.cpp:298:		command->error = "Cannot put item in "+TBAGame->displayTarget->getName();
+src/game/CommandFuncs.cpp:308:		std::vector<GameObject*> containers = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER);
+src/game/CommandFuncs.cpp:310:			if(startsWith(toLower(containers.at(i)->getName()),toLower(containerName))) {
+src/game/CommandFuncs.cpp:311:				return "\n"+containers.at(i)->getInvString();
+src/game/CommandFuncs.cpp:316:		return "\n"+TBAGame->displayTarget->getInvString();
+src/game/CommandFuncs.cpp:321:	if(!TBAGame->hasDisplayTarget() and args.size() == 0) {
+src/game/CommandFuncs.cpp:322:		command->error = "No target selected";
+src/game/CommandFuncs.cpp:332:	int index = TBAGame->playerChar->inventory->find(itemName);
+src/game/CommandFuncs.cpp:334:		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+src/game/CommandFuncs.cpp:335:		if(TBAGame->playerChar->equip(goodItem)) {
+src/game/CommandFuncs.cpp:336:			TBAGame->playerChar->resetCombatTimer();
+src/game/CommandFuncs.cpp:337:			return "\nEquipped "+goodItem->name;
+src/game/CommandFuncs.cpp:339:		return "\nCan't equip this item ("+goodItem->name+")";
+src/game/CommandFuncs.cpp:340:	} else if(index == -2) {
+src/game/CommandFuncs.cpp:347:		command->error = "No item specified";
+src/game/CommandFuncs.cpp:363:		std::string surface = "\nStanding on "+TBAGame->playerChar->location->getName();
+src/game/CommandFuncs.cpp:364:		std::vector<Character*> nearbyChars = TBAGame->playerChar->getCharactersInRadius();
+src/game/CommandFuncs.cpp:365:		std::vector<GameObject*> nearbyObjs = TBAGame->playerChar->getObjectsInRadius(OBJ_GENERIC);
+src/game/CommandFuncs.cpp:369:			surface += "\n-"+nearbyChars.at(i)->getName();
+src/game/CommandFuncs.cpp:372:			surface += "\n>"+nearbyObjs.at(i)->getName();
+src/game/CommandFuncs.cpp:376:		int index = TBAGame->playerChar->inventory->find(join(' ',args));
+src/game/CommandFuncs.cpp:378:			return "\n"+TBAGame->playerChar->inventory->getItem(index)->getInfo();
+src/game/CommandFuncs.cpp:379:		} else if(index == -2) {
+src/game/CommandFuncs.cpp:394:	int index = TBAGame->playerChar->inventory->find(itemName);
+src/game/CommandFuncs.cpp:396:		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+src/game/CommandFuncs.cpp:397:		if(TBAGame->playerChar->plant(goodItem)) {
+src/game/CommandFuncs.cpp:398:			return "\nPlanted "+goodItem->name;
+src/game/CommandFuncs.cpp:400:		return "\nCan't plant this item ("+goodItem->name+")";
+src/game/CommandFuncs.cpp:401:	} else if(index == -2) {
+src/game/CommandFuncs.cpp:408:		command->error = "No item specified";
+src/game/CommandUtils.h:35:	int index = source->find(goodItem->name);
+src/game/CommandUtils.h:38:		goodItem = source->remove(index);
+src/game/CommandUtils.h:39:		destination->add(goodItem);
+src/game/CommandUtils.h:40:		index = source->find(goodItem->name);
+src/game/CommandUtils.h:41:		if(index == -1) {
+src/game/CommandUtils.h:53:	int index = -1;
+src/game/CommandUtils.h:56:	std::vector<GameObject*> containers = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER);
+src/game/CommandUtils.h:60:		index = testContainer->inventory->find(itemName);
+src/game/CommandUtils.h:62:			inv = testContainer->inventory;
+src/game/CommandUtils.h:63:			sourceName = testContainer->getName();
+src/game/CommandUtils.h:74:	std::string command = cmd->aliases.at(0);
+src/game/CommandUtils.h:119:		targetName = TBAGame->displayTarget->getName();
+src/game/CommandUtils.h:124:		source = TBAGame->displayTarget->getInventory();
+src/game/CommandUtils.h:125:		destination = TBAGame->playerChar->inventory;
+src/game/CommandUtils.h:130:		targetName = TBAGame->displayTarget->getName();
+src/game/CommandUtils.h:134:		source = TBAGame->playerChar->inventory;
+src/game/CommandUtils.h:135:		destination = TBAGame->displayTarget->getInventory();
+src/game/CommandUtils.h:137:		if(TBAGame->displayTarget->type == OBJ_CHARACTER) {
+src/game/CommandUtils.h:148:		std::vector<std::string> allItems = source->getContentString();
+src/game/CommandUtils.h:156:	int index = source->find(itemName);
+src/game/CommandUtils.h:161:		goodItem = source->getItem(index);
+src/game/CommandUtils.h:162:		if(takeAll) itemCount = source->itemCount(goodItem->id);
+src/game/CommandUtils.h:164:		if(taken > 1) return "\n"+tense+" "+goodItem->name + " ("+std::to_string(taken)+")"+" "+preposition+" "+targetName;
+src/game/CommandUtils.h:165:		return "\n"+tense+" "+goodItem->name+" "+preposition+" "+targetName;
+src/game/CommandUtils.h:166:	} else if(index == -2) {
+src/game/Container.cpp:11:	this->inventory = new Inventory(size);
+src/game/Container.cpp:12:	decompose(location,this->x,this->y);
+src/game/Container.cpp:13:	this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+src/game/Container.cpp:14:	this->location->addObject(this);
+src/game/Container.cpp:19:	decompose(location,this->x,this->y);
+src/game/Container.cpp:20:	this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+src/game/Container.cpp:21:	this->location->addObject(this);
+src/game/Container.cpp:25:	this->inventory = new Inventory(size);
+src/game/Container.cpp:26:	this->inventory->add(itemVec);
+src/game/Container.cpp:27:	decompose(location,this->x,this->y);
+src/game/Container.cpp:28:	this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+src/game/Container.cpp:29:	this->location->addObject(this);
+src/game/Container.cpp:33:	return {this->x,this->y};
+src/game/Container.cpp:37:	return "\n\nName:\t"+this->name + "\n" +
+src/game/Container.cpp:38:				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n" +
+src/game/Container.cpp:39:				"\tContents:"+this->inventory->contentString;
+src/game/Container.h:29:		std::string inline getName() {return this->name;}
+src/game/Container.h:33:			delete this->inventory;
+src/game/Container.h:34:			TBAGame->removeObject(this);
+src/game/Equipment.cpp:5:	" Primary:   " + this->getPrimaryName() +
+src/game/Equipment.cpp:6:	"\n Head:      " + this->getHeadName() +
+src/game/Equipment.cpp:7:	"\n Body:      " + this->getBodyName() +
+src/game/Equipment.cpp:8:	"\n Legs:      " + this->getLegsName() + 
+src/game/Equipment.cpp:9:	"\n Feet:      " + this->getFeetName();
+src/game/Equipment.h:20:	bool inline hasPrimary() {return this->primary != nullptr;}
+src/game/Equipment.h:21:	bool inline hasSecondary() {return this->primary != nullptr;}
+src/game/Equipment.h:22:	bool inline hasHead() {return this->head != nullptr;}
+src/game/Equipment.h:23:	bool inline hasBody() {return this->body != nullptr;}
+src/game/Equipment.h:24:	bool inline hasLegs() {return this->legs != nullptr;}
+src/game/Equipment.h:25:	bool inline hasFeet() {return this->feet != nullptr;}
+src/game/Equipment.h:28:		if(this->hasPrimary()) return this->primary->name;
+src/game/Equipment.h:32:		if(this->hasSecondary()) return this->secondary->name;
+src/game/Equipment.h:36:		if(this->hasHead()) return this->head->name;
+src/game/Equipment.h:40:		if(this->hasBody()) return this->body->name;
+src/game/Equipment.h:44:		if(this->hasLegs()) return this->legs->name;
+src/game/Equipment.h:48:		if(this->hasFeet()) return this->feet->name;
+src/game/FloatingText.cpp:9:	//Source rectangle taken from screenFont->fontTexture
+src/game/FloatingText.cpp:22:	int x = std::get<0>(this->location) - (TBAGame->gameWindow->textScreen->charW/TBAGame->gameWindow->mapScreen->zoom*this->message.at(0).size()/2);
+src/game/FloatingText.cpp:23:	int y = std::get<1>(this->location) - (TBAGame->gameWindow->textScreen->charH/TBAGame->gameWindow->mapScreen->zoom*this->message.size()/2);
+src/game/FloatingText.cpp:26:	for(int i=0;i<this->message.size();i++) {
+src/game/FloatingText.cpp:27:		thisLine = this->message.at(i);
+src/game/FloatingText.cpp:34:			if(TBAGame->gameWindow->textScreen->screenFont->fontMap.find(charIndex) == TBAGame->gameWindow->textScreen->screenFont->fontMap.end()) {
+src/game/FloatingText.cpp:39:			charInfo = TBAGame->gameWindow->textScreen->screenFont->fontMap.at(charIndex);
+src/game/FloatingText.cpp:45:			SDL_Rect dRect = {x+(1*cursor[0])+this->offsetX,(TBAGame->gameWindow->textScreen->charH*cursor[1])+y+charInfo.yo-this->offsetY-this->dialogOffset,sRect.w,sRect.h};
+src/game/FloatingText.cpp:47:			//SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&dRect);
+src/game/FloatingText.cpp:48:			SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
+src/game/FloatingText.cpp:62:	if(this->hasExpired()) {
+src/game/FloatingText.cpp:63:		TBAGame->removeUIObject(this);
+src/game/FloatingText.cpp:64:		this->trackSubject = nullptr;
+src/game/FloatingText.cpp:70:	//if(std::abs(this->defaultX) > std::abs(TBAGame->playerChar->x)+TBAGame->gameWindow->mapScreen->screenCharWidth or std::abs(this->defaultY) > std::abs(TBAGame->playerChar->y)+TBAGame->gameWindow->mapScreen->screenCharHeight) {
+src/game/FloatingText.cpp:72:			TBAGame->removeUIObject(this);
+src/game/FloatingText.cpp:73:			this->trackSubject = nullptr;
+src/game/FloatingText.cpp:79:	this->completion = (TBAGame->logicTicks-this->created)/(this->duration*(float)TBAGame->convert(1000.0));
+src/game/FloatingText.cpp:81:	if(this->tracking) {
+src/game/FloatingText.cpp:82:		this->location = this->trackSubject->getAbsoluteLocation();
+src/game/FloatingText.cpp:86:		this->offsetY = this->heightReached*this->completion;
+src/game/FloatingText.cpp:87:		this->offsetX = this->offsetXsign*this->offsetXMult*this->completion;
+src/game/FloatingText.cpp:88:		this->location = {
+src/game/FloatingText.cpp:89:			TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x - this->defaultX)),
+src/game/FloatingText.cpp:90:			TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y - this->defaultY))
+src/game/FloatingText.cpp:93:	SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,this->color.r,this->color.g,this->color.b);
+src/game/FloatingText.cpp:94:	this->drawContent();
+src/game/FloatingText.cpp:95:	SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,180,180,180);
+src/game/FloatingText.h:37:		this->dialogOffset = 5;
+src/game/FloatingText.h:38:		this->offsetXMult = rand()%16;
+src/game/FloatingText.h:39:		this->offsetXsign = ((rand()%2) == 0)? -1 : 1;
+src/game/FloatingText.h:40:		this->created = TBAGame->logicTicks;
+src/game/FloatingText.h:41:		decompose(this->location,this->defaultX,this->defaultY);
+src/game/FloatingText.h:47:		this->dialogOffset = 24;
+src/game/FloatingText.h:48:		decompose(this->location,this->defaultX,this->defaultY);
+src/game/FloatingText.h:49:		this->tracking = true;
+src/game/FloatingText.h:50:		this->created = TBAGame->logicTicks;
+src/game/FloatingText.h:51:		this->color = {200,200,200,255};
+src/game/FloatingText.h:55:		return TBAGame->logicTicks >= this->created + (TBAGame->convert(this->duration*1000));
+src/game/GameObject.cpp:12:	this->objectID = ++TBAGame->objectTotal;
+src/game/GameObject.cpp:14:	switch(this->type) {
+src/game/GameObject.cpp:21:			TBAGame->gameObjects.push_back(this);
+src/game/GameObject.cpp:24:			TBAGame->gameUIObjects.push_back(this);
+src/game/GameObject.cpp:31:	switch(this->type) {
+src/game/GameObject.cpp:33:			return static_cast<Character*>(this)->inventory;
+src/game/GameObject.cpp:35:			return static_cast<Container*>(this)->inventory;
+src/game/GameObject.cpp:41:	if(!this->hasInventory()) return "ERR_NO_INVENTORY";
+src/game/GameObject.cpp:42:	return this->getName()+":"+this->getInventory()->toString();
+src/game/GameObject.h:31:		virtual std::tuple<float,float> getLocation() {return {-1,-1};}
+src/game/GameObject.h:32:		virtual int getDisplayID() {return -1;}
+src/game/GameObject.h:34:		inline bool hasInventory() { return this->type == OBJ_CHARACTER or this->type == OBJ_CONTAINER;}
+src/game/Input.cpp:37:	for(int i=0;i<TBAGame->commandList.size();i++) {
+src/game/Input.cpp:40:		testCommand = TBAGame->commandList.at(i);
+src/game/Input.cpp:43:			for(int j=0;j<testCommand->aliases.size();j++) {
+src/game/Input.cpp:44:				if(testCommand->aliases.at(j) == commandString) {
+src/game/Input.cpp:45:					return testCommand->call(args);
+src/game/Inventory.cpp:12:	this->contents->push_back(item);
+src/game/Inventory.cpp:13:	this->setInfoString();
+src/game/Inventory.cpp:18:	for(int i=0;i<this->contents->size();i++) {
+src/game/Inventory.cpp:19:		if(item == this->contents->at(i)) return i;
+src/game/Inventory.cpp:21:	return -1;
+src/game/Inventory.cpp:25:	std::vector<std::string> contentVec = this->getContentString();
+src/game/Inventory.cpp:30:		if(itemName != name) return -2;
+src/game/Inventory.cpp:32:	for(int i=0;i<this->contents->size();i++) {
+src/game/Inventory.cpp:33:		if(itemName == this->contents->at(i)->name) return i;
+src/game/Inventory.cpp:35:	return -1;
+src/game/Inventory.cpp:40:	for(int i=0;i<this->contents->size();i++) {
+src/game/Inventory.cpp:41:		if(this->contents->at(i)->id == id) c++;
+src/game/Inventory.cpp:47:	if(this->isEmpty()) return "\nEmpty";
+src/game/Inventory.cpp:48:	return this->contentString;
+src/game/Inventory.cpp:58:	this->contents->push_back(new Item(id));
+src/game/Inventory.cpp:59:	this->setInfoString();
+src/game/Inventory.cpp:65:		this->contents->push_back(new Item(itemVec.at(i)));
+src/game/Inventory.cpp:67:	this->setInfoString();
+src/game/Inventory.cpp:71:	Item *removedItem = this->getItem(index);
+src/game/Inventory.cpp:72:	this->contents->erase(this->contents->begin()+index);
+src/game/Inventory.cpp:73:	this->setInfoString();
+src/game/Inventory.cpp:79:	for(int i=0;i<this->contents->size();i++) {
+src/game/Inventory.cpp:80:		if(!contains(contents,this->contents->at(i)->name)) {
+src/game/Inventory.cpp:81:			contents.push_back(this->contents->at(i)->name);
+src/game/Inventory.cpp:96:	if(this->isEmpty()) {
+src/game/Inventory.cpp:97:		this->contentString = "\tEmpty";
+src/game/Inventory.cpp:102:	for(int i=0;i<this->contents->size();i++) {
+src/game/Inventory.cpp:103:		idList.push_back(this->contents->at(i)->id);
+src/game/Inventory.cpp:106:	for(int i=0;i<this->contents->size();i++) {
+src/game/Inventory.cpp:108:		itemID = this->contents->at(i)->id;
+src/game/Inventory.cpp:113:		itemName = replace(this->contents->at(i)->name,' ',"");
+src/game/Inventory.cpp:116:			invString += "\t-"+itemName;
+src/game/Inventory.cpp:118:			// invString += "\t-"+std::to_string(itemCount)+""+this->contents->at(i)->getPluralDisplayName();
+src/game/Inventory.cpp:119:			invString += "\t-"+std::to_string(itemCount)+"x"+this->contents->at(i)->getDisplayName();
+src/game/Inventory.cpp:120:			//invString += "\t-"+itemName+""+"("+std::to_string(itemCount)+")";
+src/game/Inventory.cpp:125:	this->contentString = invString;
+src/game/Inventory.h:25:	inline Item* getItem(int i) {return this->contents->at(i);}
+src/game/Inventory.h:28:	inline bool isEmpty() { return this->contents->size() == 0; } 
+src/game/Inventory.h:35:		this->contents->clear();
+src/game/Inventory.h:36:		std::vector<Item*>().swap(*this->contents);
+src/game/Inventory.h:37:		delete this->contents;
+src/game/Item.cpp:42:	this->name = std::get<0>(itemInfo);
+src/game/Item.cpp:43:	this->description = std::get<1>(itemInfo);
+src/game/Item.cpp:44:	this->weight = std::get<2>(itemInfo);
+src/game/Item.cpp:45:	this->size = std::get<3>(itemInfo);
+src/game/Item.cpp:46:	this->types = std::get<4>(itemInfo);
+src/game/Item.cpp:47:	this->primaryType = this->getPrimaryType();
+src/game/Item.cpp:48:	this->createAttributeSet(this->getAttributes(),std::get<5>(itemInfo));
+src/game/Item.cpp:50:	/*std::vector<itemAttribute> attribEnums = attributeLookup.at(this->primaryType);
+src/game/Item.cpp:54:		this->attributeValues.insert({attribEnums.at(i),attribValues.at(i)});
+src/game/Item.cpp:58:	this->created = std::time(NULL);
+src/game/Item.cpp:64:	if(attributeLookup.find(this->primaryType) != attributeLookup.end()) {
+src/game/Item.cpp:65:		return attributeLookup.at(this->primaryType);
+src/game/Item.cpp:76:		if(this->hasType((itemType)testFlag)) return (itemType)testFlag;
+src/game/Item.cpp:92:		this->attributes.insert({attribs.at(i),attribValues.at(i)});
+src/game/Item.cpp:97:	//return (this->attributeValues.find(attrib) != this->attributeValues.end());
+src/game/Item.cpp:98:	return (this->attributes.find(attrib) != this->attributes.end());
+src/game/Item.cpp:103:	if(this->hasAttribute(attrib)) {
+src/game/Item.cpp:104:		return this->attributes.at(attrib);
+src/game/Item.cpp:106:	return -1;
+src/game/Item.cpp:111:	return itemTypeMap.at(this->primaryType);
+src/game/Item.cpp:116:	" Name:\t"+this->name+"\n" +
+src/game/Item.cpp:117:	" Type:\t"+this->getTypeAsString()+"\n" +
+src/game/Item.cpp:118:	" Weight:\t"+std::to_string(this->weight)+"\n" +
+src/game/Item.cpp:119:	" Size:\t"+std::to_string(this->size);
+src/game/Item.cpp:125:	return this->name;
+src/game/Item.cpp:128:	if(this->name[this->name.size()-1] == 's') return this->name+"'";
+src/game/Item.cpp:129:	if(issymbol(this->name[this->name.size()-1])) return this->name;
+src/game/Item.cpp:130:	return this->name+'s';
+src/game/Item.cpp:133:	return replace(this->getPlural(),' ',"");
+src/game/Item.cpp:136:	return replace(this->name,' ',"");
+src/game/Item.h:32:		inline flag getType() {return this->types;}
+src/game/Item.h:33:		inline bool hasType(itemType type) { return (this->types & type) > 0;}
+src/game/Item.h:48:			//delete this->attributes;
+src/game/ItemManifest.cpp:30:	{"Iron Arrow","A wood-shafted arrow with an iron tip. Could probably do some damage.",3,3,I_CRAFTING | I_METAL | I_INGREDIENT,{}},
+src/game/ItemManifest.cpp:34:	{"Cracked Longbow","A wooden bow. Probably won't survive more than a few shots.",3,3,I_WEAPON | I_WEAPON_RANGED | I_WEAPON_BOW | I_EQUIPMENT,{2,-1}},
+src/game/ItemManifest.h:74:// will return -1
+src/game/ItemManifest.h:96:		std::vector<float>				//Type-specific traits (attributes)
+src/game/Limb.h:18:		this->health = max;
+src/game/Limb.h:21:	inline int getHealth() {return this->health;}
+src/game/Limb.h:22:	inline void applyDamage(int damage) {this->health -= damage;}
+src/game/Projectile.cpp:14:	this->x = _x+(this->collisionSize*std::cos(this->angle));
+src/game/Projectile.cpp:15:	this->y = _y+(this->collisionSize*std::sin(this->angle));
+src/game/Projectile.cpp:17:	this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+src/game/Projectile.cpp:18:	this->location->addObject(this);
+src/game/Projectile.cpp:20:	this->lastUpdate = TBAGame->logicTicks;
+src/game/Projectile.cpp:21:	this->destroyTime = TBAGame->logicTicks + this->maxAge;
+src/game/Projectile.cpp:23:	this->active = true;
+src/game/Projectile.cpp:28:	if(this->active) {
+src/game/Projectile.cpp:29:		this->relocate();
+src/game/Projectile.cpp:30:	} else if(this->trackSubject != nullptr) {
+src/game/Projectile.cpp:31:		decompose(trackSubject->getLocation(),this->x,this->y);
+src/game/Projectile.cpp:34:	if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
+src/game/Projectile.cpp:35:		this->location->removeObject(this);
+src/game/Projectile.cpp:36:		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+src/game/Projectile.cpp:37:		this->location->objects.push_back(this);
+src/game/Projectile.cpp:40:	this->lastUpdate = TBAGame->logicTicks;
+src/game/Projectile.cpp:42:	if(TBAGame->logicTicks >= this->destroyTime) {
+src/game/Projectile.cpp:43:		this->cleanup();
+src/game/Projectile.cpp:50:	float testX = this->x;
+src/game/Projectile.cpp:51:	float testY = this->y;
+src/game/Projectile.cpp:53:	Tile* thisTile = TBAGame->gameWorld->getTileAt(testX,testY);
+src/game/Projectile.cpp:57:	for(int j=0;j<TBAGame->logicTicks-this->lastUpdate;j++) {
+src/game/Projectile.cpp:60:		if(!thisTile->isPassable()) {
+src/game/Projectile.cpp:61:			this->x = testX;// + (rand()%4)*(this->velocity*std::cos(this->angle));
+src/game/Projectile.cpp:62:			this->y = testY;// + (rand()%4)*(this->velocity*std::sin(this->angle));
+src/game/Projectile.cpp:63:			this->active = false;
+src/game/Projectile.cpp:67:		if(thisTile->isOccupied()) {
+src/game/Projectile.cpp:68:			for(int i=0;i<thisTile->occupiers.size();i++) {
+src/game/Projectile.cpp:70:				occupant = thisTile->occupiers.at(i);
+src/game/Projectile.cpp:73:				if((char*)occupant == (char*)this->owner) continue;
+src/game/Projectile.cpp:74:				if(!occupant->isAlive()) continue;
+src/game/Projectile.cpp:76:				if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
+src/game/Projectile.cpp:78:					occupant->receiveAttack(1,this->owner);
+src/game/Projectile.cpp:80:					this->x = testX;// + 2*(this->velocity*std::cos(this->angle));
+src/game/Projectile.cpp:81:					this->y = testY;// + 2*(this->velocity*std::sin(this->angle));
+src/game/Projectile.cpp:82:					this->trackSubject = occupant;
+src/game/Projectile.cpp:83:					this->active = false;
+src/game/Projectile.cpp:90:		testX += this->velocity*std::cos(this->angle);
+src/game/Projectile.cpp:91:		testY += this->velocity*std::sin(this->angle);
+src/game/Projectile.cpp:92:		thisTile = TBAGame->gameWorld->getTileAt(testX,testY);
+src/game/Projectile.cpp:93:		if((char*)thisTile != (char*)this->location) {
+src/game/Projectile.cpp:94:			this->location->removeObject(this);
+src/game/Projectile.cpp:95:			this->location = thisTile;
+src/game/Projectile.cpp:96:			this->location->objects.push_back(this);
+src/game/Projectile.cpp:99:	this->x = testX;
+src/game/Projectile.cpp:100:	this->y = testY;
+src/game/Projectile.cpp:104:	this->location->removeObject(this);
+src/game/Projectile.cpp:105:	TBAGame->removeObject(this);
+src/game/Projectile.h:17:		int maxAge = TBAGame->convert(60000);	//Projectiles decay after 1 minute
+src/game/Projectile.h:34:			return {this->x,this->y};
+src/game/Statistics.cpp:9:	this->defaultAttackRate = 100;
+src/game/Statistics.cpp:12:	this->defaultAttackDamage = 3;
+src/game/Statistics.cpp:16:	this->defaultAttackSpeed = 20;
+src/game/Statistics.cpp:18:	this->maxHealth = 10;
+src/game/Statistics.cpp:19:	this->health = this->maxHealth;
+src/game/Statistics.cpp:22:	this->defaultAttackRange = .5;
+src/game/Statistics.cpp:23:	this->defaultMoveSpeed = 2;
+src/game/Statistics.cpp:25:	this->defaultTurnSpeed = 4;
+src/game/Statistics.cpp:26:	this->turnSpeed = this->defaultTurnSpeed;
+src/game/Statistics.cpp:27:	this->defaultFOV = 90;
+src/game/Statistics.cpp:29:	this->attackRate = this->defaultAttackRate + ((-500+rand()%1000)/50);
+src/game/Statistics.h:17:		this->type = _type;
+src/game/Statistics.h:18:		this->xp = 0;
+src/game/Statistics.h:19:		this->level = 0;
+src/game/Statistics.h:30:		this->strength = new Stat(STAT_STRENGTH);
+src/game/Statistics.h:31:		this->dexterity = new Stat(STAT_DEXTERITY);
+src/game/World.cpp:14:	return ( std::abs((int)(x*10)%10) >= 5 )? (int)( x + ((x > 0)? 1 : -1)) : (int)x;
+src/game/World.cpp:15:	//y = ( std::abs((int)(y*10)%10) >= 5 )?  (int)( y + ((y > 0)? 1 : -1)) : (int)y;
+src/game/World.cpp:23:	x -= this->size/2;
+src/game/World.cpp:24:	y -= this->size/2;
+src/game/World.cpp:32:	//x = ( std::abs((int)(x*10)%10) >= 5 )? (int)( x + ((x > 0)? 1 : -1)) : (int)x;
+src/game/World.cpp:33:	//y = ( std::abs((int)(y*10)%10) >= 5 )?  (int)( y + ((y > 0)? 1 : -1)) : (int)y;
+src/game/World.cpp:35:	//x = ( (( ((int)x < 0)? -1 : 1 ) * (int)(x*10)%10) >= 5 )? (int)( x + ((x > 0)? 1 : -1)) : (int)x;
+src/game/World.cpp:36:	//y = ( (( ((int)y < 0)? -1 : 1 ) * (int)(y*10)%10) >= 5 )?  (int)( y + ((y > 0)? 1 : -1)) : (int)y;
+src/game/World.cpp:46:	x += this->size/2;
+src/game/World.cpp:47:	y += this->size/2;
+src/game/World.cpp:60:	for(int y=0;y<this->size;y++) {
+src/game/World.cpp:62:		this->tileVector.push_back(new std::vector<Tile*>);
+src/game/World.cpp:63:		for(int x=0;x<this->size;x++) {
+src/game/World.cpp:71:				this->tileVector.at(y)->push_back(new Tile(2,cartesianX,-cartesianY));
+src/game/World.cpp:73:				this->tileVector.at(y)->push_back(new Tile(1,cartesianX,-cartesianY));
+src/game/World.cpp:75:				this->tileVector.at(y)->push_back(new Tile(0,cartesianX,-cartesianY));
+src/game/World.cpp:88:	SDL_SetTextureColorMod(this->screenFont->fontTexture,200,200,200);
+src/game/World.cpp:90:	SDL_SetRenderTarget(renderer,this->worldTexture);
+src/game/World.cpp:92:	//Source rectangle taken from screenFont->fontTexture
+src/game/World.cpp:100:	//std::vector<std::vector<Tile*>> visibleContent = subVec(this->map,0,this->map.size());
+src/game/World.cpp:102:	//visibleContent.push_back("->");
+src/game/World.cpp:110:	int index = -1;
+src/game/World.cpp:114:	for(int y=0;y<this->size;y++) {
+src/game/World.cpp:115:		for(int x=0;x<this->size;x++) {
+src/game/World.cpp:117:			thisTile = this->tileVector.at(y)->at(x);
+src/game/World.cpp:122:			tileID = thisTile->getDisplayID();
+src/game/World.cpp:124:			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+src/game/World.cpp:129:			charInfo = this->screenFont->fontMap.at(tileID);
+src/game/World.cpp:137:			SDL_RenderCopyEx(renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+src/game/World.cpp:153:	int startingX = std::get<0>(location) - (s.at(0).size()/2);
+src/game/World.cpp:154:	int startingY = std::get<1>(location) - (s.size()/2);
+src/game/World.cpp:163:			this->replaceTile({startingX+j,startingY+i},0);
+src/game/World.cpp:164:			this->getTileAt(startingX+j,startingY+i)->needsUpdate = true;
+src/game/World.cpp:165:			//if( (j == 0 and i == 0) or (j == 0 and i == s.size()-1) or (j == s.at(i).size()-1 and i == 0) or (j == s.at(i).size()-1 and i == s.size()-1) ) {
+src/game/World.cpp:168:				//block->setFlipType(-s.at(i).at(j));
+src/game/World.cpp:169:				this->getTileAt(startingX+j,startingY+i)->addBlock(block);
+src/game/World.cpp:173:				this->getTileAt(startingX+j,startingY+i)->addBlock(new Block(tileID));
+src/game/World.cpp:191:	this->cartesianToIndex(indX,indY);
+src/game/World.cpp:193:	Tile *oldTile = this->getTileAt(x,y);
+src/game/World.cpp:194:	Tile *newTile = new Tile(tileID,x,-y);
+src/game/World.cpp:198:	newTile->occupiers = oldTile->occupiers;
+src/game/World.cpp:199:	newTile->objects = oldTile->objects;
+src/game/World.cpp:202:	this->tileVector.at(indY)->at(indX) = newTile;
+src/game/World.cpp:212:	for(int i=y-r;i<=y+r;i++) {
+src/game/World.cpp:213:		for(int j=x-r;j<=x+r;j++) {
+src/game/World.cpp:214:			if(	pow(j-x,2) + pow(i-y,2) <= rs) {
+src/game/World.cpp:231:			newMap.at(i).push_back(this->getTileAt(x-(mapSize/2)+j,y-(mapSize/2)+i));
+src/game/World.cpp:243:		return this->invalid;
+src/game/World.cpp:248:	return this->tileVector.at(y)->at(x);
+src/game/World.cpp:256:	return !(x >= this->size or x < 0 or y >= this->size or y < 0);
+src/game/World.cpp:264:	return !(x >= this->size-16 or x < 16 or y >= this->size-16 or y < 16);
+src/game/World.h:21:		Tile* invalid = new Tile(-1,-1,-1);
+src/game/World.h:44:			this->tileVector.clear();
+src/game/World.h:45:			delete this->invalid;
+src/game/World.h:46:			std::vector<std::vector<Tile*>*>().swap(this->tileVector);
+src/Main.cpp:12:		TBAGame->debugMode = true;
+src/Main.cpp:21:	TBAGame->setupUI();
+src/Main.cpp:24:	TBAGame->setupGame();
+src/Main.cpp:27:	//TBAGame->canUpdateLogic = false;
+src/Main.cpp:28:	//TBAGame->canUpdateGraphics = true;
+src/Main.cpp:31:	TBAGame->spawn_threads();
+src/Main.cpp:34:	//pthread_cond_signal(&TBAGame->graphics);
+src/Main.cpp:36:	TBAGame->gameLog->writeln("Entering game loop");
+src/Main.cpp:37:	while(TBAGame->gameRunning) {
+src/Main.cpp:38:		TBAGame->input();
+src/Main.cpp:39:		TBAGame->update();
+src/tools/Log.cpp:8:	this->filename = _filename;
+src/tools/Log.cpp:9:	this->path = "log/"+_filename;
+src/tools/Log.cpp:11:	logfile.open(this->path,std::ofstream::out | std::ofstream::trunc);
+src/tools/Log.cpp:13:		std::cerr << "ERROR opening "<< this->filename << " at path " << this->path << std::endl;
+src/tools/Log.cpp:16:		this->writeln(this->filename+" initialized");
+src/tools/Log.cpp:24:	logfile.open(this->path,std::ios_base::app);
+src/tools/Log.cpp:27:		std::cerr << "ERROR writing to "<< this->filename << " at path " << this->path << std::endl;
+src/tools/Log.cpp:30:		this->get_timestamp();
+src/tools/Log.cpp:31:		logfile << this->timestamp << " : " << s;
+src/tools/Log.cpp:40:	logfile.open(this->path,std::ios_base::app);
+src/tools/Log.cpp:43:		std::cerr << "ERROR writing to "<< this->filename << " at path " << this->path << std::endl;
+src/tools/Log.cpp:46:		this->get_timestamp();
+src/tools/Log.cpp:47:		logfile << this->timestamp << " : " << s << std::endl;
+src/tools/Log.cpp:60:	strftime(this->timestamp,32,"%b/%d/%Y(%a)%H:%M:%S",local_time);
+src/tools/Utility.cpp:11:	for(int i=s.length()-1;i>0;i--) {
+src/tools/Utility.cpp:14:	return -1;
+src/tools/Utility.cpp:24:	return -1;
+src/tools/Utility.cpp:89:				TBAGame->displayText("\n"+matchlist+"\r");
+src/tools/Utility.cpp:213:        if(find(s[i], digits) == -1) {
+src/tools/Utility.cpp:220:    std::vector<char> symbols = {'!','@','#','$','%','^','&','*',')','(','-','=','+','_','`','~','/','\\','.','|','[',']','{','}',';',':','"','?','<','>'};
+src/tools/Utility.cpp:230:	return sqrt(pow((y1-y2),2)+pow(x1-x2,2));
+src/tools/Utility.h:12://--VECTORS--
+src/tools/Utility.h:23:	v.at(v.size()-1) = v.at(v.size()-1)+t;
+src/tools/Utility.h:31:	std::cout << "--DUMPVEC BEGIN--" << std::endl;
+src/tools/Utility.h:35:	std::cout << "--DUMPVEC END--" << std::endl;
+src/tools/Utility.h:137://--STRINGS--
+src/tools/Utility.h:159:	return -1;
+src/tools/Utility.h:169://--TUPLE--
+src/tools/Utility.h:178://--DEBUG--
+src/ui/Font.cpp:12:	std::string path = "assets/font/"+this->fontName+"_0.tga";
+src/ui/Font.cpp:14:	fontLog->writeln("Opening front from path "+path);
+src/ui/Font.cpp:21:	fontLog->writeln("Optimizing font surface...");
+src/ui/Font.cpp:22:	optimizedSurface = SDL_ConvertSurface( loadedSurface, SDL_GetWindowSurface(window)->format, 0 );
+src/ui/Font.cpp:23:	fontLog->writeln("Font surface optimized");
+src/ui/Font.cpp:30:	SDL_SetColorKey(optimizedSurface, SDL_TRUE, SDL_MapRGB( optimizedSurface->format, 0, 0, 0 ) );
+src/ui/Font.cpp:36:	fontLog->writeln("Font texture generation complete");
+src/ui/Font.cpp:43:	fontLog->writeln("Loading font map...");
+src/ui/Font.cpp:80:	fontLog->writeln("Font map loaded.");
+src/ui/Font.h:32:		this->basePath = "assets/font/"+fontname;
+src/ui/Font.h:33:		this->fontName = fontname;
+src/ui/Font.h:34:		this->loadFontMap();
+src/ui/Font.h:38:		SDL_DestroyTexture(this->fontTexture);
+src/ui/Font.h:39:		delete this->fontLog;
+src/ui/Screen.cpp:15:	this->x = x;
+src/ui/Screen.cpp:16:	this->y = y;
+src/ui/Screen.cpp:17:	this->w = w;
+src/ui/Screen.cpp:18:	this->h = h;
+src/ui/Screen.cpp:20:	this->defaultX = x;
+src/ui/Screen.cpp:21:	this->defaultY = y;
+src/ui/Screen.cpp:23:	this->hasBorder = border;
+src/ui/Screen.cpp:27:	this->bdRect = {this->x,this->y,this->w,this->h};
+src/ui/Screen.cpp:34:	this->x = x;
+src/ui/Screen.cpp:35:	this->y = y;
+src/ui/Screen.cpp:36:	this->w = w;
+src/ui/Screen.cpp:37:	this->h = h;
+src/ui/Screen.cpp:39:	this->charW = 8;
+src/ui/Screen.cpp:40:	this->charH = 12;
+src/ui/Screen.cpp:42:	this->offsetX = 4;
+src/ui/Screen.cpp:43:	this->offsetY = 3;
+src/ui/Screen.cpp:45:	this->defaultX = x;
+src/ui/Screen.cpp:46:	this->defaultY = y;
+src/ui/Screen.cpp:47:	this->updatePriority = 0;
+src/ui/Screen.cpp:49:	this->hasBorder = border;
+src/ui/Screen.cpp:50:	this->screenCharWidth = this->w/this->charW;
+src/ui/Screen.cpp:51:	this->screenCharHeight = this->h/this->charH;
+src/ui/Screen.cpp:53:	this->tabChar = "->";
+src/ui/Screen.cpp:54:	this->commandHistory.push_back("");
+src/ui/Screen.cpp:55:	this->setCommandLine();
+src/ui/Screen.cpp:63:	this->x = x;
+src/ui/Screen.cpp:64:	this->y = y;
+src/ui/Screen.cpp:65:	this->w = w;
+src/ui/Screen.cpp:66:	this->h = h;
+src/ui/Screen.cpp:68:	this->charW = 8;
+src/ui/Screen.cpp:69:	this->charH = 12;
+src/ui/Screen.cpp:71:	this->offsetX = 4;
+src/ui/Screen.cpp:72:	this->offsetY = 3;
+src/ui/Screen.cpp:74:	this->defaultX = x;
+src/ui/Screen.cpp:75:	this->defaultY = y;
+src/ui/Screen.cpp:77:	this->hasBorder = border;
+src/ui/Screen.cpp:78:	this->screenCharWidth = this->w/this->charW;
+src/ui/Screen.cpp:79:	this->screenCharHeight = this->h/this->charH;
+src/ui/Screen.cpp:81:	this->content.push_back("");
+src/ui/Screen.cpp:85:	this->bdRect = {this->x,this->y,this->w,this->h};
+src/ui/Screen.cpp:87:	this->updatePriority = 1;
+src/ui/Screen.cpp:93:	this->x = x;
+src/ui/Screen.cpp:94:	this->y = y;
+src/ui/Screen.cpp:96:	this->duration = _duration;
+src/ui/Screen.cpp:98:	this->hasBorder = true;
+src/ui/Screen.cpp:100:	this->charW = 8;
+src/ui/Screen.cpp:101:	this->charH = 12;
+src/ui/Screen.cpp:102:	this->w = std::min(this->maxWidth*charW,(this->charW*(int)content.size()) + (this->borderSize*2));
+src/ui/Screen.cpp:103:	this->screenCharWidth = this->w/this->charW;
+src/ui/Screen.cpp:105:	this->h = (this->charH*(content.size()/this->screenCharWidth)) + 6;
+src/ui/Screen.cpp:106:	this->screenCharHeight = this->h/this->charH;
+src/ui/Screen.cpp:108:	this->x -= this->w/2;
+src/ui/Screen.cpp:109:	this->y += this->h/2;
+src/ui/Screen.cpp:111:	this->offsetX = 5;
+src/ui/Screen.cpp:112:	this->offsetY = 3;
+src/ui/Screen.cpp:114:	this->defaultX = x;
+src/ui/Screen.cpp:115:	this->defaultY = y;
+src/ui/Screen.cpp:117:	this->setContent(content);
+src/ui/Screen.cpp:119:	this->screenFont = new Font("terminal");
+src/ui/Screen.cpp:121:	this->bdRect = {this->x,this->y,this->w,this->h};
+src/ui/Screen.cpp:123:	this->init_texture();
+src/ui/Screen.cpp:125:	this->screenFont->generateFontTexture(TBAGame->gameWindow->window,TBAGame->gameWindow->renderer);
+src/ui/Screen.cpp:127:	this->drawBorder();
+src/ui/Screen.cpp:128:	this->generateTexture(this->content);
+src/ui/Screen.cpp:134:	this->x = x;
+src/ui/Screen.cpp:135:	this->y = y;
+src/ui/Screen.cpp:136:	this->w = w;
+src/ui/Screen.cpp:137:	this->h = h;
+src/ui/Screen.cpp:139:	this->charW = 16;
+src/ui/Screen.cpp:140:	this->charH = 16;
+src/ui/Screen.cpp:142:	this->defaultX = x;
+src/ui/Screen.cpp:143:	this->defaultY = y;
+src/ui/Screen.cpp:144:	//this->updatePriority = 0;
+src/ui/Screen.cpp:146:	this->hasBorder = border;
+src/ui/Screen.cpp:147:	this->screenCharWidth = this->w/this->charW;
+src/ui/Screen.cpp:148:	this->screenCharHeight = this->h/this->charH;
+src/ui/Screen.cpp:152:	this->bdRect = {this->x,this->y,this->w,this->h};
+src/ui/Screen.cpp:153:	this->mapTextureRect = {this->x+1,this->y+1,this->w+(2*this->charW),this->h+(2*this->charH)};
+src/ui/Screen.cpp:158:	this->screenTexture = SDL_CreateTexture(TBAGame->gameWindow->renderer,
+src/ui/Screen.cpp:159:	   SDL_GetWindowPixelFormat(TBAGame->gameWindow->window),
+src/ui/Screen.cpp:162:	   this->w+1,
+src/ui/Screen.cpp:163:	   this->h+1);
+src/ui/Screen.cpp:167:	this->drawBorder();
+src/ui/Screen.cpp:172:	if(this->hasBorder) {
+src/ui/Screen.cpp:174:		SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->screenTexture);
+src/ui/Screen.cpp:175:		SDL_RenderClear(TBAGame->gameWindow->renderer);
+src/ui/Screen.cpp:177:		this->bdRect = {0,0,this->w,this->h};
+src/ui/Screen.cpp:180:		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
+src/ui/Screen.cpp:181:		SDL_RenderFillRect(TBAGame->gameWindow->renderer,&bdRect);
+src/ui/Screen.cpp:184:		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bdColor.r,bdColor.g,bdColor.b,bdColor.a);
+src/ui/Screen.cpp:189:			SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&tRect);
+src/ui/Screen.cpp:192:		SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+src/ui/Screen.cpp:195:	SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
+src/ui/Screen.cpp:200:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,this->screenTexture);
+src/ui/Screen.cpp:201:	//SDL_RenderClear(TBAGame->gameWindow->renderer);
+src/ui/Screen.cpp:203:	//Source rectangle taken from screenFont->fontTexture
+src/ui/Screen.cpp:211:	SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,255,255,255,255);
+src/ui/Screen.cpp:216:	this->contentWindowStart = -this->screenCharHeight;
+src/ui/Screen.cpp:217:	this->contentWindowEnd = screenContent.size();
+src/ui/Screen.cpp:219:	if(this->contentWindowEnd+this->contentWindowOffset < this->screenCharHeight) {
+src/ui/Screen.cpp:220:		while(this->contentWindowEnd+this->contentWindowOffset < this->screenCharHeight) {
+src/ui/Screen.cpp:221:			this->contentWindowOffset++;
+src/ui/Screen.cpp:223:	} else if(this->contentWindowStart+this->contentWindowOffset > -this->screenCharHeight) {
+src/ui/Screen.cpp:224:		while(this->contentWindowStart+this->contentWindowOffset > -this->screenCharHeight) {
+src/ui/Screen.cpp:225:			this->contentWindowOffset--;
+src/ui/Screen.cpp:229:	//debug(this->contentWindowStart+this->contentWindowOffset);
+src/ui/Screen.cpp:230:	//debug(this->contentWindowEnd+this->contentWindowOffset);
+src/ui/Screen.cpp:232:	std::vector<std::string> visibleContent = subVec(screenContent,this->contentWindowStart+this->contentWindowOffset,this->contentWindowEnd+this->contentWindowOffset);
+src/ui/Screen.cpp:234:	//visibleContent.push_back("->");
+src/ui/Screen.cpp:247:			if(this->screenFont->fontMap.find(charIndex) == this->screenFont->fontMap.end()) {
+src/ui/Screen.cpp:252:			charInfo = this->screenFont->fontMap.at(charIndex);
+src/ui/Screen.cpp:258:			SDL_Rect dRect = {this->offsetX+(cursor[0]),this->offsetY+(cursor[1])+charInfo.yo,sRect.w,sRect.h};
+src/ui/Screen.cpp:260:			//SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&dRect);
+src/ui/Screen.cpp:261:			SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
+src/ui/Screen.cpp:268:		cursor[1] += this->charH;
+src/ui/Screen.cpp:272:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+src/ui/Screen.cpp:276:	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
+src/ui/Screen.cpp:277:	SDL_Rect dRect = {this->x,this->y,this->w+1,this->h+1};
+src/ui/Screen.cpp:279:	//SDL_Rect srect = {windowOffsetX-(this->w/2/this->zoom),windowOffsetY-(this->h/2/this->zoom),this->w/this->zoom,this->h/this->zoom};
+src/ui/Screen.cpp:281:	SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenTexture,NULL,&dRect);
+src/ui/Screen.cpp:286:	if(extend(this->content,appendToLast(this->commandLines,this->cursorChar)) != this->lastContent) {
+src/ui/Screen.cpp:287:		this->drawBorder();
+src/ui/Screen.cpp:288:		this->setCommandLine();
+src/ui/Screen.cpp:289:		this->lastContent = extend(this->content,appendToLast(this->commandLines,this->cursorChar));
+src/ui/Screen.cpp:290:		this->generateTexture(this->lastContent);
+src/ui/Screen.cpp:292:	this->drawScreen();
+src/ui/Screen.cpp:296:	if(true or this->hasNewContent() or (this->lastUpdate + this->updateInterval <= SDL_GetTicks())) {
+src/ui/Screen.cpp:297:		this->drawBorder();
+src/ui/Screen.cpp:298:		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
+src/ui/Screen.cpp:299:		this->prepareContent();
+src/ui/Screen.cpp:300:		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->contentString+"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo()+"\n\nTarget info:\n\t"+TBAGame->playerChar->getTargetInfo());
+src/ui/Screen.cpp:301:		this->generateTexture(this->content);
+src/ui/Screen.cpp:302:		this->drawScreen();
+src/ui/Screen.cpp:303:		this->lastUpdate = SDL_GetTicks();
+src/ui/Screen.cpp:309:	// this->fallbackText = message;
+src/ui/Screen.cpp:310:	// if(this->messageQueue.size() == 0) {
+src/ui/Screen.cpp:311:		// this->setContent(message);
+src/ui/Screen.cpp:318:	// this->enabled = true;
+src/ui/Screen.cpp:319:	// this->messageQueue.push_back(std::make_tuple(message,duration));
+src/ui/Screen.cpp:320:	// if(this->messageQueue.size() == 1) {
+src/ui/Screen.cpp:321:		// this->setContent(message);
+src/ui/Screen.cpp:322:		// this->stopTick = TBAGame->logicTicks+duration;
+src/ui/Screen.cpp:329:	// if(this->enabled and TBAGame->logicTicks >= this->stopTick) {
+src/ui/Screen.cpp:330:		// this->messageQueue.erase(this->messageQueue.begin());
+src/ui/Screen.cpp:331:		// if(this->messageQueue.size() == 0) {
+src/ui/Screen.cpp:332:			// this->enabled = false;
+src/ui/Screen.cpp:333:			// if(this->toggled) {
+src/ui/Screen.cpp:334:				// this->setContent(this->fallbackText);
+src/ui/Screen.cpp:337:			// this->setContent(std::get<0>(this->messageQueue.at(0)));
+src/ui/Screen.cpp:338:			// this->duration = TBAGame->logicTicks+std::get<1>(this->messageQueue.at(0));
+src/ui/Screen.cpp:341:	this->drawScreen();
+src/ui/Screen.cpp:343:	if(!this->toggled) this->duration--;
+src/ui/Screen.cpp:344:	if(this->duration <= 0) this->active = false;
+src/ui/Screen.cpp:349:	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
+src/ui/Screen.cpp:350:	this->mapTextureRect = {this->x,this->y,this->w,this->h};
+src/ui/Screen.cpp:352:	int windowOffsetX = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->x)*this->charW;
+src/ui/Screen.cpp:353:	int windowOffsetY = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->y)*this->charH;
+src/ui/Screen.cpp:355:	SDL_Rect srect = {windowOffsetX-(this->w/2/this->zoom),windowOffsetY-(this->h/2/this->zoom),this->w/this->zoom,this->h/this->zoom};
+src/ui/Screen.cpp:357:	SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture,&srect,&this->mapTextureRect);
+src/ui/Screen.cpp:366:	if(this->hasBorder) {
+src/ui/Screen.cpp:368:		this->bdRect = {this->x,this->y,this->w,this->h};
+src/ui/Screen.cpp:371:		//SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
+src/ui/Screen.cpp:372:		//SDL_RenderFillRect(TBAGame->gameWindow->renderer,&bdRect);
+src/ui/Screen.cpp:373:		//SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,NULL,&bdRect);
+src/ui/Screen.cpp:376:		SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bdColor.r,bdColor.g,bdColor.b,bdColor.a);
+src/ui/Screen.cpp:380:			SDL_Rect tRect = {bdRect.x-i,bdRect.y-i,bdRect.w+(2*i)+1,bdRect.h+(2*i)+1};
+src/ui/Screen.cpp:381:			SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&tRect);
+src/ui/Screen.cpp:388:	//this->drawBorder();
+src/ui/Screen.cpp:389:	this->updateMap();
+src/ui/Screen.cpp:390:	this->drawMap();
+src/ui/Screen.cpp:391:	this->trueDrawBorder();
+src/ui/Screen.cpp:398:	SDL_Colour bgColor = TBAGame->gameWindow->bgColor;
+src/ui/Screen.cpp:400:	SDL_SetRenderDrawColor(TBAGame->gameWindow->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
+src/ui/Screen.cpp:402:	for(int i=0;i<this->panelVector.size();i++) {
+src/ui/Screen.cpp:404:		SDL_RenderFillRect(TBAGame->gameWindow->renderer,&rect);
+src/ui/Screen.h:56:			// delete this->screenFont;
+src/ui/Screen.h:57:			// SDL_DestroyTexture(this->screenTexture);
+src/ui/Screen.h:129:		bool inline hasNewContent() {return (this->getContent() != this->oldContent);}
+src/ui/Screen.h:196:			// SDL_DestroyTexture(this->mapTexture);
+src/ui/ScreenUtils.cpp:19:	if(this->content.size() == 0) {
+src/ui/ScreenUtils.cpp:20:		this->content.push_back("");
+src/ui/ScreenUtils.cpp:26:	int indexOfLastSpace = -1;
+src/ui/ScreenUtils.cpp:27:	int tabStop = this->screenCharWidth/2;
+src/ui/ScreenUtils.cpp:31:	if(this->content.at(this->content.size()-1)[this->content.at(this->content.size()-1).size()-1] == '\r') {
+src/ui/ScreenUtils.cpp:32:		this->content.pop_back();
+src/ui/ScreenUtils.cpp:34:	std::string thisLine = this->content.at(this->content.size()-1);
+src/ui/ScreenUtils.cpp:35:	this->content.pop_back();
+src/ui/ScreenUtils.cpp:39:		cursorX = thisLine.size()-1;
+src/ui/ScreenUtils.cpp:40:		if(thisLine.size() + 1 >= this->screenCharWidth) {
+src/ui/ScreenUtils.cpp:44:				this->content.push_back(thisLine);
+src/ui/ScreenUtils.cpp:46:				indexOfLastSpace = -1;
+src/ui/ScreenUtils.cpp:47:			} else if(indexOfLastSpace == -1) {
+src/ui/ScreenUtils.cpp:49:				this->content.push_back(thisLine);
+src/ui/ScreenUtils.cpp:51:				indexOfLastSpace = -1;
+src/ui/ScreenUtils.cpp:56:				this->content.push_back(thisLine.substr(0,indexOfLastSpace));
+src/ui/ScreenUtils.cpp:65:				indexOfLastSpace = thisLine.size()-1;
+src/ui/ScreenUtils.cpp:67:				//Non-breaking space
+src/ui/ScreenUtils.cpp:72:				this->content.push_back(thisLine);
+src/ui/ScreenUtils.cpp:74:				indexOfLastSpace = -1;
+src/ui/ScreenUtils.cpp:79:						indexOfLastSpace = thisLine.size()-1;
+src/ui/ScreenUtils.cpp:85:						indexOfLastSpace = thisLine.size()-1;
+src/ui/ScreenUtils.cpp:87:						this->content.push_back(thisLine);
+src/ui/ScreenUtils.cpp:92:				//	if(s[i] == '') TBAGame->gameRunning = false;
+src/ui/ScreenUtils.cpp:99:	this->content.push_back(thisLine);
+src/ui/ScreenUtils.cpp:114:		if(thisLine.size()+1 >= this->screenCharWidth) {
+src/ui/ScreenUtils.cpp:133:	std::string thisLine = this->content.at(this->content.size()-1);
+src/ui/ScreenUtils.cpp:135:	if(thisLine.size() + 1 >= this->screenCharWidth) {
+src/ui/ScreenUtils.cpp:136:		this->content.push_back("");
+src/ui/ScreenUtils.cpp:138:	int lineIndex = this->content.size()-1;
+src/ui/ScreenUtils.cpp:139:	this->content.at(lineIndex) += c;
+src/ui/ScreenUtils.cpp:147:	int centerX = TBAGame->playerChar->x;
+src/ui/ScreenUtils.cpp:148:	int centerY = TBAGame->playerChar->y;
+src/ui/ScreenUtils.cpp:150:	this->map = TBAGame->gameWorld->getMapAt((this->w/this->charW)+2,centerX,centerY);
+src/ui/ScreenUtils.cpp:151:	this->lastMapX = centerX;
+src/ui/ScreenUtils.cpp:152:	this->lastMapY = centerY;
+src/ui/ScreenUtils.cpp:157:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
+src/ui/ScreenUtils.cpp:159:	//Source rectangle taken from screenFont->fontTexture
+src/ui/ScreenUtils.cpp:173:	int index = -1;
+src/ui/ScreenUtils.cpp:177:	this->checked.clear();
+src/ui/ScreenUtils.cpp:181:			thisTile = this->map.at(i).at(j);
+src/ui/ScreenUtils.cpp:188:			if(thisTile->isOccupied() or thisTile->hasObjects() or thisTile->planted) {
+src/ui/ScreenUtils.cpp:189:				charSize = this->charW;
+src/ui/ScreenUtils.cpp:191:				for(int k=-1;k<=1;k++) {
+src/ui/ScreenUtils.cpp:192:					for(int n=-1;n<=1;n++) {
+src/ui/ScreenUtils.cpp:196:							thisTile = this->map.at(std::min(i+k,(int)this->map.size()-1)).at(std::min(j+n,(int)this->map.size()-1));
+src/ui/ScreenUtils.cpp:201:						if(this->checked.find((char*)thisTile) != this->checked.end()) {
+src/ui/ScreenUtils.cpp:204:							this->checked.insert((char*)thisTile);
+src/ui/ScreenUtils.cpp:207:						tileID = thisTile->getDisplayID();
+src/ui/ScreenUtils.cpp:209:						if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+src/ui/ScreenUtils.cpp:214:						charInfo = this->screenFont->fontMap.at(tileID);
+src/ui/ScreenUtils.cpp:216:						int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
+src/ui/ScreenUtils.cpp:217:						int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
+src/ui/ScreenUtils.cpp:222:						// if(thisTile->planted) SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
+src/ui/ScreenUtils.cpp:223:						SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+src/ui/ScreenUtils.cpp:224:						// SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+src/ui/ScreenUtils.cpp:233:			cursor[0] += this->charW;
+src/ui/ScreenUtils.cpp:244:	int centerX = TBAGame->playerChar->x;
+src/ui/ScreenUtils.cpp:245:	int centerY = TBAGame->playerChar->y;
+src/ui/ScreenUtils.cpp:247:	if(centerX != this->lastMapX or centerY != this->lastMapY) {
+src/ui/ScreenUtils.cpp:248:		this->generateMapTiles();
+src/ui/ScreenUtils.cpp:249:		//this->generateMapTexture();
+src/ui/ScreenUtils.cpp:252:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
+src/ui/ScreenUtils.cpp:254:	///SDL_RenderClear(TBAGame->gameWindow->renderer);
+src/ui/ScreenUtils.cpp:256:	//Source rectangle taken from screenFont->fontTexture
+src/ui/ScreenUtils.cpp:270:	int index = -1;
+src/ui/ScreenUtils.cpp:285:	this->redrawActiveTiles();
+src/ui/ScreenUtils.cpp:290:				thisTile = this->map.at(i).at(j);
+src/ui/ScreenUtils.cpp:292:				charSize = this->charW;
+src/ui/ScreenUtils.cpp:294:				tileID = thisTile->getDisplayID();
+src/ui/ScreenUtils.cpp:296:				if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+src/ui/ScreenUtils.cpp:301:				charInfo = this->screenFont->fontMap.at(tileID);
+src/ui/ScreenUtils.cpp:303:				int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
+src/ui/ScreenUtils.cpp:304:				int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
+src/ui/ScreenUtils.cpp:309:				if(thisTile->hasBlocks()) {
+src/ui/ScreenUtils.cpp:310:					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+src/ui/ScreenUtils.cpp:311:				} else if(thisTile->needsUpdate) {
+src/ui/ScreenUtils.cpp:312:					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+src/ui/ScreenUtils.cpp:313:					thisTile->needsUpdate = false;
+src/ui/ScreenUtils.cpp:316:				if(thisTile->planted) {
+src/ui/ScreenUtils.cpp:318:					charInfo = this->screenFont->fontMap.at(tileID);
+src/ui/ScreenUtils.cpp:320:					dRect = {windowOffsetX,windowOffsetY,charSize,this->charW};
+src/ui/ScreenUtils.cpp:321:					SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
+src/ui/ScreenUtils.cpp:322:					SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
+src/ui/ScreenUtils.cpp:323:					SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+src/ui/ScreenUtils.cpp:326:				for(int k=0;k<thisTile->occupiers.size();k++) {
+src/ui/ScreenUtils.cpp:330:					occupant = thisTile->occupiers.at(k);
+src/ui/ScreenUtils.cpp:332:					charInfo = TBAGame->gameWindow->textScreen->screenFont->fontMap.at((int)occupant->getName()[0]);
+src/ui/ScreenUtils.cpp:334:					int windowOffsetX = 5+((TBAGame->gameWorld->size/2)+occupant->x)*this->charW;
+src/ui/ScreenUtils.cpp:335:					int windowOffsetY = 5+((TBAGame->gameWorld->size/2)+occupant->y)*this->charH;
+src/ui/ScreenUtils.cpp:340:					SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
+src/ui/ScreenUtils.cpp:342:					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+std::cos(occupant->viewAng*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->viewAng*CONV_DEGREES)*10);
+src/ui/ScreenUtils.cpp:345:				for(int k=0;k<thisTile->objects.size();k++) {
+src/ui/ScreenUtils.cpp:346:					generic = thisTile->objects.at(k);
+src/ui/ScreenUtils.cpp:349:					charInfo = this->screenFont->fontMap.at(generic->getDisplayID());
+src/ui/ScreenUtils.cpp:351:					decompose(generic->getLocation(),objX,objY);
+src/ui/ScreenUtils.cpp:353:					int windowOffsetX = ((TBAGame->gameWorld->size/2)+objX)*this->charW;
+src/ui/ScreenUtils.cpp:354:					int windowOffsetY = ((TBAGame->gameWorld->size/2)+objY)*this->charH;
+src/ui/ScreenUtils.cpp:358:					SDL_SetTextureColorMod(this->screenFont->fontTexture,255,255,255);
+src/ui/ScreenUtils.cpp:360:					switch(generic->type) {
+src/ui/ScreenUtils.cpp:362:							charSize = static_cast<Projectile*>(generic)->displaySize;
+src/ui/ScreenUtils.cpp:364:							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,static_cast<Projectile*>(generic)->angle*CONV_RADIANS,NULL,SDL_FLIP_NONE);
+src/ui/ScreenUtils.cpp:367:							charSize = this->charW;
+src/ui/ScreenUtils.cpp:369:							SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
+src/ui/ScreenUtils.cpp:374:				SDL_SetTextureColorMod(this->screenFont->fontTexture,200,200,200);
+src/ui/ScreenUtils.cpp:377:			cursor[0] += this->charW;
+src/ui/ScreenUtils.cpp:385:	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,NULL);
+src/ui/ScreenUtils.cpp:390:	this->contentWindowOffset -= 2*i;
+src/ui/ScreenUtils.cpp:394:	this->contentWindowOffset = 0;
+src/ui/ScreenUtils.cpp:398:	this->content.clear();
+src/ui/ScreenUtils.cpp:399:	this->addContent(content);
+src/ui/ScreenUtils.cpp:403:	std::string newContent = this->getContent();
+src/ui/ScreenUtils.cpp:404:	this->setContent(newContent);
+src/ui/ScreenUtils.cpp:405:	this->oldContent = newContent;
+src/ui/ScreenUtils.cpp:410:		TBAGame->playerChar->getName()+":"+TBAGame->playerChar->inventory->toString();
+src/ui/ScreenUtils.cpp:413:		/*if(TBAGame->playerChar->hasTarget()) {
+src/ui/ScreenUtils.cpp:414:			newContent += TBAGame->playerChar->getTargetInfo();
+src/ui/ScreenUtils.cpp:418:		if(TBAGame->hasDisplayTarget()) {
+src/ui/ScreenUtils.cpp:419:            newContent += TBAGame->displayTarget->getInfo();
+src/ui/ScreenUtils.cpp:420:			if((char*)TBAGame->displayTarget == (char*)TBAGame->playerChar) {
+src/ui/ScreenUtils.cpp:421:				newContent += "\n\n"+TBAGame->playerChar->getEquipString();
+src/ui/ScreenUtils.cpp:428:	this->content.clear();
+src/ui/ScreenUtils.cpp:431:	this->w = std::min(this->maxWidth*charW,(this->charW*(int)content.size()) + (this->borderSize*2));
+src/ui/ScreenUtils.cpp:432:	this->screenCharWidth = this->w/this->charW;
+src/ui/ScreenUtils.cpp:434:	this->h = (this->charH*((int)content.size()/this->screenCharWidth+1)) + 6;
+src/ui/ScreenUtils.cpp:435:	this->screenCharHeight = this->h/this->charH;
+src/ui/ScreenUtils.cpp:437:	this->x = this->defaultX - this->w/2;
+src/ui/ScreenUtils.cpp:438:	//this->y = this->defaultY + this->h/2;
+src/ui/ScreenUtils.cpp:440:	this->addContent(content);
+src/ui/ScreenUtils.cpp:450:	this->command = s;
+src/ui/ScreenUtils.cpp:451:	this->commandHistory.at(this->commandHistory.size()-1) = s;
+src/ui/ScreenUtils.cpp:452:	this->setCommandLine();
+src/ui/ScreenUtils.cpp:453:	this->resetContentWindowOffset();
+src/ui/ScreenUtils.cpp:458:	this->commandLines = this->prepareCommandForDisplay(tabChar+command);
+src/ui/ScreenUtils.cpp:462:	this->setCommand(this->command+c);
+src/ui/ScreenUtils.cpp:466:	this->setCommand(this->command+s);
+src/ui/ScreenUtils.cpp:471:	if(this->command.size() > 0) {
+src/ui/ScreenUtils.cpp:472:		this->setCommand(this->command.substr(0,this->command.size()-1));
+src/ui/ScreenUtils.cpp:484:	if(this->commandHistory.size() > 1) {
+src/ui/ScreenUtils.cpp:485:		if(this->command != this->commandHistory.at(this->commandHistory.size()-2)) {
+src/ui/ScreenUtils.cpp:486:			this->commandHistory.push_back("");
+src/ui/ScreenUtils.cpp:487:			this->commandIndex++;
+src/ui/ScreenUtils.cpp:490:		this->commandHistory.push_back("");
+src/ui/ScreenUtils.cpp:491:		this->commandIndex++;
+src/ui/ScreenUtils.cpp:495:	this->content = extend(this->content,this->commandLines);
+src/ui/ScreenUtils.cpp:499:	commandReturn = processCommand(this->command);
+src/ui/ScreenUtils.cpp:504:		this->addContent(commandReturn);
+src/ui/ScreenUtils.cpp:506:	this->setCommand("");
+src/ui/ScreenUtils.cpp:507:	this->commandIndex = this->commandHistory.size()-1;
+src/ui/ScreenUtils.cpp:515:	this->commandIndex += i;
+src/ui/ScreenUtils.cpp:517:	if(this->commandHistory.size() == 0) {return;}
+src/ui/ScreenUtils.cpp:519:	if(this->commandIndex < 0) {
+src/ui/ScreenUtils.cpp:520:		this->commandIndex = 0;
+src/ui/ScreenUtils.cpp:521:	} else if(this->commandIndex > this->commandHistory.size()-1) {
+src/ui/ScreenUtils.cpp:522:		this->commandIndex = this->commandHistory.size()-1;
+src/ui/ScreenUtils.cpp:525:	this->setCommand(this->commandHistory.at(commandIndex));
+src/ui/ScreenUtils.cpp:526:	//this->command = this->commandHistory.at(commandIndex);
+src/ui/ScreenUtils.cpp:533:	if(this->command != this->commandHistory.at(this->commandHistory.size()-1)) {
+src/ui/ScreenUtils.cpp:534:		this->commandHistory.push_back(this->command);
+src/ui/ScreenUtils.cpp:547:	if(x >= this->x and x < this->x+this->w) {
+src/ui/ScreenUtils.cpp:548:		if(y >= this->y and y < this->y+this->h) {
+src/ui/Window.cpp:13:	windowLog->writeln("New window initialized");
+src/ui/Window.cpp:15:	this->window = SDL_CreateWindow("TBA",
+src/ui/Window.cpp:22:	this->renderer = SDL_CreateRenderer(this->window,-1,SDL_RENDERER_ACCELERATED);
+src/ui/Window.cpp:24:	this->width = w;
+src/ui/Window.cpp:25:	this->height = h;
+src/ui/Window.cpp:44:	this->mapScreen->screenFont->generateFontTexture(this->window,this->renderer);
+src/ui/Window.cpp:46:	// this->popupBox->screenFont->generateFontTexture(this->window,this->renderer);
+src/ui/Window.cpp:51:	SDL_SetTextureColorMod(this->mapScreen->screenFont->fontTexture,200,200,200);
+src/ui/Window.cpp:53:	for(int i=0;i<this->screenVector.size();i++) {
+src/ui/Window.cpp:54:		screenVector.at(i)->screenFont->generateFontTexture(this->window,this->renderer);
+src/ui/Window.cpp:55:		// SDL_SetTextureAlphaMod(screenVector.at(i)->screenFont->fontTexture,200);
+src/ui/Window.cpp:56:		SDL_SetTextureColorMod(this->screenVector.at(i)->screenFont->fontTexture,180,180,180);
+src/ui/Window.cpp:62:	for(int i=0;i<this->screenVector.size();i++) {
+src/ui/Window.cpp:63:		screenVector.at(i)->update();
+src/ui/Window.cpp:70:	while(screen->updatePriority != this->screenVector.size()-1) {//2) {
+src/ui/Window.cpp:71:		swap(this->screenVector,screen->updatePriority,screen->updatePriority+1);
+src/ui/Window.cpp:72:		int oldPriority = screen->updatePriority;
+src/ui/Window.cpp:73:		screen->updatePriority++;
+src/ui/Window.cpp:74:		this->screenVector.at(oldPriority)->updatePriority = oldPriority;
+src/ui/Window.cpp:79:	for(int i=0;i<this->popupVector.size();i++) {
+src/ui/Window.cpp:80:		if(popupVector.at(i)->toggled) {
+src/ui/Window.cpp:81:			this->popupVector.erase(this->popupVector.begin()+i);
+src/ui/Window.cpp:88:	DynamicTextBox *newPopup = new DynamicTextBox(message,duration,this->mapScreen->x+(this->mapScreen->w/2),borderSize+(borderSize/2)+mapScreen->h);
+src/ui/Window.cpp:89:	// newPopup->screenFont->generateFontTexture(this->window,this->renderer);
+src/ui/Window.cpp:90:	// newPopup->generateTexture(newPopup->content);
+src/ui/Window.cpp:91:	newPopup->toggled = toggled;
+src/ui/Window.cpp:92:	this->popupVector.push_back(newPopup);
+src/ui/Window.cpp:97:	SDL_SetRenderDrawColor(this->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
+src/ui/Window.cpp:98:	SDL_RenderClear(this->renderer);
+src/ui/Window.cpp:100:	if(gdebug == false) this->mapScreen->update();
+src/ui/Window.cpp:101:	TBAGame->updateGameUIObjects();
+src/ui/Window.cpp:102:	//this->mapPanel->update();
+src/ui/Window.cpp:103:	 if(this->popupVector.size() > 0) {
+src/ui/Window.cpp:104:		this->popupVector.at(0)->update();
+src/ui/Window.cpp:106:		if(!this->popupVector.at(0)->active) {
+src/ui/Window.cpp:108:			this->popupVector.erase(popupVector.begin());
+src/ui/Window.cpp:109:			this->popupVector.shrink_to_fit();
+src/ui/Window.cpp:113:	// dumpVec(this->popupVector);
+src/ui/Window.cpp:116:	//-------------------
+src/ui/Window.cpp:117:	this->drawScreens();
+src/ui/Window.cpp:118:	//-------------------
+src/ui/Window.cpp:120:	//TBAGame->updateGameUIObjects();
+src/ui/Window.cpp:123:	//SDL_SetRenderDrawColor(this->renderer,255,255,255,255);
+src/ui/Window.cpp:124:	//SDL_RenderDrawPoint(this->renderer,this->mapScreen->x+this->mapScreen->w/2,this->mapScreen->y+this->mapScreen->h/2);
+src/ui/Window.cpp:126:	SDL_RenderPresent(this->renderer);
+src/ui/Window.h:49:			SDL_DestroyRenderer(this->renderer);
+src/ui/Window.h:50:			SDL_DestroyWindow(this->window);
+src/ui/Window.h:51:			delete this->textScreen;
+src/ui/Window.h:52:			delete this->mapScreen;
+src/ui/Window.h:53:			// delete this->mapPanel;
+src/ui/Window.h:54:			// delete this->auxScreen;
+src/ui/Window.h:55:			// delete this->windowLog;

@@ -153,7 +153,7 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	this->playerChar = new Character(true,160,"Player",0,0);
-	for(int i=0;i<100;i++) {
+	for(int i=0;i<10;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
@@ -161,7 +161,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<0;i++) {
+	for(int i=0;i<1990;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);

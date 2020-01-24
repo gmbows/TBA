@@ -327,7 +327,6 @@ void Character::setLocomotion() {
 
 	if(fabs(this->velocity) < 0.5f) {
 		this->removeStatus(STATUS_MOVE);
-		return;
 	}
 
 
@@ -566,7 +565,9 @@ void Character::say(const std::string& message) {
 //==========
 
 void Character::update() {
-
+	
+	debug("1");
+	
 	if(!this->isAlive()) {
 		//safeguard against zombies
 		if(!this->hasStatus(STATUS_DEAD)) {
@@ -600,6 +601,7 @@ void Character::update() {
 		// }
 
 		//Set movement-based status-actions
+		debug("2");
 		this->setLocomotion();
 
 		/*
@@ -630,7 +632,11 @@ void Character::update() {
 		if(this->viewAng != this->targetAng) this->turn();
 	}
 	
+	
+	
 	//Physics
 	this->move();
+	
+	
 
 }
