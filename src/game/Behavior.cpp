@@ -566,7 +566,7 @@ void Character::say(const std::string& message) {
 
 void Character::update() {
 	
-	debug("1");
+	// debug("1");
 	
 	if(!this->isAlive()) {
 		//safeguard against zombies
@@ -601,7 +601,7 @@ void Character::update() {
 		// }
 
 		//Set movement-based status-actions
-		debug("2");
+		// debug("2");
 		this->setLocomotion();
 
 		/*
