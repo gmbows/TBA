@@ -1,5 +1,5 @@
 # TBA
-A multiplatform text based rpg written in c++
+A multiplatform text based rpg engine written in c++
 
 ## Basic controls
 #### Commands
