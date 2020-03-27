@@ -97,6 +97,8 @@ void Game::setupUI() {
 
 void Game::setupGame() {
 	
+	pthread_mutex_init(&this->updateLock, NULL);
+	
 	//this->maxWaitTime = 1000/std::max(this->logicTickRate,this->graphicsTickRate);
 	//this->minWaitTime = 1000/std::min(this->logicTickRate,this->graphicsTickRate);
 						
@@ -161,7 +163,7 @@ void Game::setupGame() {
 
 	//New characters are added to gameObjects automatically
 	Character *newChar,*LB,*Dog;
-	for(int i=0;i<1990;i++) {
+	for(int i=0;i<0;i++) {
 		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
 		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
 		newChar->setTarget(this->playerChar);
@@ -273,7 +275,7 @@ void logic_thread_routine(Game *game) {
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
-
+	
 	while(game->gameRunning) {
 		// debug("Updating logic");
 		// pthread_mutex_lock(&game->updateLock);
@@ -314,7 +316,7 @@ void graphics_thread_routine(Game *game) {
 
 void Game::spawn_threads() {
 	// if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
-	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+	// if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 }
 
 void Game::updateGameObjects() {
@@ -336,16 +338,16 @@ void Game::update_logic() {
 	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
 	//Update all active game objects
 	this->lastLogicUpdate = SDL_GetTicks();
-	// int start = SDL_GetTicks();
+	int start = SDL_GetTicks();
 	this->updateGameObjects();
 	this->logicTicks++;
 	// debug("Done updating graphics");
-	// int elapsed = SDL_GetTicks()-start;
+	int elapsed = SDL_GetTicks()-start;
 	
 	// pthread_mutex_unlock(&game->updateLock);
 
-	// int real_wait = (1000/this->logicTickRate)-elapsed;
-	// if(real_wait <= 0) debug("Falling behind! (logic)");
+	int real_wait = (1000/this->logicTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (logic)");
 	// SDL_Delay(real_wait);
 	
 	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
@@ -381,7 +383,12 @@ void Game::update() {
 	// logic_thread_routine(this);
 	// graphics_thread_routine(this);
 	// if(!this->paused) this->update_logic();
-	this->update_graphics();
+	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
+		this->update_logic();
+		this->update_graphics();
+	} else {
+		SDL_Delay(SDL_GetTicks() - this->lastLogicUpdate);
+	}
 	// SDL_Delay(1000/30);
 
 }

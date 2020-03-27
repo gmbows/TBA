@@ -55,6 +55,7 @@ std::string common(const std::string &s1, const std::string &s2) {
 			return c;
 		}
 	}
+	return "";
 }
 
 //s is passed by reference 

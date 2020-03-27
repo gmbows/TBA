@@ -52,7 +52,7 @@ class Window {
 			delete this->mapScreen;
 			// delete this->mapPanel;
 			// delete this->auxScreen;
-			// delete this->windowLog;
+			delete this->windowLog;
 			debug("Done cleaning up game window.");
 		}
 

@@ -7,45 +7,60 @@
 Log::Log(const std::string& _filename) {
 	this->filename = _filename;
 	this->path = "log/"+_filename;
-	std::ofstream logfile;
-	logfile.open(this->path,std::ofstream::out | std::ofstream::trunc);
-	if(!logfile) {
+	this->logfile.open(this->path,std::ofstream::out | std::ofstream::trunc);
+	if(!this->logfile) {
 		std::cerr << "ERROR opening "<< this->filename << " at path " << this->path << std::endl;
 		return;
 	} else {
 		this->writeln(this->filename+" initialized");
-		logfile.close();
+		// logfile.close();
 	}
 }
 
 void Log::write(const std::string& s) {
 
-	std::ofstream logfile;
-	logfile.open(this->path,std::ios_base::app);
+	// std::ofstream logfile;
+	// this->logfile.open(this->path,std::ios_base::app);
 
-	if(!logfile) {
+	if(!this->logfile) {
 		std::cerr << "ERROR writing to "<< this->filename << " at path " << this->path << std::endl;
 		return;
 	} else {
 		this->get_timestamp();
-		logfile << this->timestamp << " : " << s;
-		logfile.close();
+		this->logfile << this->timestamp << " : " << s;
+		// this->logfile.close();
+	}
+
+}
+
+void Log::write_nts(const std::string& s) {
+
+	// std::ofstream logfile;
+	// this->logfile.open(this->path,std::ios_base::app);
+
+	if(!this->logfile) {
+		std::cerr << "ERROR writing to "<< this->filename << " at path " << this->path << std::endl;
+		return;
+	} else {
+		this->get_timestamp();
+		this->logfile << s;
+		// this->logfile.close();
 	}
 
 }
 
 void Log::writeln(const std::string& s) {
 
-	std::ofstream logfile;
-	logfile.open(this->path,std::ios_base::app);
+	// std::ofstream this->logfile;
+	// this->logfile.open(this->path,std::ios_base::app);
 
-	if(!logfile) {
+	if(!this->logfile) {
 		std::cerr << "ERROR writing to "<< this->filename << " at path " << this->path << std::endl;
 		return;
 	} else {
 		this->get_timestamp();
-		logfile << this->timestamp << " : " << s << std::endl;
-		logfile.close();
+		this->logfile << this->timestamp << " : " << s << std::endl;
+		// this->logfile.close();
 	}
 
 }

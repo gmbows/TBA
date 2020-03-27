@@ -6,6 +6,7 @@ Threads/Synchronization:
 		in main thread and drawn in graphics thread)
 		
 Debug:
+	-IF THERE IS AN UNEXPLAINABLE CRASH AND WE ARE USING THREADS, MUTEX LOCK THE BUSIEST FUNCTION
 	-If runtime crash: You are referencing an object that is not fully constructed
 	-Undefined reference to x() = class or function has not been defined by the time this line is run
 	-Implement all template functions in header files or define all possible template types

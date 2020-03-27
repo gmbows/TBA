@@ -220,6 +220,7 @@ std::vector<GameObject*> Character::getObjectsInRadius(objType type = OBJ_GENERI
 
 bool Character::combatRetarget() {
 
+
 	//Target highest priority target in awareness range (placeholder 10)
 	std::vector<Character*> targets = this->getCharactersInRadius();
 	Tile* thisTile;
@@ -251,7 +252,7 @@ bool Character::combatRetarget() {
 			}
 		}
 	}
-	//ALWAYS RETURNS FALSE!!
+
 	return this->hasTarget();
 }
 
@@ -341,13 +342,17 @@ void Character::combat() {
 	//====================
 	//		ACQUIRE TARGET
 	//====================
-
+	// TBAGame->gameLog->write_nts("2");
 	if(!this->hasTarget()) {
+		// TBAGame->gameLog->write_nts("2");
 		if(!this->combatRetarget()) {
+			// TBAGame->gameLog->write_nts("2");
 			this->removeStatus(STATUS_COMBAT);
 			return;
 		}
 	}
+	
+	// TBAGame->gameLog->write_nts("2");
 
 	//============================
 	//		PREPARE STATUS_ATTACK CONDITIONS
@@ -566,7 +571,10 @@ void Character::say(const std::string& message) {
 
 void Character::update() {
 	
+	// pthread_mutex_lock(&TBAGame->updateLock);
+	
 	// debug("1");
+	// TBAGame->gameLog->write_nts("1");
 	
 	if(!this->isAlive()) {
 		//safeguard against zombies
@@ -601,7 +609,7 @@ void Character::update() {
 		// }
 
 		//Set movement-based status-actions
-		// debug("2");
+		
 		this->setLocomotion();
 
 		/*
@@ -637,6 +645,6 @@ void Character::update() {
 	//Physics
 	this->move();
 	
-	
+	// pthread_mutex_unlock(&TBAGame->updateLock);
 
 }

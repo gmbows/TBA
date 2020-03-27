@@ -35,8 +35,10 @@ struct Font {
 	}
 
 	~Font() {
+		debug("Deleting font "+this->fontName);
 		SDL_DestroyTexture(this->fontTexture);
 		delete this->fontLog;
+		debug("Done deleting font");
 	}
 
 	void generateFontTexture(SDL_Window*,SDL_Renderer*);

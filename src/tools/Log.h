@@ -8,10 +8,15 @@ struct Log {
 	std::string filename;
 	char timestamp[32];
 	void write(const std::string&);
+	void write_nts(const std::string&); //write without timestamp
 	void writeln(const std::string&);
 	void get_timestamp();
+	
+	std::ofstream logfile;
 
 	Log(const std::string&);
-	~Log() {}
+	~Log() {
+		this->logfile.close();
+	}
 
 };

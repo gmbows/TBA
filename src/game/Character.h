@@ -245,10 +245,12 @@ class Character: public GameObject {
 		std::tuple<float,float> getLocation() {return {this->x,this->y}; }
 
 		~Character() {
+			debug("Deleting character");
 			delete this->equipment;
 			delete this->inventory;
 			//this->location->evict(this);
 			delete this;
+			debug("Done deleting character");
 		}
 
 };

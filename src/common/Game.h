@@ -73,7 +73,7 @@ struct Game {
 
 	//Uint32 lastUpdate = SDL_GetTicks();
 	Uint32 lastGraphicsUpdate;
-	Uint32 lastLogicUpdate;
+	Uint32 lastLogicUpdate = 0;
 	int timeToNextUpdate;
 	int elapsed;
 	int timeToNextLogicUpdate;
@@ -105,11 +105,11 @@ struct Game {
 	Game() {}
 	~Game() {
 		debug("Closing game");
-		delete this->gameWindow;
-		this->gameObjects.clear();
-		this->gameUIObjects.clear();
-		std::vector<GameObject*>().swap(this->gameObjects);
-		std::vector<GameObject*>().swap(this->gameUIObjects);
+		// delete this->gameWindow;
+		// this->gameObjects.clear();
+		// this->gameUIObjects.clear();
+		// std::vector<GameObject*>().swap(this->gameObjects);
+		// std::vector<GameObject*>().swap(this->gameUIObjects);
 		// pthread_join(this->logic_thread,NULL);
 		// pthread_join(this->graphics_thread,NULL);
 	}

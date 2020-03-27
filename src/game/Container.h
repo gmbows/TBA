@@ -30,9 +30,11 @@ class Container: public GameObject {
 		std::string getInfo();
 
 		void cleanup() {
+			debug("Deleting container");
 			delete this->inventory;
 			TBAGame->removeObject(this);
 			delete this;
+			debug("Done deleting container");
 		}
 
 };

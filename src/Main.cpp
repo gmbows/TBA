@@ -4,10 +4,10 @@
 
 #include "common/Common.h"
 
-using namespace std;
-
 int main(int argc, char** argv) {
-
+	std::cout << "BLACK" << std::endl;
+	return 0;
+	
 	if(argc > 1) {
 		TBAGame->debugMode = true;
 		std::cout << "Debug mode enabled" << std::endl;
@@ -28,7 +28,7 @@ int main(int argc, char** argv) {
 	//TBAGame->canUpdateGraphics = true;
 
 	//Start logic and graphics threads
-	TBAGame->spawn_threads();
+	// TBAGame->spawn_threads();
 
 	//Let graphics thread update first
 	//pthread_cond_signal(&TBAGame->graphics);
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
 		TBAGame->update();
 	}
 
-	delete TBAGame;
+	// delete TBAGame;
 	SDL_Quit();
 
-	return 1;
+	return 0;
 }
