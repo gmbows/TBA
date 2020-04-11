@@ -313,7 +313,8 @@ std::string searchFunc(Command* command, const std::vector<std::string> &args) {
 		}
 		return "\nContainer not found";
 	} else {
-		return "\n"+TBAGame->displayTarget->getInvString();
+		TBAGame->displayText("\nSearching "+TBAGame->displayTarget->getName()+"...");
+		return TBAGame->displayTarget->getInvString();
 	}
 }
 bool searchEC(Command* command, const std::vector<std::string> &args) {

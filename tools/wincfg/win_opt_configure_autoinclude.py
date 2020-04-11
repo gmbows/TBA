@@ -1,6 +1,6 @@
 import os
 
-execname = "TBA.exe"
+execname = "TBAGame.exe"
 
 basedir = os.path.dirname(os.path.realpath(__file__))+"/../../"
 

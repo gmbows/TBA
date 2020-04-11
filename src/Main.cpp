@@ -5,8 +5,8 @@
 #include "common/Common.h"
 
 int main(int argc, char** argv) {
-	std::cout << "BLACK" << std::endl;
-	return 0;
+	// std::cout << "BLACK" << std::endl;
+	// return 0;
 	
 	if(argc > 1) {
 		TBAGame->debugMode = true;
@@ -39,8 +39,10 @@ int main(int argc, char** argv) {
 		TBAGame->update();
 	}
 
-	// delete TBAGame;
+	delete TBAGame;
 	SDL_Quit();
+	
+	// std::cout<< SDL_GetError() << std::endl;
 
 	return 0;
 }

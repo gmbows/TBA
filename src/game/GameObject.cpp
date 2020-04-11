@@ -39,6 +39,6 @@ Inventory* GameObject::getInventory() {
 
 std::string GameObject::getInvString() {
 	if(!this->hasInventory()) return "ERR_NO_INVENTORY";
-	return this->getName()+":"+this->getInventory()->toString();
+	return this->getInventory()->toString();
 }
 
