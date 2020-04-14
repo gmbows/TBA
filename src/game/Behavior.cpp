@@ -176,6 +176,13 @@ void Character::setTargetAngle(Character *c) {
 	this->targetAng = newAng;
 }	
 
+void Character::setTargetLoc(int x,int y) {
+	//Sets target view angle to aim at target
+	int newAng = atan2(y-this->y,x-this->x)*CONV_RADIANS;
+	if(newAng < 0) newAng = 360+newAng;
+	this->targetAng = newAng;
+}	
+
 std::vector<Character*> Character::getCharactersInRadius() {
 	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
 	Tile* thisTile;
@@ -254,9 +261,11 @@ bool Character::combatRetarget() {
 	}
 
 	return this->hasTarget();
+	
 }
 
-void Character::moveTo(Character *c) {
+/*
+void Character::moveToCharacter(Character *c) {
 	//Set target angle to aim at c
 	this->setTargetAngle(c);
 	
@@ -266,9 +275,96 @@ void Character::moveTo(Character *c) {
 		this->move_forward = false;
 	}
 }
+*/
+
+void Character::moveTo() {
+		move_forward = true;
+		int tx = this->targetPath.at(0)->x;
+		int ty = -this->targetPath.at(0)->y;
+		this->setTargetLoc(tx,ty);
+		// debug(this->targetAng);
+		if((char*)this->location == (char*)this->targetPath.at(0)) {
+			this->targetPath.erase(this->targetPath.begin());
+		}
+		if(this->targetPath.size() == 0) move_forward = false;
+}
+
+void Character::generatePathTo(Character *c) {
+	this->generatePathTo(c->location->x,-c->location->y);
+}
+
+void Character::generatePathTo(float tx, float ty) {
+	if(TBAGame->logicTicks < this->lastPathCheck+TBAGame->pathCheckInterval) return;
+	float g,h,f;
+	float tg,th;
+	
+	Tile *thisTile;
+	Tile *testTile;
+	Tile *currentBestTile = this->location;
+	float currentBestF;
+	
+	float startingDist = dist({this->location->x,this->location->y},{tx,ty});
+
+	std::vector<Tile*> bestPath;
+	
+	std::vector<Tile*> previousBests;
+
+	thisTile = this->location;
+	
+	float tileX = this->location->x;
+	float tileY = -this->location->y;
+	
+	int iter = 0;
+	
+	while( !(tileX == tx and tileY == ty)) {
+		
+		currentBestF = 0xFF;
+	
+		for(int i=-1;i<=1;i++) {
+			for(int j=-1;j<=1;j++) {
+				if(j==0 and i==0) continue;
+				if(tileX+j == this->location->x and tileY+i == -this->location->y) continue;
+				if(contains(previousBests,TBAGame->gameWorld->getTileAt(tileX+j,tileY+i))) continue;
+				if(!TBAGame->gameWorld->getTileAt(tileX+j,tileY+i)->isPassable()) continue;
+				// std::cout << "Testing tile " << thisTile->x+j << ", " << thisTile->y+i << std::endl;
+				// debug(thisTile->x+j);
+				tg = dist({this->location->x,-this->location->y},{tileX+j,tileY+i});
+				th = dist({tileX+j,tileY+i},{tx,ty});
+				f = tg+th;
+				// tiles.insert({thisTile,f});
+				if(f < currentBestF) {
+						// std::cout << "New best tile at " << testTile->x+j << ", " << testTile->y+i << std::endl;
+						currentBestTile = TBAGame->gameWorld->getTileAt(tileX+j,tileY+i);
+						currentBestF = f;
+						previousBests.push_back(currentBestTile);
+					
+				}
+				// std::cout << f << " \tat tile " << tileX+j << ", " << tileY+i << std::endl;
+			}
+		}
+		tileX = currentBestTile->x;
+		tileY = -currentBestTile->y;
+		if((char*)thisTile == (char*)currentBestTile or iter > 40) {
+			debug("Pathing error");
+			// this->targetPath = {};
+			return;
+		}
+		// std::cout << "\nNew best tile at " << tileX << ", " << tileY << std::endl;
+		bestPath.push_back(currentBestTile);
+		iter++;
+	}
+	
+	this->targetPath = bestPath;
+	
+	this->lastPathCheck = TBAGame->logicTicks;
+	
+	for(int i=0;i<bestPath.size();i++) {
+		// bestPath.at(i)->addBlock(4);
+		// std::cout << bestPath.at(i)->x << ", " << bestPath.at(i)->y << std::endl;
+	}
+}
 
 void Character::moveAway(Character *c) {
-	
 	this->setTargetAngle(c);
 	this->targetAng = ((int)this->targetAng+180)%360;
 	this->move_forward = true;
@@ -317,7 +413,7 @@ void Character::setLocomotion() {
 	if(!this->isPlayer) {
 		if(this->hasTarget()) {
 			if(this->hasStatus(STATUS_PURSUE)) {
-				this->moveTo(this->getCharTarget());
+				this->generatePathTo(this->getCharTarget());
 			} else if(this->hasStatus(STATUS_ESCAPE)) {
 				//Check awareness range here for targets in combat, targeting and moving towards this character
 				//Using this character's target is a shortcut
@@ -447,13 +543,14 @@ void Character::sendAttack(GameObject *target) {
 
 	switch(this->getAttackType()) {
 		case I_WEAPON_RANGED:
-			float x,y;
-			decompose(this->getLocation(),x,y);
-			float tx,ty;
-			decompose(this->target->getLocation(),tx,ty);
+			// float x,y;
+			// decompose(this->getLocation(),x,y);
+			// float tx,ty;
+			// decompose(this->target->getLocation(),tx,ty);
 			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
 			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
-			new Projectile(this,this->getLocation(),((-1+rand()%1)+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
+			//												accuracy mult goes here \/
+			new Projectile(this,this->getLocation(),this->viewAng*CONV_DEGREES,.5); //placeholder velocity
 			break;
 		case I_WEAPON_MELEE:
 			// Send to target to be changed based on damage resistance
@@ -638,6 +735,9 @@ void Character::update() {
 		}
 		*/
 		if(this->viewAng != this->targetAng) this->turn();
+		if(this->targetPath.size() > 0) {
+			this->moveTo();
+		}
 	}
 	
 	

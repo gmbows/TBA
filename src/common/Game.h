@@ -91,12 +91,15 @@ struct Game {
 	
 	unsigned int inline convert(unsigned int ms) { return ms/this->logicTickRate;} 
 
+	//recalculate npc pathing every 2 seconds at most
+	int pathCheckInterval = convert(2000);
+
 	//==========
 	// COMMANDS
 	//==========
 
 	std::vector<Command*> commandList;
-	std::vector<std::string> commandStrings;	
+	std::vector<std::string> commandStrings;
 
 	//====================
 	// UPDATE / FOUNDATION
@@ -105,11 +108,11 @@ struct Game {
 	Game() {}
 	~Game() {
 		debug("Closing game");
-		// delete this->gameWindow;
-		// this->gameObjects.clear();
-		// this->gameUIObjects.clear();
-		// std::vector<GameObject*>().swap(this->gameObjects);
-		// std::vector<GameObject*>().swap(this->gameUIObjects);
+		delete this->gameWindow;
+		this->gameObjects.clear();
+		this->gameUIObjects.clear();
+		std::vector<GameObject*>().swap(this->gameObjects);
+		std::vector<GameObject*>().swap(this->gameUIObjects);
 		// pthread_join(this->logic_thread,NULL);
 		// pthread_join(this->graphics_thread,NULL);
 	}

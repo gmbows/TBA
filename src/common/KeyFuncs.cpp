@@ -240,7 +240,7 @@ void turn(bool turn_left,bool turn_right) {
 //==========
 int alpha = -1;
 
-void debugKey() {
+void debugKey() { //kp_plus
 
 	//SDL_Delay(100);
 
@@ -277,6 +277,7 @@ void debugKey() {
 
 	//TBAGame->playerChar->target->receiveAttack(0,TBAGame->playerChar);
 
+	/*
 	float x,y;
 	decompose(TBAGame->playerChar->getLocation(),x,y);
 
@@ -291,8 +292,13 @@ void debugKey() {
 	// static_cast<Character*>(TBAGame->displayTarget)->setTarget(TBAGame->playerChar);
 	
 	// TBAGame->setPlayer(static_cast<Character*>(TBAGame->displayTarget));
+	*/
 
 	TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(5000),false);
+	
+	// TBAGame->playerChar->moveTo(1,1);
+	
+	static_cast<Character*>(TBAGame->displayTarget)->generatePathTo(TBAGame->playerChar->location->x,-TBAGame->playerChar->location->y);
 
 	// TBAGame->gameWindow->popupBox->setToggledContent("Paused");
 	// TBAGame->gameWindow->popupBox->toggled = true;

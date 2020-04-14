@@ -42,7 +42,5 @@ int main(int argc, char** argv) {
 	delete TBAGame;
 	SDL_Quit();
 	
-	// std::cout<< SDL_GetError() << std::endl;
-
 	return 0;
 }

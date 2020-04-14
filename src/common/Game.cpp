@@ -171,14 +171,17 @@ void Game::setupGame() {
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	newChar = new Character(false,160,"Debug Trader",-1,3);
+	newChar = new Character(false,160,"Debug Trader",0,-7);
+	TBAGame->setDisplayTarget(newChar);
+	// newChar->moveTo(0,0);
+	newChar->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	LB = new Character(false,160,"Lost Bladesman",0,6);
 	Dog = new Character(false,160,"Wolf",5,5);
-	//Dog->equipment->primary = new Item(4);
+	// Dog->equipment->primary = new Item(4);
 	LB->equipment->primary = new Item(5);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	Dog->turnSpeed = playerChar->turnSpeed*2;
-	//newChar->lookAt(LB);
+	// newChar->lookAt(LB);
 	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
 	Dog->setStatus(STATUS_COMBAT);
@@ -339,8 +342,10 @@ void Game::update_logic() {
 	//Update all active game objects
 	this->lastLogicUpdate = SDL_GetTicks();
 	int start = SDL_GetTicks();
-	this->updateGameObjects();
-	this->logicTicks++;
+	if(!this->paused) {
+		this->updateGameObjects();
+		this->logicTicks++;
+	}
 	// debug("Done updating graphics");
 	int elapsed = SDL_GetTicks()-start;
 	

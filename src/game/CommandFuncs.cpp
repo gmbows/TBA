@@ -308,7 +308,8 @@ std::string searchFunc(Command* command, const std::vector<std::string> &args) {
 		std::vector<GameObject*> containers = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER);
 		for(int i=0;i<containers.size();i++) {
 			if(startsWith(toLower(containers.at(i)->getName()),toLower(containerName))) {
-				return "\n"+containers.at(i)->getInvString();
+				TBAGame->displayText("\nSearching "+containers.at(i)->getName()+"...");
+				return containers.at(i)->getInvString();
 			}
 		}
 		return "\nContainer not found";

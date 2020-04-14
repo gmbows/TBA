@@ -68,6 +68,14 @@ class Character: public GameObject {
 		//Aim angle in degrees
 		float viewAng = 0;
 		float targetAng = 0;
+		
+		float targetX = 0;
+		float targetY = 0;
+		
+		Uint32 lastPathCheck = 0;
+		
+		std::vector<Tile*> targetPath;
+
 		float getTurnSpeed() {return this->turnSpeed;}
 
 		//Movement control
@@ -169,7 +177,10 @@ class Character: public GameObject {
 		//if viewang != targetang, attenuate at turnspeed
 		void turn();
 		void resolveMove(float&, float&);
-		void moveTo(Character*);
+		void moveToCharacter(Character*);
+		void generatePathTo(float,float);
+		void generatePathTo(Character*);
+		void moveTo();
 		void moveAway(Character*);
 
 		//========
@@ -200,6 +211,7 @@ class Character: public GameObject {
 
 		}
 		void setTargetAngle(Character*);
+		void setTargetLoc(int,int);
 
 		//Status
 		void setStatus(statusIndicator);
