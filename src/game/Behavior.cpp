@@ -533,6 +533,20 @@ itemType Character::getAttackType() {
 	return I_WEAPON_RANGED;
 }
 
+bool Character::hasAmmo(itemType type) {
+	for(int i=0;i<this->inventory->contents->size();i++) {
+		if(this->inventory->contents->at(i)->hasType(I_AMMO | type)) return true;
+	}
+	return false;
+}
+
+Item* Character::getAmmo(itemType type) {
+	for(int i=0;i<this->inventory->contents->size();i++) {
+		if(this->inventory->contents->at(i)->hasType(I_AMMO | type)) return this->inventory->contents->at(i);
+	}
+	return nullptr;
+}
+
 void Character::sendAttack(GameObject *target) {
 
 	//Sends attack type and specifics to target
@@ -550,7 +564,10 @@ void Character::sendAttack(GameObject *target) {
 			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
 			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
 			//												accuracy mult goes here \/
-			new Projectile(this,this->getLocation(),this->viewAng*CONV_DEGREES,.5); //placeholder velocity
+			if(this->hasAmmo(I_WEAPON_BOW)) {
+				new Projectile(this,this->getLocation(),this->viewAng*CONV_DEGREES,.5); //placeholder velocity
+				this->inventory->remove(this->getAmmo(I_WEAPON_BOW));
+			}
 			break;
 		case I_WEAPON_MELEE:
 			// Send to target to be changed based on damage resistance
@@ -596,13 +613,13 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	// this->health -= damage;
 	int targetLimb = rand()%101;
 	if(targetLimb >= 87) {
-		this->limbs.at(0).applyDamage(damage);
+		this->limbs.at(0)->applyDamage(damage);
 	} else if(targetLimb >= 47) {
-		this->limbs.at(1).applyDamage(damage);
+		this->limbs.at(1)->applyDamage(damage);
 	} else if(targetLimb >= 27) {
-		this->limbs.at(2).applyDamage(damage);
+		this->limbs.at(2)->applyDamage(damage);
 	}	else {
-		this->limbs.at(3).applyDamage(damage);
+		this->limbs.at(3)->applyDamage(damage);
 	}
 
 	this->checkLimbs();
@@ -652,7 +669,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 
 void Character::checkLimbs() {
 	for(int i=0;i<this->limbs.size();i++) {
-		if((float)this->limbs.at(i).getHealth()/this->limbs.at(i).maxHealth <= .5) {
+		if((float)this->limbs.at(i)->getHealth()/this->limbs.at(i)->maxHealth <= .5) {
 			this->addStatus(STATUS_CRIPPLED);
 		}
 	}
@@ -670,8 +687,10 @@ void Character::update() {
 	
 	// pthread_mutex_lock(&TBAGame->updateLock);
 	
-	// debug("1");
 	// TBAGame->gameLog->write_nts("1");
+	
+	//Process status effects
+	this->processEffects();
 	
 	if(!this->isAlive()) {
 		//safeguard against zombies
@@ -709,31 +728,6 @@ void Character::update() {
 		
 		this->setLocomotion();
 
-		/*
-		switch(this->getStatus()) {
-			case STATUS_DEAD:
-				break;
-			case STATUS_IDLE:
-				//Contemplate
-				//this->decideOnNewAction()
-				break;
-			case STATUS_COMBAT:
-			case STATUS_ATTACK:
-				this->combat();
-				break;
-			case STATUS_PURSUE:
-				if(this->targetInRange()) {
-					this->addStatus(STATUS_COMBAT);
-				}
-				this->setLocomotion();
-				break;
-			case STATUS_MOVE:
-				this->setLocomotion();
-				break;
-			case STATUS_ESCAPE:
-				break;
-		}
-		*/
 		if(this->viewAng != this->targetAng) this->turn();
 		if(this->targetPath.size() > 0) {
 			this->moveTo();

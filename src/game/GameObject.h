@@ -27,6 +27,7 @@ class GameObject {
 		virtual void cleanup(){}
 
 		virtual std::string getName() {return "NAME_FUNC_UNDEFINED";}
+		virtual std::string getFormattedName() {return "FORMATTED_NAME_FUNC_UNDEFINED";}
 		virtual std::string getInfo() {debug("ERROR");return "INFO_FUNC_UNDEFINED";}
 		virtual std::tuple<float,float> getLocation() {return {-1,-1};}
 		virtual int getDisplayID() {return -1;}

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ItemManifest.h"
+#include "StatusEffect.h"
 
 #include <vector>
 #include <string>
@@ -24,6 +25,7 @@ class Item {
 		itemType primaryType;
 		std::string getTypeAsString();
 		std::map<itemAttribute,float> attributes;
+		std::vector<StatusEffect*> effects;
 		
 		std::string getInfo();
 
@@ -35,11 +37,15 @@ class Item {
 		itemType getPrimaryType();
 
 		bool hasAttribute(itemAttribute);
+		bool hasEffect(EffectType);
+		std::vector<StatusEffect*> lookupEffects();
 		float getAttribute(itemAttribute);
 		std::vector<itemAttribute> getAttributes();
+		std::vector<StatusEffect*> inline getEffects() { return this->effects; }
 		void createAttributeSet(const std::vector<itemAttribute>&,const std::vector<float>&);
 
 		std::string getName();
+		std::string getFormattedName();
 		std::string getPlural();
 		std::string getPluralDisplayName();
 		std::string getDisplayName();

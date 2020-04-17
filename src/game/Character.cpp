@@ -1,11 +1,13 @@
 #include "Character.h"
 #include "../common/Common.h"
+#include "StatusEffect.h"
 #include "../tools/Utility.h"
 #include "GameObject.h"
 #include "Inventory.h"
 #include "Behavior.h"
 #include "Equipment.h"
 #include "Statistics.h"
+#include "StatusEffect.h"
 #include "../common/Tile.h"
 
 #include <cmath>
@@ -152,9 +154,55 @@ bool Character::plant(Item *item) {
 	//Item is a weapon, placeholder for secondary equipping
 	if(item->hasType(I_PLANTABLE)) {
 		this->location->planted = true;
+		this->inventory->remove(item);
 		return true;
 	}
 	return false;
+}
+
+bool Character::consume(Item *item) {
+	//Item is a weapon, placeholder for secondary equipping
+	if(item->hasType(I_FOOD)) {
+		this->triggerItemEffects(item);
+		this->inventory->remove(item);
+		return true;
+	}
+	return false;
+}
+
+void Character::triggerItemEffects(Item* item) {
+	for(int i=0;i<item->effects.size();i++) {
+		this->effects.push_back(item->effects.at(i));
+		// debug("Added effect to "+this->getName()+" with magnitude "+std::to_string(item->effects.at(i)->magnitude));
+	}
+}
+
+void Character::processEffects() {
+	StatusEffect *thisEffect;
+	for(int i=0;i<this->effects.size();i++) {
+		thisEffect = this->effects.at(i);
+		
+		//Don't apply inactive/expired effects and remove from player
+		if(!thisEffect->active) {
+			this->effects.erase(this->effects.begin()+i);
+			return;
+		}
+		switch(thisEffect->type) {
+			case EFFECT_HEALING: {
+				for(int j=0;j<this->limbs.size();j++) {
+					this->limbs.at(j)->applyHealing((float)thisEffect->magnitude/thisEffect->duration);
+				}
+				break;
+			}
+			case EFFECT_DAMAGE: {
+				for(int j=0;j<this->limbs.size();j++) {
+					this->limbs.at(j)->applyDamage(thisEffect->magnitude);
+				}
+				break;
+			}
+		}
+		thisEffect->tick();
+	}
 }
 
 //=============
@@ -163,8 +211,8 @@ bool Character::plant(Item *item) {
 
 std::tuple<float,float> Character::getApproximateLocation() {
 
-	float x = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x - this->location->x));
-	float y = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y + this->location->y));
+	float x = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->location->x - this->location->x));
+	float y = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->location->y + this->location->y));
 
 	return {x,y};
 
@@ -199,7 +247,7 @@ std::string Character::getStatusString() {
 
 std::string Character::getInfo() {
 	
-	std::string info = " \n\n Name:\t"+this->name + "\n" +
+	std::string info = " Name:\t"+this->name + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" ;
 				// "\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
 				// "\tTarget Angle:"+std::to_string(this->targetAng) + "\n" ;
@@ -210,10 +258,17 @@ std::string Character::getInfo() {
 				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
 				// info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
 				info += "\tAttack rate: "+std::to_string(this->attackRate) + "\n\n" +
-					"\tHead: "+std::to_string(this->limbs.at(0).getHealth()) + "/" + std::to_string(this->limbs.at(0).maxHealth) + "\n"+
-					"\tBody: "+std::to_string(this->limbs.at(1).getHealth()) + "/" + std::to_string(this->limbs.at(1).maxHealth) + "\n"+
-					"\tArms: "+std::to_string(this->limbs.at(2).getHealth()) + "/" + std::to_string(this->limbs.at(2).maxHealth) + "\n"+
-					"\tLegs: "+std::to_string(this->limbs.at(3).getHealth()) + "/" + std::to_string(this->limbs.at(3).maxHealth);
+					"\tHead: "+std::to_string(this->limbs.at(0)->getHealth()) + "/" + std::to_string(this->limbs.at(0)->maxHealth) + "\n"+
+					"\tBody: "+std::to_string(this->limbs.at(1)->getHealth()) + "/" + std::to_string(this->limbs.at(1)->maxHealth) + "\n"+
+					"\tArms: "+std::to_string(this->limbs.at(2)->getHealth()) + "/" + std::to_string(this->limbs.at(2)->maxHealth) + "\n"+
+					"\tLegs: "+std::to_string(this->limbs.at(3)->getHealth()) + "/" + std::to_string(this->limbs.at(3)->maxHealth);
+					
+				if(this->hasEffects()) {
+					info += "\n";
+					for(int i=0;i<this->effects.size();i++) {
+						info += "\n"+this->effects.at(i)->getTypeString()+" ("+this->effects.at(i)->getDurationString()+")";
+					}
+				}
 	return info;
 }
 

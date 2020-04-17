@@ -18,6 +18,8 @@ inline std::vector<T> operator+(std::vector<T> v,T t) {
 	return v;
 }
 
+int tsize(const std::string&);
+
 template <class T>
 std::vector<T> appendToLast(std::vector<T> v, T t) {
 	v.at(v.size()-1) = v.at(v.size()-1)+t;

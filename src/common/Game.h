@@ -89,7 +89,7 @@ struct Game {
 	unsigned int logicTicks;
 	unsigned int graphicsTicks;
 	
-	unsigned int inline convert(unsigned int ms) { return ms/this->logicTickRate;} 
+	unsigned int inline convert(unsigned int ms) { return ms/(1000/this->logicTickRate);} 
 
 	//recalculate npc pathing every 2 seconds at most
 	int pathCheckInterval = convert(2000);

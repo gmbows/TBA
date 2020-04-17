@@ -127,8 +127,12 @@ void Game::setupGame() {
 			new		Command({"debug"},debugFunc),
 			new		Command({"examine"},examineFunc,examineEC),
 			new		Command({"plant"},plantFunc,plantEC),
+			new		Command({"drink"},drinkFunc,drinkEC),
+			new		Command({"use"},useFunc,useEC),
 			////
 		};
+		
+	checkHelp();
 	
 	//Populate string command list with command names for autocomplete
 	for(int i=0;i<this->commandList.size();i++) {
@@ -155,6 +159,7 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	this->playerChar = new Character(true,160,"Player",0,0);
+	this->playerChar->inventory->add(2);
 	for(int i=0;i<10;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
@@ -177,8 +182,8 @@ void Game::setupGame() {
 	newChar->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	LB = new Character(false,160,"Lost Bladesman",0,6);
 	Dog = new Character(false,160,"Wolf",5,5);
-	// Dog->equipment->primary = new Item(4);
-	LB->equipment->primary = new Item(5);
+	Dog->equipment->primary = new Item(4);
+	LB->equipment->primary = new Item(4);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	Dog->turnSpeed = playerChar->turnSpeed*2;
 	// newChar->lookAt(LB);
@@ -319,7 +324,7 @@ void graphics_thread_routine(Game *game) {
 
 void Game::spawn_threads() {
 	// if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
-	// if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 }
 
 void Game::updateGameObjects() {
@@ -364,17 +369,17 @@ void Game::update_logic() {
 void Game::update_graphics() {
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
-	int start = SDL_GetTicks();
+	// int start = SDL_GetTicks();
 	this->gameWindow->update(this->debugMode);
 	this->graphicsTicks++;
 	// debug("Done updating graphics");
-	int elapsed = SDL_GetTicks()-start;
+	// int elapsed = SDL_GetTicks()-start;
 	
 	// pthread_mutex_unlock(&game->updateLock);
 
-	int real_wait = (1000/this->graphicsTickRate)-elapsed;
-	if(real_wait <= 0) debug("Falling behind! (graphics)");
-	SDL_Delay(real_wait);
+	// int real_wait = (1000/this->graphicsTickRate)-elapsed;
+	// if(real_wait <= 0) debug("Falling behind! (graphics)");
+	// SDL_Delay(real_wait);
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}
 
@@ -382,18 +387,15 @@ void Game::update_graphics() {
 
 void Game::update() {
 
-	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
+	int start = SDL_GetTicks();
+	this->update_graphics();
 
-	//Keyboard input delay
-	// logic_thread_routine(this);
-	// graphics_thread_routine(this);
-	// if(!this->paused) this->update_logic();
-	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
-		this->update_logic();
-		this->update_graphics();
-	} else {
-		SDL_Delay(SDL_GetTicks() - this->lastLogicUpdate);
-	}
-	// SDL_Delay(1000/30);
+	int elapsed = SDL_GetTicks()-start;
+
+	int real_wait = (1000/this->graphicsTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (graphics)");
+	// SDL_Delay(real_wait);
+	std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
+
 
 }

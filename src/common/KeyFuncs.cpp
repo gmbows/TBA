@@ -78,6 +78,7 @@ void clearCommand() {
 
 void paste() {
 	std::string clipboard(SDL_GetClipboardText());
+	// debug((int)clipboard[0]);
 	TBAGame->gameWindow->textScreen->commandAppend(clipboard);
 }
 
@@ -294,11 +295,13 @@ void debugKey() { //kp_plus
 	// TBAGame->setPlayer(static_cast<Character*>(TBAGame->displayTarget));
 	*/
 
-	TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(5000),false);
+	// TBAGame->gameWindow->createPopup("Cannot place building here",TBAGame->convert(5000),false);
 	
 	// TBAGame->playerChar->moveTo(1,1);
 	
 	static_cast<Character*>(TBAGame->displayTarget)->generatePathTo(TBAGame->playerChar->location->x,-TBAGame->playerChar->location->y);
+	
+	// debug(TBAGame->playerChar->limbs.at(0)->health);
 
 	// TBAGame->gameWindow->popupBox->setToggledContent("Paused");
 	// TBAGame->gameWindow->popupBox->toggled = true;

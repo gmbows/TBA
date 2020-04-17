@@ -1,5 +1,7 @@
 #include "Item.h"
 #include "ItemManifest.h"
+#include "../common/Common.h"
+#include "StatusEffect.h"
 #include "../tools/Utility.h"
 
 #include <map>
@@ -46,6 +48,7 @@ Item::Item(int _id): id(_id) {
 	this->types = std::get<4>(itemInfo);
 	this->primaryType = this->getPrimaryType();
 	this->createAttributeSet(this->getAttributes(),std::get<5>(itemInfo));
+	this->effects = this->lookupEffects();
 
 	/*std::vector<itemAttribute> attribEnums = attributeLookup.at(this->primaryType);
 	std::vector<int> attribValues = std::get<4>(itemInfo);
@@ -55,9 +58,26 @@ Item::Item(int _id): id(_id) {
 	}
 */
 
-	this->created = std::time(NULL);
+	this->created = TBAGame->logicTicks;
 
 }
+
+std::vector<StatusEffect*> Item::lookupEffects() {
+	if(this->id == 2) {
+		return {new StatusEffect(EFFECT_HEALING,TBAGame->convert(5000),10)};
+	}
+	return {};
+}
+
+bool Item::hasEffect(EffectType type) {
+	for(int i=0;i<this->effects.size();i++) {
+		if(this->effects.at(i)->type == type) {
+			return true;
+		}
+	}
+	return false;
+}
+
 
 std::vector<itemAttribute> Item::getAttributes() {
 	//Returns vector of attributes that this item needs values for
@@ -123,6 +143,10 @@ std::string Item::getInfo() {
 std::string Item::getName() {
 	//For advanced item types with names that may be different than default
 	return this->name;
+}
+std::string Item::getFormattedName() {
+	//For advanced item types with names that may be different than default
+	return "☺w"+this->name+"☺";
 }
 std::string Item::getPlural() {
 	if(this->name[this->name.size()-1] == 's') return this->name+"'";

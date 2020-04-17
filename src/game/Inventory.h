@@ -17,10 +17,13 @@ struct Inventory {
 	void add(const std::vector<int>&);
 	int find(Item*);
 	int find(const std::string&);
+	
+	int getFirstInstance(const std::string&);
 
 	int itemCount(int);
 
 	Item* remove(int);
+	Item* remove(Item*);
 
 	inline Item* getItem(int i) {return this->contents->at(i);}
 

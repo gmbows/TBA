@@ -9,6 +9,8 @@
 	//===========
 	//FUNCTION LIST
 	//===========
+	
+	void checkHelp();
 
 	//Clear
 	std::string clearFunc(Command* command, const std::vector<std::string> &);
@@ -90,3 +92,11 @@
 	//Plant
 	std::string plantFunc(Command*, const std::vector<std::string>&);
 	bool plantEC(Command*, const std::vector<std::string>&);
+
+	//Drink
+	std::string drinkFunc(Command*, const std::vector<std::string>&);
+	bool drinkEC(Command*, const std::vector<std::string>&);
+
+	//Use
+	std::string useFunc(Command*, const std::vector<std::string>&);
+	bool useEC(Command*, const std::vector<std::string>&);

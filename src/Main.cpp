@@ -28,10 +28,10 @@ int main(int argc, char** argv) {
 	//TBAGame->canUpdateGraphics = true;
 
 	//Start logic and graphics threads
-	// TBAGame->spawn_threads();
+	TBAGame->spawn_threads();
 
 	//Let graphics thread update first
-	//pthread_cond_signal(&TBAGame->graphics);
+	// pthread_cond_signal(&TBAGame->graphics);
 
 	TBAGame->gameLog->writeln("Entering game loop");
 	while(TBAGame->gameRunning) {

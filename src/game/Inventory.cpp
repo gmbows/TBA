@@ -29,8 +29,12 @@ int Inventory::find(const std::string &name) {
 		// special return code for interaction parsing
 		if(itemName != name) return -2;
 	}
-	for(int i=0;i<this->contents->size();i++) {
-		if(itemName == this->contents->at(i)->name) return i;
+	return this->getFirstInstance(itemName);
+}
+
+int Inventory::getFirstInstance(const std::string &itemName) {
+		for(int i=0;i<this->contents->size();i++) {
+			if(itemName == this->contents->at(i)->name) return i;
 	}
 	return -1;
 }
@@ -72,6 +76,15 @@ Item* Inventory::remove(int index) {
 	this->contents->erase(this->contents->begin()+index);
 	this->setInfoString();
 	return removedItem;
+}
+
+Item* Inventory::remove(Item* item) {
+	int index = this->find(item);
+	if(index >= 0) {
+		this->contents->erase(this->contents->begin()+index);
+		this->setInfoString();
+	}
+	return item;
 }
 
 std::vector<std::string> Inventory::getContentString() {

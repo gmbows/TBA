@@ -3,6 +3,7 @@
 #include "../game/Input.h"
 #include "../common/Common.h"
 #include "../game/Projectile.h"
+#include "../tools/Utility.h"
 
 #include <unordered_set>
 
@@ -36,8 +37,8 @@ void TextScreen::addContent(const std::string& str) {
 
 	//Iterate through added string
 	for(int i=0;i<s.size();i++) {
-		cursorX = thisLine.size()-1;
-		if(thisLine.size() + 1 >= this->screenCharWidth) {
+		cursorX = tsize(thisLine)-1;
+		if(tsize(thisLine) + 1 >= this->screenCharWidth) {
 			//Push content back with current line and start new line
 			if(s[i] == ' ') {
 				//If last character in line is a space, start new line without the space
@@ -54,15 +55,16 @@ void TextScreen::addContent(const std::string& str) {
 				//Break line on the last space
 				thisLine += s[i];
 				this->content.push_back(thisLine.substr(0,indexOfLastSpace));
-				//thisLine = thisLine.substr(indexOfLastSpace+1,thisLine.size());
-				s.insert(i+1,thisLine.substr(indexOfLastSpace,thisLine.size()));
+				//thisLine = thisLine.substr(indexOfLastSpace+1,tsize(thisLine));
+				s.insert(i+1,thisLine.substr(indexOfLastSpace,tsize(thisLine)));
 				thisLine = "";
 			}
 		} else {
+			if((int)s[i] == -70 or (int)s[i] == -104) continue;
 			if(s[i] == ' ') {
 				//Record index of the last space on this line
 				thisLine += ' ';
-				indexOfLastSpace = thisLine.size()-1;
+				indexOfLastSpace = tsize(thisLine)-1;
 			} else if(s[i] == '') {
 				//Non-breaking space
 				//Add space but don't record as a breakpoint
@@ -76,13 +78,13 @@ void TextScreen::addContent(const std::string& str) {
 					//Move "cursor" to next tabstop
 					if(cursorX  <= 1) {
 						thisLine += ' ';
-						indexOfLastSpace = thisLine.size()-1;
+						indexOfLastSpace = tsize(thisLine)-1;
 					} else if(cursorX < tabStop) {
 						while(cursorX <= tabStop) {
 							thisLine += ' ';
-							cursorX = thisLine.size();
+							cursorX = tsize(thisLine);
 						}
-						indexOfLastSpace = thisLine.size()-1;
+						indexOfLastSpace = tsize(thisLine)-1;
 					} else if(cursorX >= tabStop) {
 						this->content.push_back(thisLine);
 						thisLine = " ";
@@ -406,8 +408,8 @@ void TextBox::prepareContent() {
 }
 
 std::string TextBox::getContent() {
-	std::string newContent = 
-		TBAGame->playerChar->getName()+":"+TBAGame->playerChar->inventory->toString();
+	std::string newContent; 
+		// TBAGame->playerChar->getName()+":"+TBAGame->playerChar->inventory->toString();
 
 		//Draw display target info
 		/*if(TBAGame->playerChar->hasTarget()) {
@@ -418,6 +420,7 @@ std::string TextBox::getContent() {
 		if(TBAGame->hasDisplayTarget()) {
             newContent += TBAGame->displayTarget->getInfo();
 			if((char*)TBAGame->displayTarget == (char*)TBAGame->playerChar) {
+				newContent += "\n\n"+TBAGame->playerChar->getInvString();
 				newContent += "\n\n"+TBAGame->playerChar->getEquipString();
 			}
         }

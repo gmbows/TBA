@@ -24,6 +24,19 @@ int find(char c,const std::string &s) {
 	return -1;
 }
 
+//Gets size of printable characters only for screen drawing
+int tsize(const std::string &s) {
+	int size=0;
+	for(int i=0;i<s.size();i++) {
+		if((int)s[i] >= 0) {
+			size++; 
+		} else {
+			i+=3;
+		}
+	}
+	return size;
+}
+
 
 std::string strip(const std::string &s) {
     std::string newString = "";
@@ -59,14 +72,14 @@ std::string common(const std::string &s1, const std::string &s2) {
 }
 
 //s is passed by reference 
-bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
+bool autocomplete(std::string& target, const std::vector<std::string>& wordList) {
 
-	if(s == "") {
+	if(target == "") {
 		return false;
 	}
 
 	std::string testWord;
-	std::string searchString = toLower(s);
+	std::string searchString = toLower(target);
 	std::string matchlist;
 	bool hasMultipleMatches = false;
 
@@ -74,13 +87,14 @@ bool autocomplete(std::string& s, const std::vector<std::string>& wordList) {
 	for(int i=0;i<wordList.size();i++) {
 		testWord = toLower(wordList.at(i));
 		if(startsWith(testWord,searchString)) {
-			s = wordList.at(i);
-			matchlist = s;
+			target = wordList.at(i);
+			matchlist = target;
+			if(target.size() == searchString.size()) return true;
 			for(int j=0;j<wordList.size();j++) {
 				testWord = toLower(wordList.at(j));
-				if(startsWith(testWord,searchString) and wordList.at(j) != s) {
-					if(common(s,wordList.at(j)) != "") {
-						s = common(s,wordList.at(j));
+				if(startsWith(testWord,searchString) and wordList.at(j) != target) {
+					if(common(target,wordList.at(j)) != "") {
+						target = common(target,wordList.at(j));
 					}
 					matchlist += " | "+wordList.at(j);	
 					hasMultipleMatches = true;

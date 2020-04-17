@@ -27,6 +27,7 @@ class Container: public GameObject {
 		int getDisplayID() {return 8;}
 
 		std::string inline getName() {return this->name;}
+		std::string inline getFormattedName() {return "☺g"+this->name+"☺";}
 		std::string getInfo();
 
 		void cleanup() {

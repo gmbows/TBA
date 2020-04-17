@@ -34,7 +34,7 @@ std::tuple<float,float> Container::getLocation() {
 }
 
 std::string Container::getInfo() {
-	return "\n\nName:\t"+this->name + "\n" +
+	return " Name:\t"+this->name + "\n" +
 				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n" +
 				"\tContents:"+this->inventory->contentString;
 }

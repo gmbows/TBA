@@ -10,6 +10,7 @@ struct Tile;
 #include "Equipment.h"
 #include "Statistics.h"
 #include "GameObject.h"
+#include "StatusEffect.h"
 
 #include "Limb.h"
 
@@ -97,11 +98,11 @@ class Character: public GameObject {
 		//	  		LIMBS
 		//=============
 		
-		std::vector<Limb> limbs = {
-			Limb(100,LIMB_HEAD),
-			Limb(100,LIMB_TORSO),
-			Limb(100,LIMB_ARMS),
-			Limb(100,LIMB_LEGS),
+		std::vector<Limb*> limbs = {
+			new Limb(100,LIMB_HEAD),
+			new Limb(100,LIMB_TORSO),
+			new Limb(100,LIMB_ARMS),
+			new Limb(100,LIMB_LEGS),
 		};
 		
 		//Checks limb HP and assigns statuses accordingly
@@ -121,6 +122,21 @@ class Character: public GameObject {
 		std::string inline getEquipString() {return this->equipment->getEquipString();}
 		bool equip(Item*);
 		bool plant(Item*);
+		bool consume(Item*);
+		bool hasAmmo(itemType);
+		Item* getAmmo(itemType);
+		
+		//=============
+		//	  	STATUS EFFECTS
+		//=============
+		
+		//for adding effects from an item
+		void triggerItemEffects(Item*);
+		//for processing effects each tick
+		void processEffects();
+		std::vector<StatusEffect*> effects;
+		
+		bool inline hasEffects() {return this->effects.size() > 0;}
 
 		//=============
 		//	  	STATS
@@ -251,6 +267,7 @@ class Character: public GameObject {
 		virtual void cleanup();
 
 		//Gameobject compliance functions
+		virtual inline std::string getFormattedName() {return "☺g"+this->name+"☺";}
 		virtual inline std::string getName() {return this->name;}
 		virtual std::string getInfo();
 		virtual inline int getID() {return this->objectID;}

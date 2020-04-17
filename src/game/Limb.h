@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 enum limbType {	
 							LIMB_HEAD,
@@ -9,7 +10,7 @@ enum limbType {
 
 struct Limb {
 
-	int health;
+	float health;
 	int maxHealth;
 
 	limbType type;
@@ -19,6 +20,7 @@ struct Limb {
 	}
 	
 	inline int getHealth() {return this->health;}
-	inline void applyDamage(int damage) {this->health -= damage;}
+	inline void applyDamage(float damage) {this->health -= damage;}
+	inline void applyHealing(float amount) {this->health += amount;}
 
 };

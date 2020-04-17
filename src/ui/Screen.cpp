@@ -237,6 +237,8 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 	//Cursor
 	int cursor[2] = {0,0};
 
+	bool colorMod = false;
+
 	//For each line of visible Content
 	for(int i=0;i<visibleContent.size();i++) {
 		thisLine = visibleContent.at(i);
@@ -244,6 +246,48 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 
 			//Get character ASCII code and retrieve display values from font map file
 			charIndex = int(thisLine[j]);
+
+			//Ignore invalid characters and handle coloring
+			if(charIndex < 0) {
+				if(charIndex == -30) {
+					if(colorMod) {
+						SDL_SetTextureColorMod(this->screenFont->fontTexture,200,200,200);
+						colorMod = false;
+						continue;
+					}	else {
+							switch(int(thisLine[j+1])) {
+								//red (r)
+								case 114:
+									SDL_SetTextureColorMod(this->screenFont->fontTexture,222,0,0);
+									colorMod = true;
+									break;
+								//green (g)
+								case 103:
+									SDL_SetTextureColorMod(this->screenFont->fontTexture,0,170,0);
+									colorMod = true;
+									break;
+								//blue (b)
+								case 98:
+									SDL_SetTextureColorMod(this->screenFont->fontTexture,30,80,222);
+									colorMod = true;
+									break;
+								//orange (o)
+								case 111:
+									SDL_SetTextureColorMod(this->screenFont->fontTexture,222,100,0);
+									colorMod = true;
+									break;
+								//green (g)
+								case 119:
+									SDL_SetTextureColorMod(this->screenFont->fontTexture,255,255,255);
+									colorMod = true;
+									break;
+								
+							}
+						j = j+1;
+					}
+				}
+				continue;
+			}
 			if(this->screenFont->fontMap.find(charIndex) == this->screenFont->fontMap.end()) {
 				debug("ERROR: Missing charMap entry for character "+thisLine[j]);
 				exit(0);
@@ -259,7 +303,7 @@ void Screen::generateTexture(const std::vector<std::string>& screenContent) {
 
 			//SDL_RenderDrawRect(TBAGame->gameWindow->renderer,&dRect);
 			SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
-	
+
 			//Advance cursor for next character
 			cursor[0] += charInfo.adv;
 		}
