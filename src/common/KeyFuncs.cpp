@@ -73,7 +73,7 @@ void clear() {
 }
 
 void clearCommand() {
-	TBAGame->gameWindow->textScreen->command = "";
+	TBAGame->gameWindow->textScreen->setCommand("");
 }
 
 void paste() {
@@ -96,7 +96,7 @@ void click(SDL_MouseButtonEvent& event) {
 	int tileX = std::round(((float)(event.x-centerX))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
 	int tileY = std::round(((float)(event.y-centerY))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
 
-	std::cout << tileX << ", " << tileY << std::endl;
+	// std::cout << tileX << ", " << tileY << std::endl;
 
 	Tile* thisTile = TBAGame->gameWorld->getTileAt(tileX,tileY);
 

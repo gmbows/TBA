@@ -264,9 +264,9 @@ std::string Character::getInfo() {
 					"\tLegs: "+std::to_string(this->limbs.at(3)->getHealth()) + "/" + std::to_string(this->limbs.at(3)->maxHealth);
 					
 				if(this->hasEffects()) {
-					info += "\n";
+					info += "\n\nStatus Effects:";
 					for(int i=0;i<this->effects.size();i++) {
-						info += "\n"+this->effects.at(i)->getTypeString()+" ("+this->effects.at(i)->getDurationString()+")";
+						info += "\n "+this->effects.at(i)->getTypeString()+" ("+this->effects.at(i)->getDurationString()+")";
 					}
 				}
 	return info;

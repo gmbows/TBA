@@ -110,7 +110,7 @@ std::string stopFunc(Command* command, const std::vector<std::string> &args) {
 //Help
 std::string helpFunc(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) 
-		return "\n=====================\nFor information type:\n->help <command>\n=====================\n"+join('\n',TBAGame->commandStrings);
+		return "\n==========================\nFor more information type:\n->help <command>\n==========================\n"+join('\n',TBAGame->commandStrings);
 	std::string cmd = join(' ',args);
 	if(helpMap.find(cmd) != helpMap.end()) {
 		return "\n☺bUsage☺: "+join("\n       ",helpMap.at(cmd).first)+"\n\n☺bFunction☺: "+join("\n          ",helpMap.at(cmd).second);
@@ -378,10 +378,10 @@ std::string examineFunc(Command* command, const std::vector<std::string> &args) 
 		if(nearbyChars.size() == 0 and nearbyObjs.size() == 0) return surface;
 		surface += "\nNearby:";
 		for(int i=0;i<nearbyChars.size();i++) {
-			surface += "\n-"+nearbyChars.at(i)->getName();
+			surface += "\n -"+nearbyChars.at(i)->getName();
 		}
 		for(int i=0;i<nearbyObjs.size();i++) {
-			surface += "\n>"+nearbyObjs.at(i)->getName();
+			surface += "\n >"+nearbyObjs.at(i)->getName();
 		}
 		return surface;
 	} else {
@@ -468,3 +468,20 @@ bool useEC(Command* command, const std::vector<std::string> &args) {
 	}
 	return true;
 }
+
+//Giveme
+std::string givemeFunc(Command* command, const std::vector<std::string> &args) {
+	int id = std::stoi(args.at(0));
+	Item* newItem = new Item(id);
+	TBAGame->playerChar->inventory->add(newItem);
+	return "\nGave "+TBAGame->playerChar->getName()+" "+newItem->getFormattedName();
+}
+
+bool givemeEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+

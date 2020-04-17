@@ -24,14 +24,16 @@ int find(char c,const std::string &s) {
 	return -1;
 }
 
-//Gets size of printable characters only for screen drawing
+//Gets size of printable/visible characters only for screen drawing
+//Color key characters (☺r, etc.) do not get drawn and should not be counted 
+// toward total string size
 int tsize(const std::string &s) {
 	int size=0;
 	for(int i=0;i<s.size();i++) {
 		if((int)s[i] >= 0) {
 			size++; 
 		} else {
-			i+=3;
+			i++;
 		}
 	}
 	return size;

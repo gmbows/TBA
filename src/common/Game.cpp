@@ -121,7 +121,7 @@ void Game::setupGame() {
 			new		Command({"exit","quit"},exitFunc),
 			new		Command({"take"},takeFunc,takeEC),
 			new		Command({"select","sel"},selectFunc,selectEC),
-			new		Command({"put"},putFunc,putEC),
+			new		Command({"put","give"},putFunc,putEC),
 			new		Command({"search"},searchFunc,searchEC),
 			new		Command({"equip"},equipFunc,equipEC),
 			new		Command({"debug"},debugFunc),
@@ -129,6 +129,7 @@ void Game::setupGame() {
 			new		Command({"plant"},plantFunc,plantEC),
 			new		Command({"drink"},drinkFunc,drinkEC),
 			new		Command({"use"},useFunc,useEC),
+			new		Command({"giveme"},givemeFunc,givemeEC),
 			////
 		};
 		
@@ -164,6 +165,11 @@ void Game::setupGame() {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
+	this->playerChar->inventory->add(11);
+	this->playerChar->inventory->add(7);
+	this->playerChar->inventory->add(7);
+	this->playerChar->inventory->add(7);
+	this->playerChar->inventory->add(7);
 	this->displayTarget = this->playerChar;
 
 	//New characters are added to gameObjects automatically
@@ -177,7 +183,7 @@ void Game::setupGame() {
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
 	newChar = new Character(false,160,"Debug Trader",0,-7);
-	TBAGame->setDisplayTarget(newChar);
+	// TBAGame->setDisplayTarget(newChar);
 	// newChar->moveTo(0,0);
 	newChar->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	LB = new Character(false,160,"Lost Bladesman",0,6);

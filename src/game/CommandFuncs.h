@@ -100,3 +100,7 @@
 	//Use
 	std::string useFunc(Command*, const std::vector<std::string>&);
 	bool useEC(Command*, const std::vector<std::string>&);
+
+	//Giveme
+	std::string givemeFunc(Command*, const std::vector<std::string>&);
+	bool givemeEC(Command*, const std::vector<std::string>&);

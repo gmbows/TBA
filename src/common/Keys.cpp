@@ -94,6 +94,7 @@ void Game::input() {
 					case 117:
 						if(SDL_GetModState() & (KMOD_LCTRL)) {
 							clearCommand();
+							
 						} else {
 							if(shift) processKeystroke(85);
 							if(!shift) processKeystroke(117);

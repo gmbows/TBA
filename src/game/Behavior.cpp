@@ -9,6 +9,7 @@
 std::map<statusIndicator,const std::string> statusMap = {
 	{STATUS_IDLE,"Idle"},
 	{STATUS_ATTACK,"Swinging weapon"},
+	{STATUS_NO_AMMO,"No ammo"},
 	{STATUS_COMBAT,"In combat"},
 	{STATUS_PURSUE,"Pursuing target"},
 	{STATUS_MOVE,"Traveling"},
@@ -433,6 +434,12 @@ void Character::setLocomotion() {
 //  STATUS_COMBAT
 //==========
 
+void Character::exitCombat() {
+	this->removeStatus(STATUS_NO_AMMO);
+	this->removeStatus(STATUS_COMBAT);
+	this->removeStatus(STATUS_PURSUE);
+}
+
 void Character::combat() {
 
 	//====================
@@ -443,7 +450,7 @@ void Character::combat() {
 		// TBAGame->gameLog->write_nts("2");
 		if(!this->combatRetarget()) {
 			// TBAGame->gameLog->write_nts("2");
-			this->removeStatus(STATUS_COMBAT);
+			this->exitCombat();
 			return;
 		}
 	}
@@ -475,7 +482,7 @@ void Character::combat() {
 		} else {
 			//Placeholder for behavior when in combat with dead target
 		}
-		this->removeStatus(STATUS_COMBAT);
+		this->exitCombat();
 		return;
 	}
 	//====================
@@ -493,7 +500,12 @@ void Character::combat() {
 		//Character is currently attacking with weapon
 		//Wait for attack to connect
 		case ATK_STATUS_ATTACKING:
-			this->addStatus(STATUS_ATTACK);
+			if(!this->hasAmmo(I_WEAPON_BOW)) {
+				this->addStatus(STATUS_NO_AMMO);
+			} else {
+				this->removeStatus(STATUS_NO_AMMO);
+				this->addStatus(STATUS_ATTACK);
+			}
 			return;
 		//Swing makes contact, send attack and calculate damage
 		case ATK_COMPLETE:
@@ -515,7 +527,7 @@ void Character::resetCombatTimer() {
 }
 
 attackStatus Character::getAttackStatus() {
-	
+
 	//Attack rate needs to be weapon/stat dependant
 	if(TBAGame->logicTicks >= this->lastAttack + this->attackRate + this->defaultAttackSpeed) {
 		return ATK_COMPLETE;

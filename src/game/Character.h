@@ -26,6 +26,7 @@ enum statusIndicator: flag {
 	STATUS_IDLE = 			1 << 0,
 	STATUS_MOVE = 			1 << 1,
 	STATUS_ATTACK = 		1 << 2,
+	STATUS_NO_AMMO = 	1 << 11,
 	STATUS_COMBAT =		1 << 3,
 	STATUS_PURSUE = 		1 << 4,
 	STATUS_STUN = 			1 << 5,
@@ -34,7 +35,7 @@ enum statusIndicator: flag {
 	STATUS_DYING = 		1 << 8,
 	STATUS_CRIPPLED = 	1 << 9,
 	STATUS_DEAD = 			1 << 10,
-	STATUS_END = 			1 << 11,
+	STATUS_END = 			1 << 12,
 };
 
 inline statusIndicator operator|(statusIndicator f1,statusIndicator f2) {
@@ -55,6 +56,7 @@ enum attackStatus: int {
 	ATK_NOT_READY,
 	ATK_STATUS_ATTACKING,
 	ATK_COMPLETE,
+	
 };
 
 class Character: public GameObject {
@@ -246,6 +248,7 @@ class Character: public GameObject {
 		//Combat
 		attackStatus getAttackStatus();
 		void combat();
+		void exitCombat();
 		void sendAttack(GameObject*);
 		void receiveAttack(int, GameObject*);
 		void resetCombatTimer();
