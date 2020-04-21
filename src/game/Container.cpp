@@ -29,10 +29,6 @@ Container::Container(const std::string &_name,std::tuple<float,float> location, 
 	this->location->addObject(this);
 }
 
-std::tuple<float,float> Container::getLocation() {
-	return {this->x,this->y};
-}
-
 std::string Container::getInfo() {
 	return " Name:\t"+this->name + "\n" +
 				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n" +

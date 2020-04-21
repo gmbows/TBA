@@ -8,9 +8,12 @@
 #include <tuple>
 #include <ctime>
 
-std::map<itemType,std::string> itemTypeMap = {
+std::map<ItemType,std::string> ItemTypeMap = {
 	{I_FOOD,"Food"},
 	{I_FRUIT,"Fruit"},
+	{I_POTION,"Potion"},
+	{I_CONSUMABLE,"Consumable"},
+	{I_AMMO,"Ammunition"},
 	{I_VEGETABLE,"Vegetable"},
 	{I_WEAPON,"Weapon"},
 	{I_EQUIPMENT,"Equipment"},
@@ -29,14 +32,21 @@ std::map<itemType,std::string> itemTypeMap = {
 	{I_CURRENCY,"Currency"},
 	{I_CONTAINER,"Container"},
 	{I_PLANTABLE,"Plantable"},
-	
-	
 };
+
+void checkItemTypes() {
+	for(flag i=0;i<log2((int)I_END);i++) {
+		if(ItemTypeMap.find((ItemType)pow(2,i)) == ItemTypeMap.end()) {
+			debug("WARNING Item type string not found for type: "+std::to_string(i));
+		}
+	}
+}
 
 Item::Item(int _id): id(_id) {
 
 	if(id >= itemManifest.size()) {
 		debug("ERROR: Adding invalid item with id "+std::to_string(id)+", using invalid item");
+		id = 0;
 	}
 
 	itemTraits itemInfo = itemManifest.at(id);
@@ -46,11 +56,12 @@ Item::Item(int _id): id(_id) {
 	this->weight = std::get<2>(itemInfo);
 	this->size = std::get<3>(itemInfo);
 	this->types = std::get<4>(itemInfo);
-	this->primaryType = this->getPrimaryType();
-	this->createAttributeSet(this->getAttributes(),std::get<5>(itemInfo));
-	this->effects = this->lookupEffects();
+	// this->primaryType = this->getPrimaryType();
+	// this->createAttributeSet(std::get<5>(itemInfo));
+	this->attributes = std::get<5>(itemInfo);
+	this->effects = std::get<6>(itemInfo);
 
-	/*std::vector<itemAttribute> attribEnums = attributeLookup.at(this->primaryType);
+	/*std::vector<ItemAttribute> attribEnums = attributeLookup.at(this->primaryType);
 	std::vector<int> attribValues = std::get<4>(itemInfo);
 
 	for(int i=0;i<attribEnums.size();i++) {
@@ -62,45 +73,28 @@ Item::Item(int _id): id(_id) {
 
 }
 
-std::vector<StatusEffect*> Item::lookupEffects() {
-	if(this->id == 2) {
-		return {new StatusEffect(EFFECT_HEALING,TBAGame->convert(5000),10)};
-	}
-	return {};
-}
-
-bool Item::hasEffect(EffectType type) {
-	for(int i=0;i<this->effects.size();i++) {
-		if(this->effects.at(i)->type == type) {
-			return true;
+std::vector<StatusEffect*> Item::getEffectsOnAction(Action action) {
+	std::vector<StatusEffect*> effectsOnAction;
+	if(this->effects.find(action) != this->effects.end()) {
+		for(int i=0;i<this->effects.at(action).size();i++) {
+			std::vector<float> effectValues = this->effects.at(action).at(i);
+			EffectType type = (EffectType)effectValues.at(0);
+			float magnitude = effectValues.at(1);
+			float duration = TBAGame->convert(1000*effectValues.at(2));
+			float period = 0;
+			if(effectValues.size() == 4) period = TBAGame->convert(1000*effectValues.at(3));
+			effectsOnAction.push_back(new StatusEffect(type,magnitude,duration,period));
 		}
 	}
-	return false;
+	return effectsOnAction;
 }
 
-
-std::vector<itemAttribute> Item::getAttributes() {
-	//Returns vector of attributes that this item needs values for
-	if(attributeLookup.find(this->primaryType) != attributeLookup.end()) {
-		return attributeLookup.at(this->primaryType);
-	} else {
-		return {};
-	}
+bool Item::hasEffectOnAction(Action action) {
+	return this->effects.find(action) != this->effects.end();
+	// return type | this->getAttribute(ATTRIB_CONSUME_EFFECT);
 }
 
-itemType Item::getPrimaryType() {
-	//Returns type that appears first in the itemType enum
-	flag testFlag;
-	for(int i=0;i<log2((flag)I_END);i++) {
-		testFlag = 1 << i;
-		if(this->hasType((itemType)testFlag)) return (itemType)testFlag;
-	}
-	//Should never return I_END
-	// item should have received a type
-	return I_END;
-}
-
-void Item::createAttributeSet(const std::vector<itemAttribute> &attribs,const std::vector<float> &attribValues) {
+void Item::createAttributeSet(const std::vector<ItemAttribute> &attribs,const std::vector<float> &attribValues) {
 
 	// If list of attribute values received from item manifest
 	// is longer than list of attributes from attribute lookup map,
@@ -113,12 +107,12 @@ void Item::createAttributeSet(const std::vector<itemAttribute> &attribs,const st
 	}
 }
 
-bool Item::hasAttribute(itemAttribute attrib) {
+bool Item::hasAttribute(ItemAttribute attrib) {
 	//return (this->attributeValues.find(attrib) != this->attributeValues.end());
 	return (this->attributes.find(attrib) != this->attributes.end());
 }
 
-float Item::getAttribute(itemAttribute attrib) {
+float Item::getAttribute(ItemAttribute attrib) {
 
 	if(this->hasAttribute(attrib)) {
 		return this->attributes.at(attrib);
@@ -127,14 +121,18 @@ float Item::getAttribute(itemAttribute attrib) {
 
 }
 
-std::string Item::getTypeAsString() {
-	return itemTypeMap.at(this->primaryType);
+std::vector<std::string> Item::getTypes() {
+	std::vector<std::string> typevec;
+	for(int i=0;i<log2((int)I_END);i++) {
+		if(this->hasType((ItemType)pow(2,i))) typevec.push_back(ItemTypeMap.at((ItemType)pow(2,i)));
+	}
+	return typevec;
 }
 
 std::string Item::getInfo() {
 	std::string infoString = 
 	" Name:\t"+this->name+"\n" +
-	" Type:\t"+this->getTypeAsString()+"\n" +
+	" Type:\t"+join(", ",this->getTypes())+"\n" +
 	" Weight:\t"+std::to_string(this->weight)+"\n" +
 	" Size:\t"+std::to_string(this->size);
 	return infoString;
@@ -146,7 +144,7 @@ std::string Item::getName() {
 }
 std::string Item::getFormattedName() {
 	//For advanced item types with names that may be different than default
-	return "☺w"+this->name+"☺";
+	return TBAGame->colorKey+("w"+this->name)+TBAGame->colorKey;//TBAGame->colorKey;
 }
 std::string Item::getPlural() {
 	if(this->name[this->name.size()-1] == 's') return this->name+"'";

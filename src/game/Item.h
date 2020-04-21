@@ -8,6 +8,8 @@
 #include <ctime>
 #include <map>
 
+void checkItemTypes();
+
 class Item {
 
 	public:
@@ -22,27 +24,27 @@ class Item {
 		time_t created;
 
 		flag types;
-		itemType primaryType;
+		// ItemType primaryType;
 		std::string getTypeAsString();
-		std::map<itemAttribute,float> attributes;
-		std::vector<StatusEffect*> effects;
+		std::map<ItemAttribute,float> attributes;
+		std::map<Action,std::vector<std::vector<float>>> effects;
 		
 		std::string getInfo();
 
 		Item(int);
 
 		inline flag getType() {return this->types;}
-		inline bool hasType(itemType type) { return (this->types & type) > 0;}
+		inline bool hasType(ItemType type) { return (this->types & type) > 0;}
 
-		itemType getPrimaryType();
+		std::vector<std::string> getTypes();
 
-		bool hasAttribute(itemAttribute);
-		bool hasEffect(EffectType);
-		std::vector<StatusEffect*> lookupEffects();
-		float getAttribute(itemAttribute);
-		std::vector<itemAttribute> getAttributes();
-		std::vector<StatusEffect*> inline getEffects() { return this->effects; }
-		void createAttributeSet(const std::vector<itemAttribute>&,const std::vector<float>&);
+		bool hasAttribute(ItemAttribute);
+		bool hasEffectOnAction(Action);
+		// std::vector<StatusEffect*> importEffects();
+		float getAttribute(ItemAttribute);
+		// std::vector<ItemAttribute> getAttributes();
+		std::vector<StatusEffect*> getEffectsOnAction(Action);
+		void createAttributeSet(const std::vector<ItemAttribute>&,const std::vector<float>&);
 
 		std::string getName();
 		std::string getFormattedName();
@@ -51,7 +53,7 @@ class Item {
 		std::string getDisplayName();
 
 		~Item() {
-			//delete this->attributes;
+			// std::cout << "Deleting item" << std::endl;
 		}
 
 };

@@ -6,9 +6,11 @@
 #include "Inventory.h"
 #include "Behavior.h"
 #include "Equipment.h"
+#include "ResourceNode.h"
 #include "Statistics.h"
 #include "StatusEffect.h"
 #include "../common/Tile.h"
+#include "ItemManifest.h"
 
 #include <cmath>
 #include <tuple>
@@ -41,6 +43,11 @@ Character::Character(bool player, int capacity, const std::string& _name, float 
 	}
 	this->health = this->maxHealth;
 	this->inventory = new Inventory(capacity);
+	
+	for(int i=0;i<10;i++) {
+		this->inventory->add(1+rand()%(itemManifest.size()-1));
+	}
+	
 	this->setLocation(x,y);
 }
 
@@ -55,15 +62,23 @@ void Character::resolveMove(float &newX, float &newY) {
 	if(newY+this->width >= TBAGame->gameWorld->size) {
 		newY = this->y;
 	}
+	
 	bool YP = TBAGame->gameWorld->getTileAt(this->x,newY+this->width)->isPassable();
 	bool YN = TBAGame->gameWorld->getTileAt(this->x,newY-this->width)->isPassable();
 	bool XP = TBAGame->gameWorld->getTileAt(newX+this->width,this->y)->isPassable();
 	bool XN = TBAGame->gameWorld->getTileAt(newX-this->width,this->y)->isPassable();
-	if(!(YP & YN)) {
-		newY = this->y;
+	
+	if(!YP) {
+		if(newY > this->y) newY = this->y;
 	}
-	if(!(XP & XN)) {
-		newX = this->x;
+	if(!YN) {
+		if(newY < this->y) newY = this->y;
+	}
+	if(!XP) {
+		if(newX > this->x) newX = this->x;
+	}
+	if(!XN) {
+		if(newX < this->x) newX = this->x;
 	}
 
 }
@@ -97,7 +112,7 @@ void Character::move() {
 	//Velocity decay
 	this->velocity *= .9;
 	
-	if(this->velocity == 0) this->removeStatus(STATUS_MOVE);
+	if(this->velocity == 0) this->removeStatus(STATUS_TRAVEL);
 
 	this->lastMove = TBAGame->logicTicks;
 
@@ -161,47 +176,45 @@ bool Character::plant(Item *item) {
 }
 
 bool Character::consume(Item *item) {
-	//Item is a weapon, placeholder for secondary equipping
-	if(item->hasType(I_FOOD)) {
-		this->triggerItemEffects(item);
+	//Trigger various effects from item on this character
+	if(item->hasType(I_CONSUMABLE)) {
+		this->triggerItemEffects(item,ACTION_CONSUME);
 		this->inventory->remove(item);
 		return true;
 	}
 	return false;
 }
 
-void Character::triggerItemEffects(Item* item) {
+void Character::triggerItemEffects(Item* item,Action action) {
+	std::vector<StatusEffect*> effectsOnAction = item->getEffectsOnAction(action);
 	for(int i=0;i<item->effects.size();i++) {
-		this->effects.push_back(item->effects.at(i));
+		this->effects.push_back(effectsOnAction.at(i));
 		// debug("Added effect to "+this->getName()+" with magnitude "+std::to_string(item->effects.at(i)->magnitude));
 	}
 }
 
 void Character::processEffects() {
-	StatusEffect *thisEffect;
 	for(int i=0;i<this->effects.size();i++) {
-		thisEffect = this->effects.at(i);
-		
-		//Don't apply inactive/expired effects and remove from player
-		if(!thisEffect->active) {
+		//Apply effects or remove if inactive
+		if(!this->effects.at(i)->applyEffect(this)) {
 			this->effects.erase(this->effects.begin()+i);
-			return;
 		}
-		switch(thisEffect->type) {
-			case EFFECT_HEALING: {
-				for(int j=0;j<this->limbs.size();j++) {
-					this->limbs.at(j)->applyHealing((float)thisEffect->magnitude/thisEffect->duration);
-				}
-				break;
-			}
-			case EFFECT_DAMAGE: {
-				for(int j=0;j<this->limbs.size();j++) {
-					this->limbs.at(j)->applyDamage(thisEffect->magnitude);
-				}
-				break;
-			}
-		}
-		thisEffect->tick();
+	}
+}
+
+bool Character::work(GameObject* node) {
+	if(node->type == OBJ_INTERACTIVE) {
+		this->addStatus(STATUS_WORK);
+		this->workTarget = node;
+		return true;
+	} else {
+		return false;
+	}
+}
+
+void Character::processWork() {
+	if(this->hasWorkTarget()) {
+		this->workTarget->getAsResource()->work();
 	}
 }
 
@@ -257,11 +270,11 @@ std::string Character::getInfo() {
 				}
 				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
 				// info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
-				info += "\tAttack rate: "+std::to_string(this->attackRate) + "\n\n" +
-					"\tHead: "+std::to_string(this->limbs.at(0)->getHealth()) + "/" + std::to_string(this->limbs.at(0)->maxHealth) + "\n"+
-					"\tBody: "+std::to_string(this->limbs.at(1)->getHealth()) + "/" + std::to_string(this->limbs.at(1)->maxHealth) + "\n"+
-					"\tArms: "+std::to_string(this->limbs.at(2)->getHealth()) + "/" + std::to_string(this->limbs.at(2)->maxHealth) + "\n"+
-					"\tLegs: "+std::to_string(this->limbs.at(3)->getHealth()) + "/" + std::to_string(this->limbs.at(3)->maxHealth);
+				// info += "\n\n"+ //"\tAttack rate: "+std::to_string(this->attackRate) + "\n\n" +
+				info += "\n\tHead: "+std::to_string(this->limbs.at(0)->getHealth()) + "/" + std::to_string(this->limbs.at(0)->maxHealth) + "\n"+
+				"\tBody: "+std::to_string(this->limbs.at(1)->getHealth()) + "/" + std::to_string(this->limbs.at(1)->maxHealth) + "\n"+
+				"\tArms: "+std::to_string(this->limbs.at(2)->getHealth()) + "/" + std::to_string(this->limbs.at(2)->maxHealth) + "\n"+
+				"\tLegs: "+std::to_string(this->limbs.at(3)->getHealth()) + "/" + std::to_string(this->limbs.at(3)->maxHealth);
 					
 				if(this->hasEffects()) {
 					info += "\n\nStatus Effects:";

@@ -14,9 +14,10 @@
 void TextScreen::addContent(const std::string& str) {
 
 	std::string s = str;
-
-	//debug("Adding content");
-
+	// s=clean(s);
+	
+	int nullChars;
+	
 	if(this->content.size() == 0) {
 		this->content.push_back("");
 		if(s[0] == '\n') {
@@ -25,8 +26,10 @@ void TextScreen::addContent(const std::string& str) {
 	}
 
 	int indexOfLastSpace = -1;
-	int tabStop = this->screenCharWidth/2;
+	int tabStop = (this->screenCharWidth/2);
 	int cursorX;
+
+	bool colored = false;
 
 	//Read last content line into a string and delete it from content vector
 	if(this->content.at(this->content.size()-1)[this->content.at(this->content.size()-1).size()-1] == '\r') {
@@ -37,7 +40,7 @@ void TextScreen::addContent(const std::string& str) {
 
 	//Iterate through added string
 	for(int i=0;i<s.size();i++) {
-		cursorX = tsize(thisLine)-1;
+		cursorX = thisLine.size()-1;
 		if(tsize(thisLine) + 1 >= this->screenCharWidth) {
 			//Push content back with current line and start new line
 			if(s[i] == ' ') {
@@ -60,11 +63,12 @@ void TextScreen::addContent(const std::string& str) {
 				thisLine = "";
 			}
 		} else {
-			if((int)s[i] == -70 or (int)s[i] == -104) continue;
+			// if((int)s[i] == -70 or (int)s[i] == -104) continue;
+			// if((int)s[i] < 0) debug((int)s[i]);
 			if(s[i] == ' ') {
 				//Record index of the last space on this line
 				thisLine += ' ';
-				indexOfLastSpace = tsize(thisLine)-1;
+				indexOfLastSpace = thisLine.size()-1;
 			} else if(s[i] == '') {
 				//Non-breaking space
 				//Add space but don't record as a breakpoint
@@ -78,14 +82,14 @@ void TextScreen::addContent(const std::string& str) {
 					//Move "cursor" to next tabstop
 					if(cursorX  <= 1) {
 						thisLine += ' ';
-						indexOfLastSpace = tsize(thisLine)-1;
+						indexOfLastSpace = thisLine.size()-1;
 					} else if(cursorX < tabStop) {
 						while(cursorX <= tabStop) {
 							thisLine += ' ';
 							cursorX = tsize(thisLine);
 						}
-						indexOfLastSpace = tsize(thisLine)-1;
-					} else if(cursorX >= tabStop) {
+						indexOfLastSpace = thisLine.size()-1;
+					} else if(cursorX-nullchars(thisLine) >= tabStop) {
 						this->content.push_back(thisLine);
 						thisLine = " ";
 						indexOfLastSpace = 0;
@@ -364,6 +368,11 @@ void MapScreen::updateMap() {
 							charSize = static_cast<Projectile*>(generic)->displaySize;
 							dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,static_cast<Projectile*>(generic)->angle*CONV_RADIANS,NULL,SDL_FLIP_NONE);
+							break;
+						case OBJ_INTERACTIVE:
+							charSize = this->charW;
+							dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
+							SDL_RenderCopy(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect);
 							break;
 						case OBJ_CONTAINER:
 							charSize = this->charW;

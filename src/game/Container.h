@@ -18,7 +18,7 @@ class Container: public GameObject {
 		Inventory* inventory;
 		Tile* location;
 
-		std::tuple<float,float> getLocation();
+		std::tuple<float,float> inline getLocation() {return {this->x,this->y};}
 
 		Container(const std::string&,std::tuple<float,float>, int);
 		Container(const std::string&,std::tuple<float,float>, Inventory*);
@@ -27,7 +27,7 @@ class Container: public GameObject {
 		int getDisplayID() {return 8;}
 
 		std::string inline getName() {return this->name;}
-		std::string inline getFormattedName() {return "☺g"+this->name+"☺";}
+		std::string inline getFormattedName() {return "\x01g"+this->name+"\x01";}
 		std::string getInfo();
 
 		void cleanup() {

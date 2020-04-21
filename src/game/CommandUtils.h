@@ -13,10 +13,10 @@ std::map<std::string,std::pair<std::vector<std::string>,std::vector<std::string>
 	{"clear",{{"clear"},{"Clears screen"}}},
 	{"inventory",{{"inventory"},{"Displays player inventory"}}},
 	{"search",{{"search"},{"Displays inventory of selected container"}}},
-	{"examine",{{"examine","examine ☺w[item]☺","examine ☺w[partial item]☺"},{"Displays information about surroundings","Displays item info"}}},
+	{"examine",{{"examine","examine \x01w[item]\x01","examine \x01w[partial item]\x01"},{"Displays information about surroundings","Displays item info"}}},
 	{"equip",{{"equip [item]","equip [partial item]"},{"Equips item"}}},
-	{"take",{{"take [item name]","take ☺w[partial name]☺"},{"Takes item from selected container"}}},
-	{"put",{{"put ☺w[item name]☺","put ☺w[partial item name]☺"},{"Puts item in selected container"}}},
+	{"take",{{"take [item name]","take \x01w[partial name]\x01"},{"Takes item from selected container"}}},
+	{"put",{{"put \x01w[item name]\x01","put \x01w[partial item name]\x01"},{"Puts item in selected container"}}},
 	{"move",{{"move [direction]"},{"Moves player in direction"}}},
 	{"pause",{{"pause"},{"Pauses game"}}},
 	{"stop",{{"stop"},{"Halts player movement"}}},
@@ -26,17 +26,17 @@ std::map<std::string,std::pair<std::vector<std::string>,std::vector<std::string>
 	{"say",{{"say [text]"},{"Creates player speech"}}},
 	{"exit",{{"exit"},{"Exits game"}}},
 	{"select",{{"select [nearby object]","select [nearby character]"},{"Selects entity"}}},
-	{"target",{{"target ☺g[character]☺"},{"Targets character"}}},
-	{"plant",{{"plant ☺w[item name]☺","plant ☺w[partial item name]☺"},{"Plants seed"}}},
-	{"drink",{{"drink ☺w[item name]☺","drink ☺w[partial item name]☺"},{"Drinks item"}}},
-	{"use",{{"use ☺w[item name]☺","use ☺w[partial item name]☺"},{"Uses item"}}},
+	{"target",{{"target \x01g[character]\x01"},{"Targets character"}}},
+	{"plant",{{"plant \x01w[item name]\x01","plant \x01w[partial item name]\x01"},{"Plants seed"}}},
+	{"drink",{{"drink \x01w[item name]\x01","drink \x01w[partial item name]\x01"},{"Drinks item"}}},
+	{"use",{{"use \x01w[item name]\x01","use \x01w[partial item name]\x01"},{"Uses item"}}},
 };
 
 int moveItems(int itemCount,Item *goodItem,Inventory *source, Inventory *destination) {
 	
 	int taken;
 	int index = source->find(goodItem->name);
-	
+		
 	for(taken=0;taken<itemCount;taken++) {
 		goodItem = source->remove(index);
 		destination->add(goodItem);
@@ -92,7 +92,10 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 	//determine itemcount
 	for(int i=0;i<args.size();i++) {
 		if(isdigit(args.at(i))) {
-			itemCount = std::stoi(strip(args.at(i)));
+			std::string temp = args.at(i).substr(0,10);
+			itemCount = std::min(1000,std::atoi(strip(args.at(i).substr(0,10)).c_str()));
+			if(itemCount < 0) itemCount = 1000;
+			debug(itemCount);
 			args.erase(args.begin() + i);
 			break;
 		} else if(args.at(i) == "*") {
@@ -136,7 +139,7 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 
 	} else if(command == "put") {
 
-		// sourceName = "☺ginventory☺";
+		// sourceName = "\x01ginventory\x01";
 		targetName = TBAGame->displayTarget->getFormattedName();
 
 		//Source and destination containers
@@ -166,20 +169,21 @@ std::string parseInteraction(Command *cmd, std::vector<std::string> args) {
 
 	//Check if item appears in selected container	
 	int index = source->find(itemName);
-
+	
 	if(index >= 0) {
 		//itemName was found in a container
 		Item *goodItem;
 		goodItem = source->getItem(index);
 		if(takeAll) itemCount = source->itemCount(goodItem->id);
 		int taken = moveItems(itemCount,goodItem,source,destination);
-		if(taken > 1) return "\n"+tense+" "+goodItem->getFormattedName() + " ("+std::to_string(taken)+")"+" "+preposition+" "+targetName;
+		if(taken > 1) return "\n"+tense+" "+std::to_string(taken)+"x "+goodItem->getFormattedName() + " "+preposition+" "+targetName;
 		return "\n"+tense+" "+goodItem->getFormattedName()+" "+preposition+" "+targetName;
 	} else if(index == -2) {
 		//itemName was found in a container but with multiple matches
 		return "";
 	} else {
 		//itemName was not found in any containers
-		return "\nItem ☺r"+itemName+"☺ not found in "+sourceName;
+		// debug("\nItem \x01r"+itemName+"\x01 not found in "+sourceName);
+		return "\nItem \x01r"+itemName.substr(0,30)+"\x01 not found in "+sourceName;
 	}
 }

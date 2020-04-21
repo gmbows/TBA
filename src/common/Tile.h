@@ -69,6 +69,7 @@ struct Tile {
 	//	  INFO RETRIEVAL
 	//================
 
+	bool adjacent(Tile*);
 	int getRotation();
 	SDL_RendererFlip getFlip();
 	SDL_Texture* getBlockTexture();

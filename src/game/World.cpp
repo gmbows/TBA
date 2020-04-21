@@ -50,12 +50,14 @@ void World::cartesianToIndex(float &x,float &y) {
 
 void World::genWorld() {
 
-	debug("Generating tiles!");
+	std::cout << "Generating tiles...\r" << std::flush;
 
 	int tileCount = 0;
 
 	int cartesianX;
 	int cartesianY;
+	
+	std::vector<int> tile_distribution = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,11,2,0,1,2};
 
 	for(int y=0;y<this->size;y++) {
 		
@@ -67,20 +69,15 @@ void World::genWorld() {
 			cartesianX = x;
 			cartesianY = y;
 			indexToCartesian(cartesianX,cartesianY);
-			if(rand()%10 == 0) {
-				this->tileVector.at(y)->push_back(new Tile(2,cartesianX,-cartesianY));
-			} else if(rand()%10 == 1) {
-				this->tileVector.at(y)->push_back(new Tile(1,cartesianX,-cartesianY));
-			} else {
-				this->tileVector.at(y)->push_back(new Tile(0,cartesianX,-cartesianY));
-			}
+			this->tileVector.at(y)->push_back(new Tile(choice_uniform(tile_distribution),cartesianX,-cartesianY));
 		}
 	}
+	std::cout << "Generating tiles... Done" << std::endl;
 }
 
 void World::genWorld_new(SDL_Renderer* renderer) {
 
-	debug("Generating world texture!");
+	std::cout << "Generating world texture...\r" << std::flush;
 	
 	//=================================
 	//!!!!!SET DEFAULT TILE COLOR/ALPHA HERE !!!!!
@@ -144,6 +141,8 @@ void World::genWorld_new(SDL_Renderer* renderer) {
 		cursor[0] = 0;
 	}
 	SDL_SetRenderTarget(renderer,NULL);
+	
+	std::cout << "Generating world texture... Done" << std::endl;
 }
 
 void World::createStructure(std::tuple<int,int> location, structure s, int tileID) {

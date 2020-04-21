@@ -6,7 +6,7 @@
 
 #include <SDL2/SDL.h>
 
-Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,float _ang,float _velocity): owner(_owner), angle(_ang), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
+Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,float dmg,float _ang,float _velocity): owner(_owner), damage(dmg), angle(_ang), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
 
 	float _x,_y;
 	decompose(_location,_x,_y);
@@ -75,7 +75,7 @@ void Projectile::relocate() {
 
 				if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
 					//Arrow damage
-					occupant->receiveAttack(1,this->owner);
+					occupant->receiveAttack(this->damage,this->owner);
 					//Do not embed arrows into characters
 					this->x = testX;// + 2*(this->velocity*std::cos(this->angle));
 					this->y = testY;// + 2*(this->velocity*std::sin(this->angle));

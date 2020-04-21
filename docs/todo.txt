@@ -42,10 +42,9 @@ OOS:
 KNOWN BUGS:
 ==========
 	Projectile:	
-		After swapping to game ticks, projectiles pass through walls
 	Character:
 		Targeting in the absence of other characters causes a crash
-		Presently characters are invisible between creation and entering a new tile (started happening when recompiled for linux)
+		
 		Behavior:
 			If Character A dies while in combat with Character B from an attack that didn't come from
 			Character B, Character B will be stuck in combat indefinitely
@@ -62,6 +61,8 @@ KNOWN BUGS:
 	
 	*FIXED* Slight scroll jitter can be seen when moving slowly
 	*FIXED* Moving out of bounds causes crash
+	*FIXED* After swapping to game ticks, projectiles pass through walls
+	*FIXED* Presently characters are invisible between creation and entering a new tile (started happening when recompiled for linux)
 ========
  TODO:
 ========
@@ -98,12 +99,16 @@ KNOWN BUGS:
 		Move move() from Character to GameObject (All game objects should be physics enabled)
 		Leave setLocomotion in Character because it is a unique to characters
 	Commands:
-		Help
-		Item interactions
 ========
   DONE:	
 ========
+	Status effects
+	Colors
+	Limbs/Limb damage
+	Pathfinding
 	Fleeing/escaping danger
+	Help
+	Item interactions
 	Fix movespeed variations
 	Limit NPC rotation speed (currently snaps instantly)
 	Set projectiles to update 3x3 area (they leave trails atm)

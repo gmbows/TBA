@@ -10,9 +10,10 @@ std::map<statusIndicator,const std::string> statusMap = {
 	{STATUS_IDLE,"Idle"},
 	{STATUS_ATTACK,"Swinging weapon"},
 	{STATUS_NO_AMMO,"No ammo"},
+	{STATUS_WORK,"Working"},
 	{STATUS_COMBAT,"In combat"},
 	{STATUS_PURSUE,"Pursuing target"},
-	{STATUS_MOVE,"Traveling"},
+	{STATUS_TRAVEL,"Traveling"},
 	{STATUS_ESCAPE,"Escaping"},
 	{STATUS_PATROL,"Patrolling"},
 	{STATUS_STUN,"Stunned"},
@@ -58,7 +59,7 @@ GameObject* Character::getTarget()  {
 void Character::addStatus(statusIndicator newStatus) {
 	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
 		// Character must be stationary to enter combat
-		this->removeStatus(STATUS_MOVE);
+		this->removeStatus(STATUS_TRAVEL);
 		this->resetCombatTimer();
 	}
 	if(newStatus != STATUS_IDLE) this->removeStatus(STATUS_IDLE);
@@ -279,26 +280,33 @@ void Character::moveToCharacter(Character *c) {
 */
 
 void Character::moveTo() {
+		this->addStatus(STATUS_TRAVEL);
 		move_forward = true;
 		int tx = this->targetPath.at(0)->x;
 		int ty = -this->targetPath.at(0)->y;
 		this->setTargetLoc(tx,ty);
 		// debug(this->targetAng);
-		if((char*)this->location == (char*)this->targetPath.at(0)) {
+		// if((char*)this->location == (char*)this->targetPath.at(0)) {
+		if(dist({this->x,this->y},{tx,ty}) <= this->width) {
 			this->targetPath.erase(this->targetPath.begin());
 		}
-		if(this->targetPath.size() == 0) move_forward = false;
+		if(this->targetPath.size() == 0) {
+			move_forward = false;
+			this->removeStatus(STATUS_TRAVEL);
+		}
 }
 
 void Character::generatePathTo(Character *c) {
 	this->generatePathTo(c->location->x,-c->location->y);
 }
 
-void Character::generatePathTo(float tx, float ty) {
-	if(TBAGame->logicTicks < this->lastPathCheck+TBAGame->pathCheckInterval) return;
+bool Character::generatePathTo(float tx, float ty, bool adjacent) {
+	if(TBAGame->logicTicks < this->lastPathCheck+TBAGame->pathCheckInterval) return false;
+	// if(this->targetPath.size() > 0) return false;
 	float g,h,f;
 	float tg,th;
 	
+	Tile* targetTile = TBAGame->gameWorld->getTileAt(tx,ty);
 	Tile *thisTile;
 	Tile *testTile;
 	Tile *currentBestTile = this->location;
@@ -316,6 +324,12 @@ void Character::generatePathTo(float tx, float ty) {
 	float tileY = -this->location->y;
 	
 	int iter = 0;
+	
+	if(targetTile->isPassable() == false and adjacent == false) {
+		debug(this->getName()+" cannot generate path to impassable tile "+std::to_string((int)tx)+", "+std::to_string((int)ty));
+		this->lastPathCheck = TBAGame->logicTicks;
+		return false;
+	}
 	
 	while( !(tileX == tx and tileY == ty)) {
 		
@@ -346,23 +360,35 @@ void Character::generatePathTo(float tx, float ty) {
 		tileX = currentBestTile->x;
 		tileY = -currentBestTile->y;
 		if((char*)thisTile == (char*)currentBestTile or iter > 40) {
-			debug("Pathing error");
+			// debug("Pathing error");
 			// this->targetPath = {};
-			return;
+			return false;
 		}
-		// std::cout << "\nNew best tile at " << tileX << ", " << tileY << std::endl;
-		bestPath.push_back(currentBestTile);
+		
+		bestPath.push_back(currentBestTile);		
 		iter++;
+		
+		if(adjacent) {
+			if(targetTile->adjacent(currentBestTile)) break;
+		}
+		
 	}
 	
-	this->targetPath = bestPath;
+	if(!this->hasPath() or bestPath.size() <= this->targetPath.size()) this->targetPath = bestPath;
 	
 	this->lastPathCheck = TBAGame->logicTicks;
 	
 	for(int i=0;i<bestPath.size();i++) {
-		// bestPath.at(i)->addBlock(4);
+		
+		// if(!bestPath.at(i)->hasBlocks()) bestPath.at(i)->addBlock(2);
 		// std::cout << bestPath.at(i)->x << ", " << bestPath.at(i)->y << std::endl;
+		
 	}
+	// debug(this->getName()+" is following new path ");
+	for(int i=0;i<this->targetPath.size();i++) {
+		// debug(std::to_string(this->targetPath.at(i)->x)+", "+std::to_string(this->targetPath.at(i)->y));
+	}
+	return true;
 }
 
 void Character::moveAway(Character *c) {
@@ -372,11 +398,11 @@ void Character::moveAway(Character *c) {
 }
 
 //==========
-//	 STATUS_MOVE
+//	 STATUS_TRAVEL
 //==========
 
 void Character::turn() {
-	if(this->isPlayer and !this->autoMove) return;
+	// if(this->isPlayer and !this->autoMove) return;
 	if((fabs(this->viewAng - this->targetAng)) > this->getTurnSpeed()) {
 		
 		int sign;
@@ -395,7 +421,12 @@ void Character::turn() {
 		}
 		
 		//																			Slow turn speed as viewAng approaches targetAng
-		this->viewAng += this->getTurnSpeed()*sign*((float)360/(360-fabs(this->viewAng-this->targetAng)));
+		float diff = 180-fabs(this->viewAng-this->targetAng);
+		if(diff == 0) {
+			this->viewAng += this->getTurnSpeed()*sign;
+		} else {
+			this->viewAng += this->getTurnSpeed()*sign*fabs((float)180/diff);
+		}
 
 	} else {
 		//If aim is close enough just set to target angle
@@ -407,6 +438,7 @@ void Character::turn() {
 		this->viewAng = 360+this->viewAng;
 	}
 	this->viewAng = (int)this->viewAng%360;
+	// if(this->getName()[0] == 'D') debug(this->viewAng);
 }
 
 void Character::setLocomotion() {
@@ -424,7 +456,7 @@ void Character::setLocomotion() {
 	}
 
 	if(fabs(this->velocity) < 0.5f) {
-		this->removeStatus(STATUS_MOVE);
+		this->removeStatus(STATUS_TRAVEL);
 	}
 
 
@@ -476,6 +508,8 @@ void Character::combat() {
 		return;
 	}
 
+	this->setTargetAngle(this->getCharTarget());
+
 	if(!this->getCharTarget()->isAlive()) {
 		if(this->isPlayer) {
 			//Placeholder for behavior when in combat with dead target
@@ -500,7 +534,7 @@ void Character::combat() {
 		//Character is currently attacking with weapon
 		//Wait for attack to connect
 		case ATK_STATUS_ATTACKING:
-			if(!this->hasAmmo(I_WEAPON_BOW)) {
+			if(this->equipment->hasPrimary() and this->equipment->primary->hasType(I_WEAPON_BOW) and !this->hasAmmo(I_WEAPON_BOW)) {
 				this->addStatus(STATUS_NO_AMMO);
 			} else {
 				this->removeStatus(STATUS_NO_AMMO);
@@ -537,7 +571,7 @@ attackStatus Character::getAttackStatus() {
 	return ATK_NOT_READY;
 }
 
-itemType Character::getAttackType() {
+ItemType Character::getAttackType() {
 	if(this->equipment->primary == nullptr) {
 		return I_WEAPON_MELEE;
 	}
@@ -545,14 +579,14 @@ itemType Character::getAttackType() {
 	return I_WEAPON_RANGED;
 }
 
-bool Character::hasAmmo(itemType type) {
+bool Character::hasAmmo(ItemType type) {
 	for(int i=0;i<this->inventory->contents->size();i++) {
 		if(this->inventory->contents->at(i)->hasType(I_AMMO | type)) return true;
 	}
 	return false;
 }
 
-Item* Character::getAmmo(itemType type) {
+Item* Character::getAmmo(ItemType type) {
 	for(int i=0;i<this->inventory->contents->size();i++) {
 		if(this->inventory->contents->at(i)->hasType(I_AMMO | type)) return this->inventory->contents->at(i);
 	}
@@ -577,8 +611,10 @@ void Character::sendAttack(GameObject *target) {
 			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
 			//												accuracy mult goes here \/
 			if(this->hasAmmo(I_WEAPON_BOW)) {
-				new Projectile(this,this->getLocation(),this->viewAng*CONV_DEGREES,.5); //placeholder velocity
+				new Projectile(this,this->getLocation(),damage,this->viewAng*CONV_DEGREES,.5); //placeholder velocity
 				this->inventory->remove(this->getAmmo(I_WEAPON_BOW));
+			} else {
+				this->addStatus(STATUS_NO_AMMO);
 			}
 			break;
 		case I_WEAPON_MELEE:
@@ -719,7 +755,7 @@ void Character::update() {
 			this->addStatus(STATUS_ESCAPE);
 		}
 		
-		if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_MOVE | STATUS_PURSUE)) {
+		if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_TRAVEL | STATUS_PURSUE)) {
 			this->combat();
 		}
 		
@@ -732,9 +768,17 @@ void Character::update() {
 			}
 		}
 		
-		// if(this->hasStatus(STATUS_MOVE | STATUS_ESCAPE | STATUS_PURSUE)) {
-			// this->setLocomotion();
-		// }
+		if(this->hasStatus(STATUS_WORK) and this->hasWorkTarget()) {
+			if(dist({this->x,this->y},this->workTarget->getLocation()) > 2) {
+				float x,y;
+				decompose(this->workTarget->getLocation(),x,y);
+				this->generatePathTo(x,y,true);
+			} else {
+				if(!this->hasStatus(STATUS_TRAVEL | STATUS_COMBAT)) {
+					this->processWork();
+				}					
+			}
+		}
 
 		//Set movement-based status-actions
 		
@@ -745,9 +789,7 @@ void Character::update() {
 			this->moveTo();
 		}
 	}
-	
-	
-	
+
 	//Physics
 	this->move();
 	

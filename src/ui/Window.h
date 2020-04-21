@@ -21,7 +21,7 @@ class Window {
 		MapScreen *mapScreen;
 		TextBox *auxScreen;
 		Panel *mapPanel;
-
+		
 		std::vector<DynamicTextBox*> popupVector;
 		void deleteFirstToggledPopup();
 

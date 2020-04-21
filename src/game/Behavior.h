@@ -2,7 +2,7 @@
 
 #include <map>
 
-typedef unsigned int flag;
+typedef unsigned long int flag;
 
 enum statusIndicator: flag;
 enum attackStatus: int;

@@ -39,6 +39,8 @@ struct Game {
 	void displayText(const std::string &s) { 
 		this->gameWindow->textScreen->addContent(s);
 	}
+	
+	const char colorKey = '\x01';
 
 	//=======================
 	//     GAME OBJECTS

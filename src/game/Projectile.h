@@ -9,21 +9,24 @@
 class Projectile: public GameObject {
 	public:
 		float x,y;
+		float damage;
 		float angle;
 		float velocity;
 		bool active;
 		int displaySize = 10;
 		float collisionSize = .35; //.35 Meters in any direction
-		int maxAge = TBAGame->convert(60000);	//Projectiles decay after 1 minute
+		int maxAge = TBAGame->convert(30000);	//Projectiles decay after 1 minute
 
 		int getDisplayID() {return 7;}
+		
+		std::string inline getName() {return "Arrow";}
 
 		Tile* location;
 
 		GameObject* owner;
 		GameObject* trackSubject = nullptr;
 
-		Projectile(GameObject*, std::tuple<float,float>,float,float);
+		Projectile(GameObject*, std::tuple<float,float>,float,float,float);
 
 		unsigned int lastUpdate;
 		unsigned int destroyTime;

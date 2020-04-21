@@ -17,6 +17,7 @@ std::map<int,std::tuple<float,bool,bool>> tileMap {
 	{-1,{1,false,false}},	//Invalid
 	{0,{.04,true,true}},	//Grass
 	{1,{.13,true,false}},	//Grass with rock
+	{11,{.13,true,false}},	//Grass with rock2
 	{2,{.04,true,false}},	//Tree
 	{3,{.04,true,false}},	//Player
 	{4,{.04,false,false}},	//Stone brick
@@ -24,6 +25,8 @@ std::map<int,std::tuple<float,bool,bool>> tileMap {
 	{6,{.04,true,false}},	//NPC
 	// {7,{.04,true,false}},	//Arrow
 	{8,{.04,true,false}},	//Chest
+	{10,{.04,true,false}},	//Rich stone
+	{12,{.04,true,false}},	//Path marker
 	
 };
 
@@ -34,15 +37,28 @@ std::map<int,std::string> tileNameMap {
 	{-1,"Invalid"},	//Invalid
 	{0,"Grass"},	//Grass
 	{1,"Rock"},	//Grass with rock
+	{11,"Rock"},	//Grass with rock
 	{2,"Tree"},	//Tree
 	{4,"Stone Brick"},	//Stone brick
 	{8,"Chest"},	//Chest
-	{9,"Seeds"},	//Chest
+	{9,"Seeds"},	//Seeds
+	{10,"Rich stone"},	//Chest
+	{12,"Path marker"},	//Chest
 	
 };
 
 std::string Tile::getName() {
 	return tileNameMap.at(this->id);
+}
+
+bool Tile::adjacent(Tile* tile) {
+	for(int i=-1;i<=1;i++) {
+		for(int j=-1;j<=1;j++) {
+			if(abs(i+j) != 1) continue;
+			if(this->x+i == tile->x and this->y+j == tile->y) return true;
+		}
+	}
+	return false;
 }
 
 Tile::Tile(int tid, int _x, int _y): id(tid), x(_x), y(_y) {
@@ -152,7 +168,7 @@ bool Tile::isPassable() {
 		return this->blocks.at(this->blocks.size()-1)->passable;
 	} else if(this->hasObjects()) {
 		for(int i=0;i<this->objects.size();i++) {
-			if(this->objects.at(i)->type == OBJ_CONTAINER) {
+			if(this->objects.at(i)->type == OBJ_INTERACTIVE or this->objects.at(i)->type == OBJ_CONTAINER) {
 				return false;
 			}
 		}

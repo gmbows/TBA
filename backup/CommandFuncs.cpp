@@ -16,6 +16,14 @@
 #include <map>
 #include <tuple>
 
+void checkHelp() {
+	for(int i=0;i<TBAGame->commandList.size();i++) {
+		if(helpMap.find(TBAGame->commandList.at(i)->aliases.at(0)) == helpMap.end()) {
+			std::cout << "WARNING No help entry for command: "+TBAGame->commandList.at(i)->aliases.at(0) << std::endl;
+		}
+	}
+}
+
 //Dirmap
 std::map<std::string,std::pair<std::string,int>> dirMap = {
 
@@ -58,7 +66,7 @@ std::string moveFunc(Command* command, const std::vector<std::string> &args) {
 
 	TBAGame->playerChar->targetAng = (float)dirMap.at(args.at(0)).second;
 	TBAGame->playerChar->autoMove = true;
-	TBAGame->playerChar->addStatus(STATUS_MOVE);
+	TBAGame->playerChar->addStatus(STATUS_TRAVEL);
 	return "\nMoving "+command->aux;
 
 }
@@ -101,12 +109,14 @@ std::string stopFunc(Command* command, const std::vector<std::string> &args) {
 
 //Help
 std::string helpFunc(Command* command, const std::vector<std::string> &args) {
-	if(args.size() == 0) return "\n"+join('\n',TBAGame->commandStrings);
+	if(args.size() == 0) 
+		return "\n==========================\nFor more information type:\n->help <command>\n==========================\n"+join('\n',TBAGame->commandStrings);
 	std::string cmd = join(' ',args);
 	if(helpMap.find(cmd) != helpMap.end()) {
-		return "\nUsage: "+join("\n       ",helpMap.at(cmd).first)+"\n\nFunction: "+join("\n          ",helpMap.at(cmd).second);
+		std::string newline = "\n";
+		return newline+TBAGame->colorKey+"bUsage"+TBAGame->colorKey+": "+join(newline+"       ",helpMap.at(cmd).first)+newline+newline+TBAGame->colorKey+"bFunction"+TBAGame->colorKey+": "+join(newline+"          ",helpMap.at(cmd).second);
 	}
-	return "h";
+	return "\nNo help entry for this command";
 }
 bool helpEC(Command* command, const std::vector<std::string> &args) {
 
@@ -154,6 +164,7 @@ bool targetEC(Command* command, const std::vector<std::string> &args) {
 
 //Attack
 std::string attackFunc(Command* command, const std::vector<std::string> &args) {
+	if(!TBAGame->playerChar->hasTarget()) return "\nNo target";
 	TBAGame->playerChar->setStatus(STATUS_COMBAT);
 	return "\nAttacking "+TBAGame->playerChar->getTargetName();
 }
@@ -220,7 +231,9 @@ std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
 	} else {
 		damage = std::stoi(args.at(0));
 	}
-	TBAGame->playerChar->health -= damage;
+	for(int i=0;i<TBAGame->playerChar->limbs.size();i++) {
+		TBAGame->playerChar->limbs.at(i)->applyDamage(damage);
+	}
 	return "\nHurt player for "+std::to_string(damage);
 }
 bool hurtmeEC(Command* command, const std::vector<std::string> &args) {
@@ -235,9 +248,7 @@ std::string exitFunc(Command* command, const std::vector<std::string> &args) {
 
 //Take
 std::string takeFunc(Command* command, const std::vector<std::string> &args) {
-	
 	return parseInteraction(command,args);
-
 }
 bool takeEC(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) {
@@ -307,12 +318,14 @@ std::string searchFunc(Command* command, const std::vector<std::string> &args) {
 		std::vector<GameObject*> containers = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER);
 		for(int i=0;i<containers.size();i++) {
 			if(startsWith(toLower(containers.at(i)->getName()),toLower(containerName))) {
-				return "\n"+containers.at(i)->getInvString();
+				TBAGame->displayText("\nSearching "+containers.at(i)->getName()+"...");
+				return containers.at(i)->getInvString();
 			}
 		}
 		return "\nContainer not found";
 	} else {
-		return "\n"+TBAGame->displayTarget->getInvString();
+		TBAGame->displayText("\nSearching "+TBAGame->displayTarget->getName()+"...");
+		return TBAGame->displayTarget->getInvString();
 	}
 }
 bool searchEC(Command* command, const std::vector<std::string> &args) {
@@ -335,7 +348,7 @@ std::string equipFunc(Command* command, const std::vector<std::string> &args) {
 			TBAGame->playerChar->resetCombatTimer();
 			return "\nEquipped "+goodItem->name;
 		}
-		return "\nCan't equip this item";
+		return "\nCan't equip this item ("+goodItem->name+")";
 	} else if(index == -2) {
 		return "";
 	}
@@ -365,10 +378,10 @@ std::string examineFunc(Command* command, const std::vector<std::string> &args) 
 		if(nearbyChars.size() == 0 and nearbyObjs.size() == 0) return surface;
 		surface += "\nNearby:";
 		for(int i=0;i<nearbyChars.size();i++) {
-			surface += "\n-"+nearbyChars.at(i)->getName();
+			surface += "\n -"+nearbyChars.at(i)->getName();
 		}
 		for(int i=0;i<nearbyObjs.size();i++) {
-			surface += "\n>"+nearbyObjs.at(i)->getName();
+			surface += "\n >"+nearbyObjs.at(i)->getName();
 		}
 		return surface;
 	} else {
@@ -386,3 +399,89 @@ std::string examineFunc(Command* command, const std::vector<std::string> &args) 
 bool examineEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
+
+//Plant
+std::string plantFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	int index = TBAGame->playerChar->inventory->find(itemName);
+	if(index >= 0) {
+		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+		if(TBAGame->playerChar->plant(goodItem)) {
+			return "\nPlanted "+goodItem->name;
+		}
+		return "\nCan't plant this item ("+goodItem->name+")";
+	} else if(index == -2) {
+		return "";
+	}
+	return "\nItem not found";
+}
+bool plantEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+
+//Drink
+std::string drinkFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	int index = TBAGame->playerChar->inventory->find(itemName);
+	if(index >= 0) {
+		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+		if(TBAGame->playerChar->consume(goodItem)) {
+			return "\nDrank "+goodItem->name;
+		}
+		return "\nCan't drink this item ("+goodItem->name+")";
+	} else if(index == -2) {
+		return "";
+	}
+	return "\nItem not found";
+}
+bool drinkEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+
+//Use
+std::string useFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	int index = TBAGame->playerChar->inventory->find(itemName);
+	if(index >= 0) {
+		Item *goodItem = TBAGame->playerChar->inventory->getItem(index);
+		if(TBAGame->playerChar->consume(goodItem)) {
+			return "\nUsed "+goodItem->name;
+		}
+		return "\nCan't use this item ("+goodItem->name+")";
+	} else if(index == -2) {
+		return "";
+	}
+	return "\nItem not found";
+}
+bool useEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+
+//Giveme
+std::string givemeFunc(Command* command, const std::vector<std::string> &args) {
+	int id = std::stoi(args.at(0));
+	Item* newItem = new Item(id);
+	TBAGame->playerChar->inventory->add(newItem);
+	return "\nGave "+TBAGame->playerChar->getName()+" "+newItem->getFormattedName();
+}
+
+bool givemeEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+}
+

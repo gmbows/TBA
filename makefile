@@ -1,5 +1,5 @@
-TBAGame.exe: bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/Projectile.o bin/Statistics.o bin/Structure.o bin/World.o bin/Main.o
-	g++ -std=c++11 bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/Projectile.o bin/Statistics.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o TBAGame.exe
+TBAGame.exe: bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/Projectile.o bin/ResourceNode.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o
+	g++ -std=c++11 bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/Projectile.o bin/ResourceNode.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o TBAGame.exe
 
 bin/Font.o: src/ui/Font.cpp src/ui/Font.h src/tools/Log.h src/tools/Log.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/ui/Font.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Font.o
@@ -73,7 +73,7 @@ bin/Input.o: src/game/Input.cpp src/game/Input.h
 bin/Inventory.o: src/game/Inventory.cpp src/game/Inventory.h  src/game/Item.h src/game/Item.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/game/Inventory.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Inventory.o
 
-bin/Item.o: src/game/Item.cpp src/game/Item.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  
+bin/Item.o: src/game/Item.cpp src/game/Item.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  src/game/StatusEffect.h src/game/StatusEffect.cpp  
 	g++ -std=c++11 -c src/game/Item.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Item.o
 
 bin/ItemManifest.o: src/game/ItemManifest.cpp src/game/ItemManifest.h  
@@ -85,8 +85,14 @@ bin/Limb.o: src/game/Limb.cpp src/game/Limb.h
 bin/Projectile.o: src/game/Projectile.cpp src/game/Projectile.h  src/game/GameObject.h src/game/GameObject.cpp src/common/Tile.h src/common/Tile.cpp src/common/Common.h src/common/Common.cpp  
 	g++ -std=c++11 -c src/game/Projectile.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Projectile.o
 
+bin/ResourceNode.o: src/game/ResourceNode.cpp src/game/ResourceNode.h  src/game/GameObject.h src/game/GameObject.cpp  src/game/Inventory.h src/game/Inventory.cpp  src/game/Item.h src/game/Item.cpp src/common/Tile.h src/common/Tile.cpp src/common/Common.h src/common/Common.cpp  
+	g++ -std=c++11 -c src/game/ResourceNode.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/ResourceNode.o
+
 bin/Statistics.o: src/game/Statistics.cpp src/game/Statistics.h  
 	g++ -std=c++11 -c src/game/Statistics.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Statistics.o
+
+bin/StatusEffect.o: src/game/StatusEffect.cpp src/game/StatusEffect.h  
+	g++ -std=c++11 -c src/game/StatusEffect.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/StatusEffect.o
 
 bin/Structure.o: src/game/Structure.cpp src/game/Structure.h  
 	g++ -std=c++11 -c src/game/Structure.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Structure.o

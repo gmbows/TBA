@@ -11,6 +11,7 @@ struct Tile;
 #include "Statistics.h"
 #include "GameObject.h"
 #include "StatusEffect.h"
+#include "ItemManifest.h"
 
 #include "Limb.h"
 
@@ -18,13 +19,13 @@ struct Tile;
 #include <tuple>
 #include <map>
 
-typedef unsigned int flag;
+typedef unsigned long int flag;
 
 class GameObject;
 
 enum statusIndicator: flag {
 	STATUS_IDLE = 			1 << 0,
-	STATUS_MOVE = 			1 << 1,
+	STATUS_TRAVEL = 		1 << 1,
 	STATUS_ATTACK = 		1 << 2,
 	STATUS_NO_AMMO = 	1 << 11,
 	STATUS_COMBAT =		1 << 3,
@@ -35,7 +36,8 @@ enum statusIndicator: flag {
 	STATUS_DYING = 		1 << 8,
 	STATUS_CRIPPLED = 	1 << 9,
 	STATUS_DEAD = 			1 << 10,
-	STATUS_END = 			1 << 12,
+	STATUS_WORK = 		1 << 12,
+	STATUS_END = 			1 << 13,
 };
 
 inline statusIndicator operator|(statusIndicator f1,statusIndicator f2) {
@@ -125,20 +127,27 @@ class Character: public GameObject {
 		bool equip(Item*);
 		bool plant(Item*);
 		bool consume(Item*);
-		bool hasAmmo(itemType);
-		Item* getAmmo(itemType);
+		bool work(GameObject*);
+		bool hasAmmo(ItemType);
+		Item* getAmmo(ItemType);
 		
 		//=============
 		//	  	STATUS EFFECTS
 		//=============
 		
 		//for adding effects from an item
-		void triggerItemEffects(Item*);
+		void triggerItemEffects(Item*,Action);
 		//for processing effects each tick
 		void processEffects();
 		std::vector<StatusEffect*> effects;
 		
-		bool inline hasEffects() {return this->effects.size() > 0;}
+		bool hasEffects() {
+			int e = 0;
+			for(int i=0;i<this->effects.size();i++) {
+				if(this->effects.at(i)->duration > 0) e++;
+			}
+			return e>0;
+		}
 
 		//=============
 		//	  	STATS
@@ -180,7 +189,7 @@ class Character: public GameObject {
 		int lastMove = 0;
 
 		//========
-		//STATUS_MOVEMENT
+		//STATUS_TRAVEL
 		//========
 
 		//In format units per ms
@@ -196,10 +205,12 @@ class Character: public GameObject {
 		void turn();
 		void resolveMove(float&, float&);
 		void moveToCharacter(Character*);
-		void generatePathTo(float,float);
+		bool generatePathTo(float,float,bool adjacent = false);
 		void generatePathTo(Character*);
 		void moveTo();
 		void moveAway(Character*);
+		
+		bool inline hasPath() {return this->targetPath.size() > 0;}
 
 		//========
 		//BEHAVIOR
@@ -230,6 +241,10 @@ class Character: public GameObject {
 		}
 		void setTargetAngle(Character*);
 		void setTargetLoc(int,int);
+		
+		GameObject* workTarget = nullptr;
+		bool inline hasWorkTarget() { return this->workTarget != nullptr;}
+		void processWork();
 
 		//Status
 		void setStatus(statusIndicator);
@@ -252,7 +267,7 @@ class Character: public GameObject {
 		void sendAttack(GameObject*);
 		void receiveAttack(int, GameObject*);
 		void resetCombatTimer();
-		itemType getAttackType();
+		ItemType getAttackType();
 
 		//Kill
 		void kill();
@@ -270,7 +285,7 @@ class Character: public GameObject {
 		virtual void cleanup();
 
 		//Gameobject compliance functions
-		virtual inline std::string getFormattedName() {return "☺g"+this->name+"☺";}
+		virtual inline std::string getFormattedName() {return '\x01'+("g"+this->name)+'\x01';}
 		virtual inline std::string getName() {return this->name;}
 		virtual std::string getInfo();
 		virtual inline int getID() {return this->objectID;}

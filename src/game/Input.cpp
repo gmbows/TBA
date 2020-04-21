@@ -13,11 +13,11 @@ std::string processCommand(const std::string& s) {
 	if(s.size() == 0) {
 		return "";
 	}
-
+	
 	std::string commandString;
 
 	//Split command string into word list
-	std::vector<std::string> commandVector  = split(' ',s);
+	std::vector<std::string> commandVector  = split(' ',s);//.substr(0,30));
 	std::vector<std::string> args;
 
 	//Command is the first word in the wordlist

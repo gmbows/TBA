@@ -13,6 +13,7 @@
 #include "../game/Character.h"
 #include "../game/Item.h"
 #include "../game/Container.h"
+#include "../game/ResourceNode.h"
 #include "../game/Inventory.h"
 #include "../game/Command.h"
 #include "../game/CommandFuncs.h"
@@ -130,10 +131,9 @@ void Game::setupGame() {
 			new		Command({"drink"},drinkFunc,drinkEC),
 			new		Command({"use"},useFunc,useEC),
 			new		Command({"giveme"},givemeFunc,givemeEC),
+			new		Command({"work"},workFunc,workEC),
 			////
 		};
-		
-	checkHelp();
 	
 	//Populate string command list with command names for autocomplete
 	for(int i=0;i<this->commandList.size();i++) {
@@ -188,8 +188,12 @@ void Game::setupGame() {
 	newChar->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	LB = new Character(false,160,"Lost Bladesman",0,6);
 	Dog = new Character(false,160,"Wolf",5,5);
-	Dog->equipment->primary = new Item(4);
-	LB->equipment->primary = new Item(4);
+	Dog->equipment->primary = new Item(12);
+	Dog->inventory->add(8);
+	Dog->inventory->add(8);
+	Dog->inventory->add(8);
+	Dog->inventory->add(8);
+	// LB->equipment->primary = new Item(4);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	Dog->turnSpeed = playerChar->turnSpeed*2;
 	// newChar->lookAt(LB);
@@ -203,6 +207,18 @@ void Game::setupGame() {
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 	this->gameWorld->createStructure({0,0}, bighouse, 4);
 	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+	GameObject *node = new ResourceNode("Rich Stone",{2.0f,2.0f},7,10,22);		
+	checkHelp();
+	
+	checkItemTypes();
+	
+	debug("Total game objects: "+std::to_string(this->gameObjects.size()));
+	debug("Total UI objects: "+std::to_string(this->gameUIObjects.size()));
+	
+	
+	debug("Game setup complete\n");
+	
+	
 }
 
 //=======================
@@ -392,6 +408,8 @@ void Game::update_graphics() {
 }
 
 void Game::update() {
+	
+	std::cout << "Game objects: " << this->gameObjects.size() << "\r" << std::flush;
 
 	int start = SDL_GetTicks();
 	this->update_graphics();

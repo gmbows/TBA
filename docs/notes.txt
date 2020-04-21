@@ -8,6 +8,7 @@ Threads/Synchronization:
 Debug:
 	-IF THERE IS AN UNEXPLAINABLE CRASH AND WE ARE USING THREADS, MUTEX LOCK THE BUSIEST FUNCTION
 	-If runtime crash: You are referencing an object that is not fully constructed
+		-Or dereferencing an uninstantialized character object
 	-Undefined reference to x() = class or function has not been defined by the time this line is run
 	-Implement all template functions in header files or define all possible template types
 
@@ -32,6 +33,7 @@ KeyFuncs:
 	DONE* Adding characters to command brings text screen to front?
 
 General:
+	Colorkey: ☺
 	 / "/22" = non-breaking space
 		-use for item/proper names with spaces
 	All GameObjects are added to GameObject vector automatically upon creation

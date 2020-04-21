@@ -6,6 +6,7 @@
 #include "../game/FloatingText.h"
 #include "../tools/Utility.h"
 #include "../game/Input.h"
+#include "../game/ResourceNode.h"
 
 #include <SDL2/SDL.h>
 #include <tuple>
@@ -78,8 +79,11 @@ void clearCommand() {
 
 void paste() {
 	std::string clipboard(SDL_GetClipboardText());
-	// debug((int)clipboard[0]);
-	TBAGame->gameWindow->textScreen->commandAppend(clipboard);
+	for(long i=0;i<92;i++) {
+		// if(i != 27) TBAGame->gameWindow->textScreen->commandAppend((char)i);
+	}
+	// debug((char)244);
+	// TBAGame->gameWindow->textScreen->commandAppend(clipboard);
 }
 
 //==========
@@ -201,14 +205,14 @@ void resetAllScreens() {
 }
 
 //====================
-//		PLAYER STATUS_MOVEMENT
+//		PLAYER STATUS_TRAVELMENT
 //====================
 
 void move(bool m_forward,bool m_back) {
 
 	if(m_forward ^ m_back) {
 		if(TBAGame->playerChar->isAlive()) {
-			TBAGame->playerChar->addStatus(STATUS_MOVE);
+			TBAGame->playerChar->addStatus(STATUS_TRAVEL);
 			TBAGame->playerChar->removeStatus(STATUS_IDLE);
 			TBAGame->playerChar->autoMove = false;
 		}
@@ -222,17 +226,18 @@ void move(bool m_forward,bool m_back) {
 
 void turn(bool turn_left,bool turn_right) {
 
-		if(turn_left) {
-			TBAGame->playerChar->autoMove = false;
-			TBAGame->playerChar->viewAng -= 2;
-			if(TBAGame->playerChar->viewAng < 0) TBAGame->playerChar->viewAng = 360+TBAGame->playerChar->viewAng;
-			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
-		}
-		if(turn_right) {
-			TBAGame->playerChar->autoMove = false;
-			TBAGame->playerChar->viewAng += 2;
-			TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
-		}
+	if(turn_left) {
+		TBAGame->playerChar->autoMove = false;
+		TBAGame->playerChar->viewAng -= 2;
+		if(TBAGame->playerChar->viewAng < 0) TBAGame->playerChar->viewAng = 360+TBAGame->playerChar->viewAng;
+		TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
+	}
+	if(turn_right) {
+		TBAGame->playerChar->autoMove = false;
+		TBAGame->playerChar->viewAng += 2;
+		TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
+	}
+	TBAGame->playerChar->targetAng = TBAGame->playerChar->viewAng;
 }
 
 
@@ -299,7 +304,16 @@ void debugKey() { //kp_plus
 	
 	// TBAGame->playerChar->moveTo(1,1);
 	
-	static_cast<Character*>(TBAGame->displayTarget)->generatePathTo(TBAGame->playerChar->location->x,-TBAGame->playerChar->location->y);
+	// static_cast<Character*>(TBAGame->displayTarget)->generatePathTo(TBAGame->playerChar->location->x,-TBAGame->playerChar->location->y);
+	
+	// TBAGame->logicTickRate /= 2;
+	
+	// GameObject *node = new ResourceNode("Rich Stone",{2.0f,2.0f},7,10,22);
+	GameObject *node = TBAGame->gameWorld->getTileAt(2,2)->objects.at(0);
+	Character *amelia = new Character(false,8,"Amelia",-6,-6);
+	amelia->maxMoveSpeed = 4;
+	amelia->turnSpeed = 16;
+	amelia->work(node);
 	
 	// debug(TBAGame->playerChar->limbs.at(0)->health);
 

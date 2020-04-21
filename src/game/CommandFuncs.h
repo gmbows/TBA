@@ -104,3 +104,6 @@
 	//Giveme
 	std::string givemeFunc(Command*, const std::vector<std::string>&);
 	bool givemeEC(Command*, const std::vector<std::string>&);
+	//Work
+	std::string workFunc(Command*, const std::vector<std::string>&);
+	bool workEC(Command*, const std::vector<std::string>&);

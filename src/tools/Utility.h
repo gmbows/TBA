@@ -4,6 +4,9 @@
 #include <vector>
 #include <tuple>
 #include <math.h>
+#include <random>
+
+class GameObject;
 
 typedef std::tuple<float,float> point;
 
@@ -18,6 +21,13 @@ inline std::vector<T> operator+(std::vector<T> v,T t) {
 	return v;
 }
 
+template <class T>
+T choice_uniform(const std::vector<T> &v) {
+	return v.at(rand()%v.size());
+}
+
+int nullchars(const std::string&);
+std::string clean(std::string&);
 int tsize(const std::string&);
 
 template <class T>
@@ -144,6 +154,7 @@ void getSDLError();
 
 //autocomplete
 bool autocomplete(std::string&, const std::vector<std::string>&);
+bool autocomplete(std::string&, const std::vector<GameObject*>&);
 
 //tolower
 std::string toLower(const std::string& s);

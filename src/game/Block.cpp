@@ -6,8 +6,9 @@
 Block::Block(int _id): id(_id), GameObject(OBJ_BLOCK) {
 		int rotation = 0;
 		bool randomized = false;
+		if(tileMap.find(_id) == tileMap.end()) this->id = 1;
 		this->flip = SDL_FLIP_NONE;
-
+		
 		this->blockTexture = SDL_CreateTexture(TBAGame->gameWindow->renderer,
                                SDL_GetWindowPixelFormat(TBAGame->gameWindow->window),
 								SDL_TEXTUREACCESS_TARGET,

@@ -9,7 +9,7 @@ void Character::init_stats() {
 	this->defaultAttackRate = 100;
 
 	//Unarmed damage
-	this->defaultAttackDamage = 3;
+	this->defaultAttackDamage = 30;
 
 	//Unarmed striking speed
 	// # of ticks it takes for an attack to connect after being initiated

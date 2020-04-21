@@ -27,13 +27,39 @@ int find(char c,const std::string &s) {
 //Gets size of printable/visible characters only for screen drawing
 //Color key characters (☺r, etc.) do not get drawn and should not be counted 
 // toward total string size
+
+int nullchars(const std::string &s) {
+	return s.size()-tsize(s);
+}
+
+std::string clean(std::string &s) {
+	std::string news;
+	for(int i=0;i<s.size();i++) {
+		if(s[i] >= 0 or s[i] == TBAGame->colorKey) {
+			news += s[i];
+		}
+	}
+	return news;
+}
+
 int tsize(const std::string &s) {
 	int size=0;
+	bool ignoreNext = false;
+	bool colored = false;
 	for(int i=0;i<s.size();i++) {
-		if((int)s[i] >= 0) {
-			size++; 
+		if(s[i] != TBAGame->colorKey) {
+			if(ignoreNext) {
+				ignoreNext = false;
+			} else {
+				size++;
+			}
 		} else {
-			i++;
+			if(!colored) {
+				ignoreNext = true;
+				colored = true;
+			} else {
+				colored = false;
+			}
 		}
 	}
 	return size;
@@ -73,6 +99,40 @@ std::string common(const std::string &s1, const std::string &s2) {
 	return "";
 }
 
+bool autocomplete(std::string& target, const std::vector<GameObject*>& objList) {
+
+	if(target == "") {
+		return false;
+	}
+
+	std::string testWord;
+	std::string com;
+	std::string searchString = toLower(target);
+	std::string matchlist = "";
+	bool hasMultipleMatches = false;
+	
+	for(int i=0;i<objList.size();i++) {
+		testWord = toLower(objList.at(i)->getName());
+		if(startsWith(testWord,searchString)) {
+			target = objList.at(i)->getName();
+			if(testWord == searchString) return true;
+			if(matchlist == "") {
+				matchlist = objList.at(i)->getName();
+			} else {
+				matchlist += " | "+objList.at(i)->getName();
+				hasMultipleMatches = true;
+			}
+		}
+	}
+	if(hasMultipleMatches) {
+		TBAGame->displayText("\n"+matchlist+"\r");
+		return false;
+	} else {
+		return true;
+	}
+}
+
+
 //s is passed by reference 
 bool autocomplete(std::string& target, const std::vector<std::string>& wordList) {
 
@@ -81,36 +141,33 @@ bool autocomplete(std::string& target, const std::vector<std::string>& wordList)
 	}
 
 	std::string testWord;
+	std::string com;
 	std::string searchString = toLower(target);
-	std::string matchlist;
+	std::string matchlist = "";
 	bool hasMultipleMatches = false;
-
-
+	
 	for(int i=0;i<wordList.size();i++) {
 		testWord = toLower(wordList.at(i));
 		if(startsWith(testWord,searchString)) {
 			target = wordList.at(i);
-			matchlist = target;
-			if(target.size() == searchString.size()) return true;
-			for(int j=0;j<wordList.size();j++) {
-				testWord = toLower(wordList.at(j));
-				if(startsWith(testWord,searchString) and wordList.at(j) != target) {
-					if(common(target,wordList.at(j)) != "") {
-						target = common(target,wordList.at(j));
-					}
-					matchlist += " | "+wordList.at(j);	
-					hasMultipleMatches = true;
-				}
-			}
-			if(hasMultipleMatches) {
-				TBAGame->displayText("\n"+matchlist+"\r");
-				return false;
-			} else {
+			if(testWord == searchString) {
 				return true;
+			}
+			if(matchlist == "") {
+				matchlist = wordList.at(i);
+			} else {
+				matchlist += " | "+wordList.at(i);
+				hasMultipleMatches = true;
 			}
 		}
 	}
-	return false;
+	if(hasMultipleMatches) {
+		target = searchString;
+		TBAGame->displayText("\n"+matchlist+"\r");
+		return false;
+	} else {
+		return true;
+	}
 }
 
 //toLower
@@ -231,6 +288,7 @@ bool isdigit(const std::string& s) {
             return false;
         }
     }
+	
     return true;
 }
 bool issymbol(char c) {

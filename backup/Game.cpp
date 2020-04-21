@@ -13,6 +13,7 @@
 #include "../game/Character.h"
 #include "../game/Item.h"
 #include "../game/Container.h"
+#include "../game/ResourceNode.h"
 #include "../game/Inventory.h"
 #include "../game/Command.h"
 #include "../game/CommandFuncs.h"
@@ -97,6 +98,8 @@ void Game::setupUI() {
 
 void Game::setupGame() {
 	
+	pthread_mutex_init(&this->updateLock, NULL);
+	
 	//this->maxWaitTime = 1000/std::max(this->logicTickRate,this->graphicsTickRate);
 	//this->minWaitTime = 1000/std::min(this->logicTickRate,this->graphicsTickRate);
 						
@@ -119,11 +122,15 @@ void Game::setupGame() {
 			new		Command({"exit","quit"},exitFunc),
 			new		Command({"take"},takeFunc,takeEC),
 			new		Command({"select","sel"},selectFunc,selectEC),
-			new		Command({"put"},putFunc,putEC),
+			new		Command({"put","give"},putFunc,putEC),
 			new		Command({"search"},searchFunc,searchEC),
 			new		Command({"equip"},equipFunc,equipEC),
 			new		Command({"debug"},debugFunc),
 			new		Command({"examine"},examineFunc,examineEC),
+			new		Command({"plant"},plantFunc,plantEC),
+			new		Command({"drink"},drinkFunc,drinkEC),
+			new		Command({"use"},useFunc,useEC),
+			new		Command({"giveme"},givemeFunc,givemeEC),
 			////
 		};
 	
@@ -152,10 +159,16 @@ void Game::setupGame() {
 
 	//Create player and fill inventory with generic items
 	this->playerChar = new Character(true,160,"Player",0,0);
-	for(int i=0;i<100;i++) {
+	this->playerChar->inventory->add(2);
+	for(int i=0;i<10;i++) {
 		//Don't add null item
 		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
 	}
+	this->playerChar->inventory->add(11);
+	this->playerChar->inventory->add(7);
+	this->playerChar->inventory->add(7);
+	this->playerChar->inventory->add(7);
+	this->playerChar->inventory->add(7);
 	this->displayTarget = this->playerChar;
 
 	//New characters are added to gameObjects automatically
@@ -168,14 +181,21 @@ void Game::setupGame() {
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	newChar = new Character(false,160,"Debug Trader",-1,3);
+	newChar = new Character(false,160,"Debug Trader",0,-7);
+	// TBAGame->setDisplayTarget(newChar);
+	// newChar->moveTo(0,0);
+	newChar->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	LB = new Character(false,160,"Lost Bladesman",0,6);
 	Dog = new Character(false,160,"Wolf",5,5);
-	//Dog->equipment->primary = new Item(4);
-	LB->equipment->primary = new Item(5);
+	Dog->equipment->primary = new Item(12);
+	Dog->inventory->add(8);
+	Dog->inventory->add(8);
+	Dog->inventory->add(8);
+	Dog->inventory->add(8);
+	// LB->equipment->primary = new Item(4);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	Dog->turnSpeed = playerChar->turnSpeed*2;
-	//newChar->lookAt(LB);
+	// newChar->lookAt(LB);
 	//newChar->setTarget(LB);
 	Dog->setTarget(LB);
 	Dog->setStatus(STATUS_COMBAT);
@@ -186,6 +206,17 @@ void Game::setupGame() {
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
 	this->gameWorld->createStructure({0,0}, bighouse, 4);
 	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+	new ResourceNode("Rich Stone",{2.0f,2.0f},7,10,this->convert(5000));
+	
+	checkHelp();
+	
+	checkItemTypes();
+	
+	debug("Total game objects: "+std::to_string(this->gameObjects.size()));
+	debug("Total UI objects: "+std::to_string(this->gameUIObjects.size()));
+	
+	
+	debug("Game setup complete\n");
 }
 
 //=======================
@@ -272,7 +303,7 @@ void logic_thread_routine(Game *game) {
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
-
+	
 	while(game->gameRunning) {
 		// debug("Updating logic");
 		// pthread_mutex_lock(&game->updateLock);
@@ -335,16 +366,18 @@ void Game::update_logic() {
 	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
 	//Update all active game objects
 	this->lastLogicUpdate = SDL_GetTicks();
-	// int start = SDL_GetTicks();
-	this->updateGameObjects();
-	this->logicTicks++;
+	int start = SDL_GetTicks();
+	if(!this->paused) {
+		this->updateGameObjects();
+		this->logicTicks++;
+	}
 	// debug("Done updating graphics");
-	// int elapsed = SDL_GetTicks()-start;
+	int elapsed = SDL_GetTicks()-start;
 	
 	// pthread_mutex_unlock(&game->updateLock);
 
-	// int real_wait = (1000/this->logicTickRate)-elapsed;
-	// if(real_wait <= 0) debug("Falling behind! (logic)");
+	int real_wait = (1000/this->logicTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (logic)");
 	// SDL_Delay(real_wait);
 	
 	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
@@ -356,17 +389,17 @@ void Game::update_logic() {
 void Game::update_graphics() {
 	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
 		//Update game window and all screens
-	int start = SDL_GetTicks();
+	// int start = SDL_GetTicks();
 	this->gameWindow->update(this->debugMode);
 	this->graphicsTicks++;
 	// debug("Done updating graphics");
-	int elapsed = SDL_GetTicks()-start;
+	// int elapsed = SDL_GetTicks()-start;
 	
 	// pthread_mutex_unlock(&game->updateLock);
 
-	int real_wait = (1000/this->graphicsTickRate)-elapsed;
-	if(real_wait <= 0) debug("Falling behind! (graphics)");
-	SDL_Delay(real_wait);
+	// int real_wait = (1000/this->graphicsTickRate)-elapsed;
+	// if(real_wait <= 0) debug("Falling behind! (graphics)");
+	// SDL_Delay(real_wait);
 		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
 	//}
 
@@ -374,13 +407,15 @@ void Game::update_graphics() {
 
 void Game::update() {
 
-	//std::cout << this->logicTicks/30 << " " << SDL_GetTicks()/1000 << "\r" << std::flush;
-
-	//Keyboard input delay
-	// logic_thread_routine(this);
-	// graphics_thread_routine(this);
-	// if(!this->paused) this->update_logic();
+	int start = SDL_GetTicks();
 	this->update_graphics();
-	// SDL_Delay(1000/30);
+
+	int elapsed = SDL_GetTicks()-start;
+
+	int real_wait = (1000/this->graphicsTickRate)-elapsed;
+	if(real_wait <= 0) debug("Falling behind! (graphics)");
+	// SDL_Delay(real_wait);
+	std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
+
 
 }
