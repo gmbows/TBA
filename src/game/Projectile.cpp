@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "../common/Common.h"
 #include "../tools/Utility.h"
+#include "Squad.h"
 #include "GameObject.h"
 
 #include <SDL2/SDL.h>
@@ -25,12 +26,17 @@ Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,flo
 
 void Projectile::update() {
 
+	if(TBAGame->logicTicks >= this->destroyTime) {
+		this->cleanup();
+	}
+
 	if(this->active) {
 		this->relocate();
 	} else if(this->trackSubject != nullptr) {
 		decompose(trackSubject->getLocation(),this->x,this->y);
 	}
 
+	//Location correction
 	if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
 		this->location->removeObject(this);
 		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
@@ -38,10 +44,6 @@ void Projectile::update() {
 	}
 
 	this->lastUpdate = TBAGame->logicTicks;
-
-	if(TBAGame->logicTicks >= this->destroyTime) {
-		this->cleanup();
-	}
 
 }
 
@@ -54,12 +56,13 @@ void Projectile::relocate() {
 	Character* occupant;
 
 	//Interpolate between old and new locations to check collision
-	for(int j=0;j<TBAGame->logicTicks-this->lastUpdate;j++) {
+	for(int j=0;j<(TBAGame->logicTicks-this->lastUpdate)*4;j++) {
 		// Check collision with impassable block or tile
 		// Embed a bit into surface
 		if(!thisTile->isPassable()) {
-			this->x = testX;// + (rand()%4)*(this->velocity*std::cos(this->angle));
-			this->y = testY;// + (rand()%4)*(this->velocity*std::sin(this->angle));
+			// debug((((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle));
+			this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
+			this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
 			this->active = false;
 			return;
 		}
@@ -69,16 +72,19 @@ void Projectile::relocate() {
 
 				occupant = thisTile->occupiers.at(i);
 
-				// Do not collide with creator or dead characters
+				// Do not collide with creator or dead characters or squad members
 				if((char*)occupant == (char*)this->owner) continue;
 				if(!occupant->isAlive()) continue;
+				if(owner->getAsCharacter()->hasSquad()) {
+					if(owner->getAsCharacter()->squad->isMember(occupant)) continue;
+				}
 
 				if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
 					//Arrow damage
 					occupant->receiveAttack(this->damage,this->owner);
 					//Do not embed arrows into characters
-					this->x = testX;// + 2*(this->velocity*std::cos(this->angle));
-					this->y = testY;// + 2*(this->velocity*std::sin(this->angle));
+					this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
+					this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
 					this->trackSubject = occupant;
 					this->active = false;
 					return;
@@ -87,8 +93,8 @@ void Projectile::relocate() {
 			}
 		}
 		// Increment interpolation
-		testX += this->velocity*std::cos(this->angle);
-		testY += this->velocity*std::sin(this->angle);
+		testX += (this->velocity/4)*std::cos(this->angle);
+		testY += (this->velocity/4)*std::sin(this->angle);
 		thisTile = TBAGame->gameWorld->getTileAt(testX,testY);
 		if((char*)thisTile != (char*)this->location) {
 			this->location->removeObject(this);

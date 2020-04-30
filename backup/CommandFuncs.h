@@ -104,3 +104,22 @@
 	//Giveme
 	std::string givemeFunc(Command*, const std::vector<std::string>&);
 	bool givemeEC(Command*, const std::vector<std::string>&);
+	//Work
+	std::string workFunc(Command*, const std::vector<std::string>&);
+	bool workEC(Command*, const std::vector<std::string>&);
+
+	//Goto
+	std::string gotoFunc(Command*, const std::vector<std::string>&);
+	bool gotoEC(Command*, const std::vector<std::string>&);
+
+	//Control
+	std::string controlFunc(Command*, const std::vector<std::string>&);
+	bool controlEC(Command*, const std::vector<std::string>&);
+
+	//Unequip
+	std::string unequipFunc(Command*, const std::vector<std::string>&);
+	bool unequipEC(Command*, const std::vector<std::string>&);
+
+	//Server
+	std::string serverFunc(Command*, const std::vector<std::string>&);
+	bool serverEC(Command*, const std::vector<std::string>&);

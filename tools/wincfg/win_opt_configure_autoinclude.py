@@ -46,14 +46,14 @@ makestr = ""
 
 binlist = ["bin"+src[src.rfind('/'):]+".o" for src in srcs]
 
-makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o "+execname+"\n\n"
+makestr += execname+": "+" ".join(binlist)+"\n\tg++ -std=c++11 "+" ".join(binlist)+" -I /include/SDL2 -L /lib -lmingw32 -lws2_32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o "+execname+"\n\n"
 
 for src in srcs:
 	head=""
 	if src in heads:
 		head = src+".h"
 	deps = getDeps(src)
-	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head + deps)
+	makestr += "bin/{1}.o: {0}.cpp {2} \n\tg++ -std=c++11 -c {0}.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/{1}.o\n\n".format(src,src[src.rfind('/')+1:],head + deps)
 	
 makefile.write(makestr)
 makefile.close()

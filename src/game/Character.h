@@ -22,8 +22,9 @@ struct Tile;
 typedef unsigned long int flag;
 
 class GameObject;
+struct Squad;
 
-enum statusIndicator: flag {
+enum StatusIndicator: flag {
 	STATUS_IDLE = 			1 << 0,
 	STATUS_TRAVEL = 		1 << 1,
 	STATUS_ATTACK = 		1 << 2,
@@ -40,19 +41,18 @@ enum statusIndicator: flag {
 	STATUS_END = 			1 << 13,
 };
 
-inline statusIndicator operator|(statusIndicator f1,statusIndicator f2) {
-	return (statusIndicator)((flag)f1 | (flag)f2);
+inline StatusIndicator operator|(StatusIndicator f1,StatusIndicator f2) {
+	return (StatusIndicator)((flag)f1 | (flag)f2);
 }
-inline statusIndicator operator&(statusIndicator f1,statusIndicator f2) {
-	return (statusIndicator)((flag)f1 & (flag)f2);
+inline StatusIndicator operator&(StatusIndicator f1,StatusIndicator f2) {
+	return (StatusIndicator)((flag)f1 & (flag)f2);
 }
-inline bool operator==(statusIndicator f1,statusIndicator f2) {
+inline bool operator==(StatusIndicator f1,StatusIndicator f2) {
 	return (f1 ^ f2) == 0;
 }
-inline bool operator!=(statusIndicator f1,statusIndicator f2) {
+inline bool operator!=(StatusIndicator f1,StatusIndicator f2) {
 	return (f1 ^ f2) > 0;
 }
-
 
 enum attackStatus: int {
 	ATK_NOT_READY,
@@ -70,6 +70,10 @@ class Character: public GameObject {
 		//=============
 
 		float x,y;
+
+		//object has finished constructing
+		bool complete = false;
+
 		//Aim angle in degrees
 		float viewAng = 0;
 		float targetAng = 0;
@@ -87,10 +91,11 @@ class Character: public GameObject {
 		bool move_forward = false;
 		bool move_back = false;
 		bool autoMove = false;
-		bool isPlayer;
+		bool player;
+		bool isPlayer();
 		Inventory* inventory;
 		std::string name;
-		Tile* location;
+		Tile* location = nullptr;
 
 		int displayID;
 		// int objectID;
@@ -99,24 +104,31 @@ class Character: public GameObject {
 		std::tuple<float,float> getApproximateLocation();
 		
 		//=============
-		//	  		LIMBS
+		//	  		BODY
 		//=============
 		
-		std::vector<Limb*> limbs = {
-			new Limb(100,LIMB_HEAD),
-			new Limb(100,LIMB_TORSO),
-			new Limb(100,LIMB_ARMS),
-			new Limb(100,LIMB_LEGS),
-		};
+		Body *body = new Body();
 		
 		//Checks limb HP and assigns statuses accordingly
-		void checkLimbs();
+		void checkBody();
 
 		//=============
 		//	  INVENTORY
 		//=============
 
 		std::string getInvString();
+		bool giveItem(int);
+		bool giveItem(Item*);
+		bool giveItems(std::vector<Item*>);
+		bool giveItems(std::vector<int>);
+		
+		//=============
+		//	  	SQUAD
+		//=============
+		
+		Squad *squad = nullptr;
+		bool inline hasSquad() {return this->squad != nullptr;}
+		bool addToSquad(Character*,bool createNew = false);
 		
 		//=============
 		//	  EQUIPMENT
@@ -130,6 +142,9 @@ class Character: public GameObject {
 		bool work(GameObject*);
 		bool hasAmmo(ItemType);
 		Item* getAmmo(ItemType);
+
+		bool chooseNewEquipment(ItemType);
+		bool evaluateEquipment();
 		
 		//=============
 		//	  	STATUS EFFECTS
@@ -207,7 +222,7 @@ class Character: public GameObject {
 		void moveToCharacter(Character*);
 		bool generatePathTo(float,float,bool adjacent = false);
 		void generatePathTo(Character*);
-		void moveTo();
+		void followPath();
 		void moveAway(Character*);
 		
 		bool inline hasPath() {return this->targetPath.size() > 0;}
@@ -220,6 +235,9 @@ class Character: public GameObject {
 
 		//swapped to flags instead of single status int
 		flag status = 1;
+		
+		//Run all status check/alteration methods
+		void think();
 		
 		//Target
 		bool inline hasTarget() {return !(this->target == nullptr);}
@@ -247,23 +265,26 @@ class Character: public GameObject {
 		void processWork();
 
 		//Status
-		void setStatus(statusIndicator);
-		void addStatus(statusIndicator);
+		void setStatus(StatusIndicator);
+		void addStatus(StatusIndicator);
 
-		inline void removeStatus(statusIndicator _s) {
+		inline void removeStatus(StatusIndicator _s) {
 			this->status = (this->status & ~_s);
 			if(this->status == 0) this->addStatus(STATUS_IDLE);
 		}
 
 		inline flag getStatus() { return this->status; }
-		inline bool hasStatus(statusIndicator _s) { return (this->status & _s) > 0;}
-		bool inline isAlive() {return (this->health > 0);}
+		inline bool hasStatus(StatusIndicator _s) { return (this->status & _s) > 0;}
+		bool inline isAlive() {return !this->hasStatus(STATUS_DEAD);}
 		std::string getStatusString();
 
 		//Combat
 		attackStatus getAttackStatus();
 		void combat();
+		bool evaluateEquipment(ItemType);
+		void combatThink();
 		void exitCombat();
+		bool inCombat();
 		void sendAttack(GameObject*);
 		void receiveAttack(int, GameObject*);
 		void resetCombatTimer();
@@ -280,7 +301,8 @@ class Character: public GameObject {
 		//==========
 
 		//Constructor and update/delete
-		Character(bool,int,const std::string&,float=0,float=0);
+		Character(const std::string&,int,std::tuple<float,float>);
+		Character(const std::string&,int,std::tuple<float,float>,std::vector<int>);
 		void update();
 		virtual void cleanup();
 

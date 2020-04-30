@@ -34,7 +34,8 @@ class Item {
 		Item(int);
 
 		inline flag getType() {return this->types;}
-		inline bool hasType(ItemType type) { return (this->types & type) > 0;}
+		ItemType getWeaponType();
+		inline bool hasType(ItemType type) { return (this->types & type) == type;}
 
 		std::vector<std::string> getTypes();
 

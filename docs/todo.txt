@@ -3,11 +3,6 @@ IDEAS:
 ========
 		Put last damage inflicted on limb next to limb HP
 		Only autocomplete on wildcard chars (*)
-		Characters
-			Width? Right now a character is only one pixel
-				Width currently only matters when passing through the corner of two impassable blocks into a passable block and in detecting projectile collision
-				Projectiles use .35 (.7)
-			Behavior:
 				Swinging a weapon in a will cause surrounding characters in a general vicinity to target you
 				Standing between two characters in combat will cause you to get hit by their swings (maybe)
 		Commands:
@@ -64,41 +59,21 @@ KNOWN BUGS:
 	*FIXED* After swapping to game ticks, projectiles pass through walls
 	*FIXED* Presently characters are invisible between creation and entering a new tile (started happening when recompiled for linux)
 ========
- TODO:
+   TODO
 ========
-	Status command:
-		Shows limb status and maybe stat bonuses
-	Projectiles could use some tweaking/cleaning up
-	Turn/Look command
-	Make viewang indicator (now it's just a line)
-	Fix movespeed variations
-	FloatingText:
-		Fix print location when zoomed in
-	Threads:
-		Split logic thread into threads for each component of logic updates (game, ui obj updates)
-		Don't need a thread for graphics
-	Autocomplete:
-		Autocompleting after entering a telemetry-supported command will attempt to
-			autocomplete the arguments of the command as well:
-			->take r[tab] will check same conditions as takeEC and display matching items
-			in selected container
-	Blocks/Construction/Tile heights
-	Character:
-		Limbs/Limb damage
-		Picking up other characters
-		Behavior:
-			Determine behavior for receiving an attack while in combat with a different character
-			Figure out what happens when you kill a character that you aren't targeting
-			Determine behavior for player character when attacking out of range target
-				"In combat" status?
-				Probably just do nothing
-				Used for target reaquisition after killing target or aquiring from targetlessness
-			Limit attack speed based on statistics
-		Begin Statistics
-	GameObject:
-		Move move() from Character to GameObject (All game objects should be physics enabled)
-		Leave setLocomotion in Character because it is a unique to characters
-	Commands:
+	Networking:
+		Send all game info to player
+		Query inputs from player
+		Client object has player character ID associated with it to apply inputs to
+		Rather than updating game objects, client retrieves them from server as packets
+	Only pathfind characters within range of target, not directly on top of them
+		-Only applicable to longer range weapons like spears
+		-Same problem makes fast character overshoot resource nodes
+			-Solution: Make microadjustment function that doesn't use pathfinding when within general area but still out of range
+	Clean up ScreenUtils
+		UpdateMap() Particularly
+	Fix pathfinding bug that makes characters just walk off in some direction
+	
 ========
   DONE:	
 ========
@@ -122,6 +97,10 @@ KNOWN BUGS:
 	Autocomplete targeting function
 		Relies on awareness range
 	Awareness (x block radius around character)
+	Width? Right now a character is only one pixel
+		Width currently only matters when passing through the corner of two impassable blocks into a passable block and in detecting projectile collision
+		Projectiles use .35 (.7)
+	Behavior:
 	Ranged attacks
 	Clean up FloatingText
 	Number damage popups
@@ -183,3 +162,40 @@ KNOWN BUGS:
 		Key input
 	KeyFuncs:
 		Adding characters to command brings text screen to front?
+
+========
+ TODO (OLD):
+========
+	Status command:
+		Shows limb status and maybe stat bonuses
+	Projectiles could use some tweaking/cleaning up
+	Turn/Look command
+	Make viewang indicator (now it's just a line)
+	Fix movespeed variations
+	FloatingText:
+		Fix print location when zoomed in
+	Threads:
+		Split logic thread into threads for each component of logic updates (game, ui obj updates)
+		Don't need a thread for graphics
+	Autocomplete:
+		Autocompleting after entering a telemetry-supported command will attempt to
+			autocomplete the arguments of the command as well:
+			->take r[tab] will check same conditions as takeEC and display matching items
+			in selected container
+	Blocks/Construction/Tile heights
+	Character:
+		Limbs/Limb damage
+		Picking up other characters
+		Behavior:
+			Determine behavior for receiving an attack while in combat with a different character
+			Figure out what happens when you kill a character that you aren't targeting
+			Determine behavior for player character when attacking out of range target
+				"In combat" status?
+				Probably just do nothing
+				Used for target reaquisition after killing target or aquiring from targetlessness
+			Limit attack speed based on statistics
+		Begin Statistics
+	GameObject:
+		Move move() from Character to GameObject (All game objects should be physics enabled)
+		Leave setLocomotion in Character because it is a unique to characters
+	Commands:

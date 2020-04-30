@@ -7,12 +7,43 @@
 Inventory::Inventory(int _capacity): capacity(_capacity) {
 }
 
-void Inventory::add(Item* item) {
+//===========
+// 		 ADD
+//===========
+
+bool Inventory::add(Item* item) {
 
 	this->contents->push_back(item);
 	this->setInfoString();
-
+	return true;
 }
+
+bool Inventory::add(int id) {
+
+	this->contents->push_back(new Item(id));
+	this->setInfoString();
+	return true;
+}
+
+bool Inventory::add(const std::vector<int>& itemVec) {
+
+	for(int i=0;i<itemVec.size();i++) {
+		this->contents->push_back(new Item(itemVec.at(i)));
+	}
+	this->setInfoString();
+	return true;
+}
+
+bool Inventory::add(const std::vector<Item*>& itemVec) {
+
+	for(int i=0;i<itemVec.size();i++) {
+		this->contents->push_back(itemVec.at(i));
+	}
+	this->setInfoString();
+	return true;
+}
+
+
 
 int Inventory::find(Item* item) {
 	for(int i=0;i<this->contents->size();i++) {
@@ -48,7 +79,7 @@ int Inventory::itemCount(int id) {
 }
 
 std::string Inventory::toString() {
-	if(this->isEmpty()) return "\nEmpty";
+	if(this->isEmpty()) return "\n\tEmpty";
 	return this->contentString;
 }
 
@@ -57,18 +88,12 @@ std::string Inventory::toString() {
 //MUST SET INFO STRING
 ////////////////
 
-void Inventory::add(int id) {
-
-	this->contents->push_back(new Item(id));
-	this->setInfoString();
-}
-
-void Inventory::add(const std::vector<int>& itemVec) {
-
-	for(int i=0;i<itemVec.size();i++) {
-		this->contents->push_back(new Item(itemVec.at(i)));
+std::vector<Item*> Inventory::getItemsOfType(ItemType type) {
+	std::vector<Item*> compatible;
+	for(int i=0;i<this->contents->size();i++) {
+		if(this->contents->at(i)->hasType(type)) compatible.push_back(this->contents->at(i));
 	}
-	this->setInfoString();
+	return compatible;
 }
 
 Item* Inventory::remove(int index) {

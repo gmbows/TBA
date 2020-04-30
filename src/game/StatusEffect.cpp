@@ -10,11 +10,11 @@ std::map<EffectType,std::string> effectTypeMap = {
 	{EFFECT_BURN,"Burning"},
 };
 
-std::map<ApplicationType,std::string> applicationTypeMap = {
-	{APP_INSTANT,"Instant"},
-	{APP_OT,"Over time"},
-	{APP_PERIODIC,"Periodic"},
-};
+// std::map<ApplicationType,std::string> applicationTypeMap = {
+	// {APP_INSTANT,"Instant"},
+	// {APP_OT,"Over time"},
+	// {APP_PERIODIC,"Periodic"},
+// };
 
 
 std::string StatusEffect::getTypeString() {
@@ -28,26 +28,18 @@ std::string StatusEffect::getDurationString() {
 	return std::to_string((int)perc+1)+"s";
 }
 
-// void StatusEffect::determineEffect(Limb *limb,void (Limb::*func)(float)) {
-	// if(this->duration==0) {
-		// (limb->*func)((float)this->magnitude);
-	// } else if(this->period == 0) {
-		// if((this->duration-this->remaining)%this->period != 0) return;
-		// (limb->*func)((float)this->period*(this->magnitude/this->duration));
-	// } else {
-		// (limb->*func)((float)this->magnitude/this->duration);
-	// }
-// }
-
 void StatusEffect::determineEffect(Character *target,void (Limb::*func)(float)) {
-	for(int i=0;i<target->limbs.size();i++) {
+	for(int i=0;i<target->body->getLimbs().size();i++) {
 		if(this->duration==0) {
-			(target->limbs.at(i)->*func)((float)this->magnitude);
-		} else if(this->period == 0) {
+			//Instant
+			(target->body->getLimbs().at(i)->*func)((float)this->magnitude);
+		} else if(this->period > 0) {
+			//Periodic
 			if((this->duration-this->remaining)%this->period != 0) return;
-			(target->limbs.at(i)->*func)((float)this->period*(this->magnitude/this->duration));
+			(target->body->getLimbs().at(i)->*func)((float)this->period*(this->magnitude/this->duration));
 		} else {
-			(target->limbs.at(i)->*func)((float)this->magnitude/this->duration);
+			//Constant over duration
+			(target->body->getLimbs().at(i)->*func)((float)this->magnitude/this->duration);
 		}
 	}
 }
@@ -59,13 +51,13 @@ bool StatusEffect::applyEffect(Character *target) {
 	switch(this->type) {
 		case EFFECT_HEALING: {
 			// for(int i=0;i<target->limbs.size();i++) {
-				this->determineEffect(target,target->limbs.at(0)->applyHealing);
+				this->determineEffect(target,target->body->getLimbs().at(0)->applyHealing);
 			// }
 			break;
 		}
 		case EFFECT_DAMAGE: {
 			// for(int i=0;i<target->limbs.size();i++) {
-				this->determineEffect(target,target->limbs.at(0)->applyDamage);
+				this->determineEffect(target,target->body->getLimbs().at(0)->applyDamage);
 			// }
 				break;
 		}

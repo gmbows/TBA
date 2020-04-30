@@ -4,7 +4,7 @@
 
 typedef unsigned long int flag;
 
-enum statusIndicator: flag;
+enum StatusIndicator: flag;
 enum attackStatus: int;
 
-extern std::map<statusIndicator,const std::string> statusMap;
+extern std::map<StatusIndicator,const std::string> statusMap;

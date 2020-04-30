@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../ui/Window.h"
+
 #include "../tools/Log.h"
+#include "../tools/Network.h"
 
 #include "../game/GameObject.h"
 #include "../game/World.h"
@@ -13,6 +15,8 @@
 #include <vector>
 #include <string>
 #include <pthread.h>
+
+struct Squad;
 
 struct Game {
 
@@ -42,6 +46,17 @@ struct Game {
 	
 	const char colorKey = '\x01';
 
+	std::vector<std::string> getItemNames(const std::vector<Item*>&);
+	
+	//=============
+	//		NETWORK
+	//=============
+	
+	Server *server = new Server();
+	std::vector<Client*> clients;
+	
+	void updateClients();
+
 	//=======================
 	//     GAME OBJECTS
 	//=======================
@@ -65,6 +80,13 @@ struct Game {
 	void removeObject(GameObject*);
 	void removeUIObject(GameObject*);
 	void removeObject(int);
+	
+	//==============
+	//     	SQUADS
+	//==============
+	unsigned int numSquads;
+	std::vector<Squad*> squads;
+	Squad* createSquad(std::string s = "None");
 
 	//To ensure unique object IDs
 	int objectTotal = 0;

@@ -22,6 +22,14 @@ inline std::vector<T> operator+(std::vector<T> v,T t) {
 }
 
 template <class T>
+inline std::vector<T> operator+(std::vector<T> v1,std::vector<T> v2) {
+	for(int i=0;i<v2.size();i++) {
+		v1.push_back(v2.at(i));
+	}
+	return v1;
+}
+
+template <class T>
 T choice_uniform(const std::vector<T> &v) {
 	return v.at(rand()%v.size());
 }
@@ -133,6 +141,8 @@ bool contains(const std::vector<T> v,T c) {
 	}
 	return false;
 }
+
+bool contains(const std::string &s,const std::string &token);
 
 template <class T>
 int count(const std::vector<T> &v, T token) {

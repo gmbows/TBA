@@ -7,6 +7,7 @@
 #include "../tools/Utility.h"
 #include "../game/Input.h"
 #include "../game/ResourceNode.h"
+#include "../game/Squad.h"
 
 #include <SDL2/SDL.h>
 #include <tuple>
@@ -14,6 +15,7 @@
 bool moving = false;
 int activeScreen = 1;
 int lastMove[2];
+int lastHighlight[2];
 
 void processKeystroke(int keycode) {
 	if(moving) {
@@ -56,7 +58,9 @@ void delChar() {
 
 void autocomplete() {
 	if(autocomplete(TBAGame->gameWindow->textScreen->command,TBAGame->commandStrings)) {
-		TBAGame->gameWindow->textScreen->commandAppend(' ');
+		if(contains(TBAGame->commandStrings,TBAGame->gameWindow->textScreen->command)) {
+			TBAGame->gameWindow->textScreen->commandAppend(' ');
+		}
 	} else {
 		//TBAGame->gameWindow->textScreen->setCommand(TBAGame->gameWindow->textScreen->command);
 		TBAGame->gameWindow->textScreen->setCommandLine();
@@ -93,7 +97,6 @@ void paste() {
 void click(SDL_MouseButtonEvent& event) {
 
 
-	//Left click
 	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
 	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
 
@@ -104,6 +107,7 @@ void click(SDL_MouseButtonEvent& event) {
 
 	Tile* thisTile = TBAGame->gameWorld->getTileAt(tileX,tileY);
 
+	//Left click
 	if(event.button == SDL_BUTTON_LEFT) {
 		for(int i=TBAGame->gameWindow->screenVector.size()-1;i>=0;i--) {
 			if(TBAGame->gameWindow->screenVector.at(i)->enclose(event.x,event.y)) {
@@ -129,6 +133,7 @@ void click(SDL_MouseButtonEvent& event) {
 			}
 			TBAGame->displayTarget = testTarget;
 		}
+	//Presumably right click
 	} else {
 		// pthread_mutex_lock(&TBAGame->updateLock);
 		if(thisTile->hasBlocks()) {
@@ -157,16 +162,22 @@ void move(SDL_Event& event) {
 		TBAGame->gameWindow->screenVector.at(activeScreen)->x += event.motion.x-lastMove[0];
 		TBAGame->gameWindow->screenVector.at(activeScreen)->y += event.motion.y-lastMove[1];
 	}
+
 	lastMove[0] = event.motion.x;
 	lastMove[1] = event.motion.y;
-	
+
 	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
 	int centerY = 5+TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y));
 
 	int tileX = std::round(((float)(event.motion.x-centerX))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
 	int tileY = std::round(((float)(event.motion.y-centerY))/TBAGame->gameWindow->mapScreen->charW/TBAGame->gameWindow->mapScreen->zoom);
 
+	TBAGame->gameWorld->getTileAt(lastHighlight[0],lastHighlight[1])->highlight = false;
+	TBAGame->gameWorld->getTileAt(lastHighlight[0],lastHighlight[1])->needsUpdate = true;
+	TBAGame->gameWorld->getTileAt(tileX,tileY)->highlight = true;
 
+	lastHighlight[0] = tileX;
+	lastHighlight[1] = tileY;
 }
 
 int getTopScreen(int x,int y) {
@@ -231,13 +242,14 @@ void turn(bool turn_left,bool turn_right) {
 		TBAGame->playerChar->viewAng -= 2;
 		if(TBAGame->playerChar->viewAng < 0) TBAGame->playerChar->viewAng = 360+TBAGame->playerChar->viewAng;
 		TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
+		TBAGame->playerChar->targetAng = TBAGame->playerChar->viewAng;
 	}
 	if(turn_right) {
 		TBAGame->playerChar->autoMove = false;
 		TBAGame->playerChar->viewAng += 2;
 		TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
+		TBAGame->playerChar->targetAng = TBAGame->playerChar->viewAng;
 	}
-	TBAGame->playerChar->targetAng = TBAGame->playerChar->viewAng;
 }
 
 
@@ -306,14 +318,15 @@ void debugKey() { //kp_plus
 	
 	// static_cast<Character*>(TBAGame->displayTarget)->generatePathTo(TBAGame->playerChar->location->x,-TBAGame->playerChar->location->y);
 	
-	// TBAGame->logicTickRate /= 2;
+	TBAGame->logicTickRate /= 2;
 	
 	// GameObject *node = new ResourceNode("Rich Stone",{2.0f,2.0f},7,10,22);
 	GameObject *node = TBAGame->gameWorld->getTileAt(2,2)->objects.at(0);
-	Character *amelia = new Character(false,8,"Amelia",-6,-6);
+	Character *amelia = new Character("Amelia",8,{-6,-6});
 	amelia->maxMoveSpeed = 4;
 	amelia->turnSpeed = 16;
 	amelia->work(node);
+	TBAGame->playerChar->addToSquad(amelia,true);
 	
 	// debug(TBAGame->playerChar->limbs.at(0)->health);
 

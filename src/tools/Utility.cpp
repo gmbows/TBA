@@ -65,7 +65,6 @@ int tsize(const std::string &s) {
 	return size;
 }
 
-
 std::string strip(const std::string &s) {
     std::string newString = "";
     for(int i=0;i<s.size();i++) {
@@ -132,10 +131,8 @@ bool autocomplete(std::string& target, const std::vector<GameObject*>& objList) 
 	}
 }
 
-
 //s is passed by reference 
 bool autocomplete(std::string& target, const std::vector<std::string>& wordList) {
-
 	if(target == "") {
 		return false;
 	}
@@ -280,8 +277,15 @@ std::string join(const std::string &c, const std::vector<std::string>& v) {
 
 }
 
+bool contains(const std::string &s,const std::string &token) {
+	for(int i=0;i<s.size();i++) {
+		if(s.substr(i,token.size()) == token) return true;
+	}
+	return false;
+}
+
 bool isdigit(const std::string& s) {
-    std::vector<char> digits = {'0','1','2','3','4','5','6','7','8','9'};
+    std::vector<char> digits = {'-','0','1','2','3','4','5','6','7','8','9'};
 	if(s.size() == 0) return false;
     for(int i=0;i<s.size();i++) {
         if(find(s[i], digits) == -1) {

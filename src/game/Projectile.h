@@ -15,11 +15,12 @@ class Projectile: public GameObject {
 		bool active;
 		int displaySize = 10;
 		float collisionSize = .35; //.35 Meters in any direction
-		int maxAge = TBAGame->convert(30000);	//Projectiles decay after 1 minute
+		int maxAge = TBAGame->convert(30000);	//Projectiles decay after 30 seconds
 
 		int getDisplayID() {return 7;}
 		
 		std::string inline getName() {return "Arrow";}
+		std::string inline getInfo() {return "Name:\t"+this->getName();}
 
 		Tile* location;
 

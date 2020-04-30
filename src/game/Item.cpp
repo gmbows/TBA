@@ -118,7 +118,7 @@ float Item::getAttribute(ItemAttribute attrib) {
 		return this->attributes.at(attrib);
 	}
 	return -1;
-
+	
 }
 
 std::vector<std::string> Item::getTypes() {
@@ -129,10 +129,18 @@ std::vector<std::string> Item::getTypes() {
 	return typevec;
 }
 
+ItemType Item::getWeaponType() {
+	std::vector<ItemType> weaponTypes = {I_WEAPON_SWORD,I_WEAPON_BOW};
+	for(int i=0;i<weaponTypes.size();i++) {
+		if(this->hasType(weaponTypes.at(i))) return weaponTypes.at(i);
+	}
+	return I_END;
+}
+
 std::string Item::getInfo() {
 	std::string infoString = 
-	" Name:\t"+this->name+"\n" +
-	" Type:\t"+join(", ",this->getTypes())+"\n" +
+	" Name:\t"+this->getFormattedName()+"\n" +
+	" Type:\t"+join("\n\t --\t",this->getTypes())+"\n" +
 	" Weight:\t"+std::to_string(this->weight)+"\n" +
 	" Size:\t"+std::to_string(this->size);
 	return infoString;

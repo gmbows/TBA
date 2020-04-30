@@ -12,9 +12,10 @@ struct Inventory {
 	std::vector<Item*> *contents = new std::vector<Item*>;
 	
 	Inventory(int);
-	void add(Item*);
-	void add(int);
-	void add(const std::vector<int>&);
+	bool add(int);
+	bool add(Item*);
+	bool add(const std::vector<int>&);
+	bool add(const std::vector<Item*>&);
 	int find(Item*);
 	int find(const std::string&);
 	
@@ -26,6 +27,7 @@ struct Inventory {
 	Item* remove(Item*);
 
 	inline Item* getItem(int i) {return this->contents->at(i);}
+	std::vector<Item*> getItemsOfType(ItemType);
 
 	std::vector<std::string> getContentString();
 	inline bool isEmpty() { return this->contents->size() == 0; } 

@@ -5,6 +5,10 @@ Threads/Synchronization:
 		both the graphics and logic thread (blocks for example are added
 		in main thread and drawn in graphics thread)
 		
+Squads:
+	Squad list is a member of game class, characters get ID(int) to determine what squad they belong to
+	
+		
 Debug:
 	-IF THERE IS AN UNEXPLAINABLE CRASH AND WE ARE USING THREADS, MUTEX LOCK THE BUSIEST FUNCTION
 	-If runtime crash: You are referencing an object that is not fully constructed

@@ -336,15 +336,16 @@ void TextScreen::update() {
 }
 
 void TextBox::update() {
-	if(true or this->hasNewContent() or (this->lastUpdate + this->updateInterval <= SDL_GetTicks())) {
+	if(this->hasNewContent() or (this->lastUpdate + this->updateInterval <= TBAGame->graphicsTicks)) {
 		this->drawBorder();
 		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
 		this->prepareContent();
 		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->contentString+"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo()+"\n\nTarget info:\n\t"+TBAGame->playerChar->getTargetInfo());
 		this->generateTexture(this->content);
-		this->drawScreen();
-		this->lastUpdate = SDL_GetTicks();
+		this->lastUpdate = TBAGame->graphicsTicks;
+		// this->drawScreen();
 	}
+	this->drawScreen();
 }
 
 void DynamicTextBox::setToggledContent(const std::string& message) {
