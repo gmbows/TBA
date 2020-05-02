@@ -65,7 +65,8 @@ KNOWN BUGS:
 		Send all game info to player
 		Query inputs from player
 		Client object has player character ID associated with it to apply inputs to
-		Rather than updating game objects, client retrieves them from server as packets
+		Rather than updating game objects, client retrieves chunks from server as packets.
+		Client has barebone versions of class objects that just act as intermediaries between client and server
 	Only pathfind characters within range of target, not directly on top of them
 		-Only applicable to longer range weapons like spears
 		-Same problem makes fast character overshoot resource nodes

@@ -1,0 +1,14 @@
+char id=-1   x=51    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Invalid block
+char id=0    x=0     y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Grass
+char id=1    x=17    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Grass with rock
+char id=11   x=34    y=17    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Grass with rock2
+char id=2    x=69    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Tree
+char id=3    x=34    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Player
+char id=4    x=86    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Stone brick
+char id=5    x=86    y=17    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Stone brick Bottom left
+char id=6    x=0     y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//NPC
+char id=7    x=17    y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Arrow
+char id=8    x=34    y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Chest
+char id=9    x=34    y=0     width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Seeds
+char id=10   x=17    y=17    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Seeds
+char id=12   x=51    y=34    width=16    height=16    xoffset=0     yoffset=0     xadvance=16    page=0  chnl=15 	//Marker

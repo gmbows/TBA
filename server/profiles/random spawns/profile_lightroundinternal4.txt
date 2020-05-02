@@ -1,0 +1,535 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  Ts/call  Ts/call  name    
+ 11.81      0.51     0.51                             MapScreen::drawMap()
+  7.64      0.84     0.33                             std::less<int>::operator()(int const&, int const&) const
+  7.41      1.16     0.32                             World::cartesianToIndex(float&, float&)
+  5.56      1.40     0.24                             Character::move(std::tuple<int, int>)
+  4.28      1.59     0.19                             Game::updateGameObjects()
+  3.70      1.75     0.16                             Window::update()
+  3.70      1.91     0.16                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, fChar> >*, std::_Rb_tree_node_base*, int const&)
+  3.47      2.06     0.15                             World::getTileAt(float, float)
+  3.24      2.19     0.14                             std::vector<Tile*, std::allocator<Tile*> >::size() const
+  2.89      2.32     0.13                             Game::update()
+  2.78      2.44     0.12                             SDL_main
+  2.31      2.54     0.10                             std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() const
+  2.31      2.64     0.10                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+  2.08      2.73     0.09                             Character::update()
+  2.08      2.82     0.09                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() const
+  1.85      2.90     0.08                             Screen::drawContent(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&)
+  1.85      2.98     0.08                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() const
+  1.39      3.04     0.06                             std::_Rb_tree_iterator<std::pair<int const, fChar> >::_Rb_tree_iterator(std::_Rb_tree_node_base*)
+  1.16      3.09     0.05                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::find(int const&)
+  0.93      3.13     0.04                             std::_Select1st<std::pair<int const, fChar> >::operator()(std::pair<int const, fChar> const&) const
+  0.93      3.17     0.04                             std::vector<Tile*, std::allocator<Tile*> >::_M_range_check(unsigned long long) const
+  0.93      3.21     0.04                             std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::size() const
+  0.93      3.25     0.04                             std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::at(unsigned long long)
+  0.69      3.28     0.03                             Game::input()
+  0.69      3.31     0.03                             Screen::drawBorder()
+  0.69      3.34     0.03                             Character::resolveMove(float&, float&)
+  0.69      3.37     0.03                             std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end()
+  0.69      3.40     0.03                             std::vector<Tile*, std::allocator<Tile*> >::at(unsigned long long)
+  0.69      3.43     0.03                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end()
+  0.69      3.46     0.03                             std::tuple<std::__decay_and_strip<int&>::__type, std::__decay_and_strip<int&>::__type> std::make_tuple<int&, int&>(int&, int&)
+  0.69      3.49     0.03                             float const& std::max<float>(float const&, float const&)
+  0.69      3.52     0.03                             int& std::forward<int&>(std::remove_reference<int&>::type&)
+  0.69      3.55     0.03                             roundf
+  0.46      3.57     0.02                             SDL_SetRenderDrawColor
+  0.46      3.59     0.02                             TextScreen::addContent(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.46      3.61     0.02                             World::locationIsValid(float, float)
+  0.46      3.63     0.02                             std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator==(std::_Rb_tree_iterator<std::pair<int const, fChar> > const&) const
+  0.46      3.65     0.02                             std::vector<GameObject*, std::allocator<GameObject*> >::_M_range_check(unsigned long long) const
+  0.46      3.67     0.02                             std::vector<GameObject*, std::allocator<GameObject*> >::size() const
+  0.46      3.69     0.02                             std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_range_check(unsigned long long) const
+  0.46      3.71     0.02                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::_M_range_check(unsigned long long) const
+  0.46      3.73     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const
+  0.46      3.75     0.02                             std::_Tuple_impl<1ull, int>::_M_head(std::_Tuple_impl<1ull, int>&)
+  0.46      3.77     0.02                             std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr()
+  0.46      3.79     0.02                             std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::at(int const&)
+  0.46      3.81     0.02                             std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::operator[](unsigned long long)
+  0.46      3.83     0.02                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::at(unsigned long long)
+  0.46      3.85     0.02                             std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&)
+  0.46      3.87     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_end()
+  0.46      3.89     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_left(std::_Rb_tree_node_base*)
+  0.46      3.91     0.02                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_right(std::_Rb_tree_node_base*)
+  0.23      3.92     0.01                             SDL_PollEvent
+  0.23      3.93     0.01                             Panel::update()
+  0.23      3.94     0.01                             Window::bringToFront(Screen*)
+  0.23      3.95     0.01                             Character::setLocation(float, float)
+  0.23      3.96     0.01                             MapScreen::update()
+  0.23      3.97     0.01                             __gnu_cxx::new_allocator<int>::allocate(unsigned long long, void const*)
+  0.23      3.98     0.01                             __gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::_S_select_on_copy(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.23      3.99     0.01                             __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr()
+  0.23      4.00     0.01                             bool __gnu_cxx::__is_null_pointer<char>(char*)
+  0.23      4.01     0.01                             std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const
+  0.23      4.02     0.01                             std::vector<SDL_Rect, std::allocator<SDL_Rect> >::size() const
+  0.23      4.03     0.01                             std::vector<Screen*, std::allocator<Screen*> >::size() const
+  0.23      4.04     0.01                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::size() const
+  0.23      4.05     0.01                             std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::size() const
+  0.23      4.06     0.01                             std::_Head_base<0ull, int, false>::_Head_base<int&>(int&)
+  0.23      4.07     0.01                             std::_Head_base<1ull, int, false>::_M_head(std::_Head_base<1ull, int, false>&)
+  0.23      4.08     0.01                             std::_Head_base<1ull, int, false>::_Head_base<int&>(int&)
+  0.23      4.09     0.01                             std::_Tuple_impl<0ull, int, int>::_Tuple_impl<int&, int&, void>(int&, int&)
+  0.23      4.10     0.01                             std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.23      4.11     0.01                             std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base()
+  0.23      4.12     0.01                             std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::select_on_container_copy_construction(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&)
+  0.23      4.13     0.01                             std::tuple<int, int>::tuple<int&, int&, true>(int&, int&)
+  0.23      4.14     0.01                             std::tuple<int, int>::operator=(std::tuple<int, int>&&)
+  0.23      4.15     0.01                             void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.23      4.16     0.01                             std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::at(unsigned long long)
+  0.23      4.17     0.01                             std::vector<GameObject*, std::allocator<GameObject*> >::at(unsigned long long)
+  0.23      4.18     0.01                             std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::operator[](unsigned long long)
+  0.23      4.19     0.01                             void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type)
+  0.23      4.20     0.01                             std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string()
+  0.23      4.21     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_key(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+  0.23      4.22     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_begin()
+  0.23      4.23     0.01                             std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node_base const*)
+  0.23      4.24     0.01                             std::move_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*> std::__make_move_if_noexcept_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::move_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  0.23      4.25     0.01                             float const& std::min<float>(float const&, float const&)
+  0.23      4.26     0.01                             std::fabs(float)
+  0.23      4.27     0.01                             int&& std::forward<int>(std::remove_reference<int>::type&)
+  0.23      4.28     0.01                             __gdtoa
+  0.23      4.29     0.01                             __mingw_pformat
+  0.23      4.30     0.01                             __pformat_cvt
+  0.23      4.31     0.01                             __pformat_emit_float
+  0.23      4.32     0.01                             __pformat_putchars
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 4 byte(s) for 0.23% of 4.32 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     11.8    0.51    0.00                 MapScreen::drawMap() [1]
+-----------------------------------------------
+                                                 <spontaneous>
+[2]      7.6    0.33    0.00                 std::less<int>::operator()(int const&, int const&) const [2]
+-----------------------------------------------
+                                                 <spontaneous>
+[3]      7.4    0.32    0.00                 World::cartesianToIndex(float&, float&) [3]
+-----------------------------------------------
+                                                 <spontaneous>
+[4]      5.6    0.24    0.00                 Character::move(std::tuple<int, int>) [4]
+-----------------------------------------------
+                                                 <spontaneous>
+[5]      4.3    0.19    0.00                 Game::updateGameObjects() [5]
+-----------------------------------------------
+                                                 <spontaneous>
+[6]      3.7    0.16    0.00                 Window::update() [6]
+-----------------------------------------------
+                                                 <spontaneous>
+[7]      3.7    0.16    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, fChar> >*, std::_Rb_tree_node_base*, int const&) [7]
+-----------------------------------------------
+                                                 <spontaneous>
+[8]      3.5    0.15    0.00                 World::getTileAt(float, float) [8]
+-----------------------------------------------
+                                                 <spontaneous>
+[9]      3.2    0.14    0.00                 std::vector<Tile*, std::allocator<Tile*> >::size() const [9]
+-----------------------------------------------
+                                                 <spontaneous>
+[10]     2.9    0.13    0.00                 Game::update() [10]
+-----------------------------------------------
+                                                 <spontaneous>
+[11]     2.8    0.12    0.00                 SDL_main [11]
+-----------------------------------------------
+                                                 <spontaneous>
+[12]     2.3    0.10    0.00                 std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() const [12]
+-----------------------------------------------
+                                                 <spontaneous>
+[13]     2.3    0.10    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node<std::pair<int const, fChar> > const*) [13]
+-----------------------------------------------
+                                                 <spontaneous>
+[14]     2.1    0.09    0.00                 Character::update() [14]
+-----------------------------------------------
+                                                 <spontaneous>
+[15]     2.1    0.09    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() const [15]
+-----------------------------------------------
+                                                 <spontaneous>
+[16]     1.9    0.08    0.00                 Screen::drawContent(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) [16]
+-----------------------------------------------
+                                                 <spontaneous>
+[17]     1.9    0.08    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() const [17]
+-----------------------------------------------
+                                                 <spontaneous>
+[18]     1.4    0.06    0.00                 std::_Rb_tree_iterator<std::pair<int const, fChar> >::_Rb_tree_iterator(std::_Rb_tree_node_base*) [18]
+-----------------------------------------------
+                                                 <spontaneous>
+[19]     1.2    0.05    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::find(int const&) [19]
+-----------------------------------------------
+                                                 <spontaneous>
+[20]     0.9    0.04    0.00                 std::_Select1st<std::pair<int const, fChar> >::operator()(std::pair<int const, fChar> const&) const [20]
+-----------------------------------------------
+                                                 <spontaneous>
+[21]     0.9    0.04    0.00                 std::vector<Tile*, std::allocator<Tile*> >::_M_range_check(unsigned long long) const [21]
+-----------------------------------------------
+                                                 <spontaneous>
+[22]     0.9    0.04    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::size() const [22]
+-----------------------------------------------
+                                                 <spontaneous>
+[23]     0.9    0.04    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::at(unsigned long long) [23]
+-----------------------------------------------
+                                                 <spontaneous>
+[24]     0.7    0.03    0.00                 roundf [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[25]     0.7    0.03    0.00                 Game::input() [25]
+-----------------------------------------------
+                                                 <spontaneous>
+[26]     0.7    0.03    0.00                 Screen::drawBorder() [26]
+-----------------------------------------------
+                                                 <spontaneous>
+[27]     0.7    0.03    0.00                 Character::resolveMove(float&, float&) [27]
+-----------------------------------------------
+                                                 <spontaneous>
+[28]     0.7    0.03    0.00                 std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end() [28]
+-----------------------------------------------
+                                                 <spontaneous>
+[29]     0.7    0.03    0.00                 std::vector<Tile*, std::allocator<Tile*> >::at(unsigned long long) [29]
+-----------------------------------------------
+                                                 <spontaneous>
+[30]     0.7    0.03    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end() [30]
+-----------------------------------------------
+                                                 <spontaneous>
+[31]     0.7    0.03    0.00                 std::tuple<std::__decay_and_strip<int&>::__type, std::__decay_and_strip<int&>::__type> std::make_tuple<int&, int&>(int&, int&) [31]
+-----------------------------------------------
+                                                 <spontaneous>
+[32]     0.7    0.03    0.00                 float const& std::max<float>(float const&, float const&) [32]
+-----------------------------------------------
+                                                 <spontaneous>
+[33]     0.7    0.03    0.00                 int& std::forward<int&>(std::remove_reference<int&>::type&) [33]
+-----------------------------------------------
+                                                 <spontaneous>
+[34]     0.5    0.02    0.00                 SDL_SetRenderDrawColor [34]
+-----------------------------------------------
+                                                 <spontaneous>
+[35]     0.5    0.02    0.00                 TextScreen::addContent(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [35]
+-----------------------------------------------
+                                                 <spontaneous>
+[36]     0.5    0.02    0.00                 World::locationIsValid(float, float) [36]
+-----------------------------------------------
+                                                 <spontaneous>
+[37]     0.5    0.02    0.00                 std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator==(std::_Rb_tree_iterator<std::pair<int const, fChar> > const&) const [37]
+-----------------------------------------------
+                                                 <spontaneous>
+[38]     0.5    0.02    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::_M_range_check(unsigned long long) const [38]
+-----------------------------------------------
+                                                 <spontaneous>
+[39]     0.5    0.02    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::size() const [39]
+-----------------------------------------------
+                                                 <spontaneous>
+[40]     0.5    0.02    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_range_check(unsigned long long) const [40]
+-----------------------------------------------
+                                                 <spontaneous>
+[41]     0.5    0.02    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::_M_range_check(unsigned long long) const [41]
+-----------------------------------------------
+                                                 <spontaneous>
+[42]     0.5    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [42]
+-----------------------------------------------
+                                                 <spontaneous>
+[43]     0.5    0.02    0.00                 std::_Tuple_impl<1ull, int>::_M_head(std::_Tuple_impl<1ull, int>&) [43]
+-----------------------------------------------
+                                                 <spontaneous>
+[44]     0.5    0.02    0.00                 std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() [44]
+-----------------------------------------------
+                                                 <spontaneous>
+[45]     0.5    0.02    0.00                 std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::at(int const&) [45]
+-----------------------------------------------
+                                                 <spontaneous>
+[46]     0.5    0.02    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::operator[](unsigned long long) [46]
+-----------------------------------------------
+                                                 <spontaneous>
+[47]     0.5    0.02    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::at(unsigned long long) [47]
+-----------------------------------------------
+                                                 <spontaneous>
+[48]     0.5    0.02    0.00                 std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&) [48]
+-----------------------------------------------
+                                                 <spontaneous>
+[49]     0.5    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_end() [49]
+-----------------------------------------------
+                                                 <spontaneous>
+[50]     0.5    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_left(std::_Rb_tree_node_base*) [50]
+-----------------------------------------------
+                                                 <spontaneous>
+[51]     0.5    0.02    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_right(std::_Rb_tree_node_base*) [51]
+-----------------------------------------------
+                                                 <spontaneous>
+[52]     0.2    0.01    0.00                 SDL_PollEvent [52]
+-----------------------------------------------
+                                                 <spontaneous>
+[53]     0.2    0.01    0.00                 Panel::update() [53]
+-----------------------------------------------
+                                                 <spontaneous>
+[54]     0.2    0.01    0.00                 Window::bringToFront(Screen*) [54]
+-----------------------------------------------
+                                                 <spontaneous>
+[55]     0.2    0.01    0.00                 Character::setLocation(float, float) [55]
+-----------------------------------------------
+                                                 <spontaneous>
+[56]     0.2    0.01    0.00                 MapScreen::update() [56]
+-----------------------------------------------
+                                                 <spontaneous>
+[57]     0.2    0.01    0.00                 __gnu_cxx::new_allocator<int>::allocate(unsigned long long, void const*) [57]
+-----------------------------------------------
+                                                 <spontaneous>
+[58]     0.2    0.01    0.00                 __gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::_S_select_on_copy(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [58]
+-----------------------------------------------
+                                                 <spontaneous>
+[59]     0.2    0.01    0.00                 __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() [59]
+-----------------------------------------------
+                                                 <spontaneous>
+[60]     0.2    0.01    0.00                 bool __gnu_cxx::__is_null_pointer<char>(char*) [60]
+-----------------------------------------------
+                                                 <spontaneous>
+[61]     0.2    0.01    0.00                 std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [61]
+-----------------------------------------------
+                                                 <spontaneous>
+[62]     0.2    0.01    0.00                 std::vector<SDL_Rect, std::allocator<SDL_Rect> >::size() const [62]
+-----------------------------------------------
+                                                 <spontaneous>
+[63]     0.2    0.01    0.00                 std::vector<Screen*, std::allocator<Screen*> >::size() const [63]
+-----------------------------------------------
+                                                 <spontaneous>
+[64]     0.2    0.01    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::size() const [64]
+-----------------------------------------------
+                                                 <spontaneous>
+[65]     0.2    0.01    0.00                 std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::size() const [65]
+-----------------------------------------------
+                                                 <spontaneous>
+[66]     0.2    0.01    0.00                 std::_Head_base<0ull, int, false>::_Head_base<int&>(int&) [66]
+-----------------------------------------------
+                                                 <spontaneous>
+[67]     0.2    0.01    0.00                 std::_Head_base<1ull, int, false>::_M_head(std::_Head_base<1ull, int, false>&) [67]
+-----------------------------------------------
+                                                 <spontaneous>
+[68]     0.2    0.01    0.00                 std::_Head_base<1ull, int, false>::_Head_base<int&>(int&) [68]
+-----------------------------------------------
+                                                 <spontaneous>
+[69]     0.2    0.01    0.00                 std::_Tuple_impl<0ull, int, int>::_Tuple_impl<int&, int&, void>(int&, int&) [69]
+-----------------------------------------------
+                                                 <spontaneous>
+[70]     0.2    0.01    0.00                 std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [70]
+-----------------------------------------------
+                                                 <spontaneous>
+[71]     0.2    0.01    0.00                 std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [71]
+-----------------------------------------------
+                                                 <spontaneous>
+[72]     0.2    0.01    0.00                 std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::select_on_container_copy_construction(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [72]
+-----------------------------------------------
+                                                 <spontaneous>
+[73]     0.2    0.01    0.00                 std::tuple<int, int>::tuple<int&, int&, true>(int&, int&) [73]
+-----------------------------------------------
+                                                 <spontaneous>
+[74]     0.2    0.01    0.00                 std::tuple<int, int>::operator=(std::tuple<int, int>&&) [74]
+-----------------------------------------------
+                                                 <spontaneous>
+[75]     0.2    0.01    0.00                 void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [75]
+-----------------------------------------------
+                                                 <spontaneous>
+[76]     0.2    0.01    0.00                 std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::at(unsigned long long) [76]
+-----------------------------------------------
+                                                 <spontaneous>
+[77]     0.2    0.01    0.00                 std::vector<GameObject*, std::allocator<GameObject*> >::at(unsigned long long) [77]
+-----------------------------------------------
+                                                 <spontaneous>
+[78]     0.2    0.01    0.00                 std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::operator[](unsigned long long) [78]
+-----------------------------------------------
+                                                 <spontaneous>
+[79]     0.2    0.01    0.00                 void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type) [79]
+-----------------------------------------------
+                                                 <spontaneous>
+[80]     0.2    0.01    0.00                 std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string() [80]
+-----------------------------------------------
+                                                 <spontaneous>
+[81]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_key(std::_Rb_tree_node<std::pair<int const, fChar> > const*) [81]
+-----------------------------------------------
+                                                 <spontaneous>
+[82]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_begin() [82]
+-----------------------------------------------
+                                                 <spontaneous>
+[83]     0.2    0.01    0.00                 std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node_base const*) [83]
+-----------------------------------------------
+                                                 <spontaneous>
+[84]     0.2    0.01    0.00                 std::move_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*> std::__make_move_if_noexcept_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::move_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*) [84]
+-----------------------------------------------
+                                                 <spontaneous>
+[85]     0.2    0.01    0.00                 float const& std::min<float>(float const&, float const&) [85]
+-----------------------------------------------
+                                                 <spontaneous>
+[86]     0.2    0.01    0.00                 std::fabs(float) [86]
+-----------------------------------------------
+                                                 <spontaneous>
+[87]     0.2    0.01    0.00                 int&& std::forward<int>(std::remove_reference<int>::type&) [87]
+-----------------------------------------------
+                                                 <spontaneous>
+[88]     0.2    0.01    0.00                 __gdtoa [88]
+-----------------------------------------------
+                                                 <spontaneous>
+[89]     0.2    0.01    0.00                 __mingw_pformat [89]
+-----------------------------------------------
+                                                 <spontaneous>
+[90]     0.2    0.01    0.00                 __pformat_cvt [90]
+-----------------------------------------------
+                                                 <spontaneous>
+[91]     0.2    0.01    0.00                 __pformat_emit_float [91]
+-----------------------------------------------
+                                                 <spontaneous>
+[92]     0.2    0.01    0.00                 __pformat_putchars [92]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2018 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [52] SDL_PollEvent           [2] std::less<int>::operator()(int const&, int const&) const [23] std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::at(unsigned long long)
+  [34] SDL_SetRenderDrawColor [62] std::vector<SDL_Rect, std::allocator<SDL_Rect> >::size() const [46] std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::operator[](unsigned long long)
+  [11] SDL_main               [38] std::vector<GameObject*, std::allocator<GameObject*> >::_M_range_check(unsigned long long) const [47] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::at(unsigned long long)
+  [35] TextScreen::addContent(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [39] std::vector<GameObject*, std::allocator<GameObject*> >::size() const [78] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::operator[](unsigned long long)
+   [5] Game::updateGameObjects() [21] std::vector<Tile*, std::allocator<Tile*> >::_M_range_check(unsigned long long) const [79] void std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::_M_construct_aux<char*>(char*, char*, std::__false_type)
+  [25] Game::input()           [9] std::vector<Tile*, std::allocator<Tile*> >::size() const [48] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::basic_string(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >&&)
+  [10] Game::update()         [63] std::vector<Screen*, std::allocator<Screen*> >::size() const [80] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::~basic_string()
+  [53] Panel::update()        [40] std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::_M_range_check(unsigned long long) const [7] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_lower_bound(std::_Rb_tree_node<std::pair<int const, fChar> >*, std::_Rb_tree_node_base*, int const&)
+  [36] World::locationIsValid(float, float) [22] std::vector<std::vector<Tile*, std::allocator<Tile*> >*, std::allocator<std::vector<Tile*, std::allocator<Tile*> >*> >::size() const [30] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end()
+   [3] World::cartesianToIndex(float&, float&) [41] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::_M_range_check(unsigned long long) const [19] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::find(int const&)
+   [8] World::getTileAt(float, float) [64] std::vector<std::vector<Tile*, std::allocator<Tile*> >, std::allocator<std::vector<Tile*, std::allocator<Tile*> > > >::size() const [49] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_end()
+  [26] Screen::drawBorder()   [65] std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >::size() const [81] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_key(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+  [16] Screen::drawContent(std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > const&) [42] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [50] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_left(std::_Rb_tree_node_base*)
+  [54] Window::bringToFront(Screen*) [66] std::_Head_base<0ull, int, false>::_Head_base<int&>(int&) [82] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_M_begin()
+   [6] Window::update()       [67] std::_Head_base<1ull, int, false>::_M_head(std::_Head_base<1ull, int, false>&) [51] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_right(std::_Rb_tree_node_base*)
+  [27] Character::resolveMove(float&, float&) [68] std::_Head_base<1ull, int, false>::_Head_base<int&>(int&) [13] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node<std::pair<int const, fChar> > const*)
+  [55] Character::setLocation(float, float) [69] std::_Tuple_impl<0ull, int, int>::_Tuple_impl<int&, int&, void>(int&, int&) [83] std::_Rb_tree<int, std::pair<int const, fChar>, std::_Select1st<std::pair<int const, fChar> >, std::less<int>, std::allocator<std::pair<int const, fChar> > >::_S_value(std::_Rb_tree_node_base const*)
+   [4] Character::move(std::tuple<int, int>) [43] std::_Tuple_impl<1ull, int>::_M_head(std::_Tuple_impl<1ull, int>&) [31] std::tuple<std::__decay_and_strip<int&>::__type, std::__decay_and_strip<int&>::__type> std::make_tuple<int&, int&>(int&, int&)
+  [14] Character::update()    [70] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_Vector_base(unsigned long long, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [84] std::move_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*> std::__make_move_if_noexcept_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::move_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*> >(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*)
+  [56] MapScreen::update()    [71] std::_Vector_base<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::~_Vector_base() [32] float const& std::max<float>(float const&, float const&)
+   [1] MapScreen::drawMap()   [44] std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() [85] float const& std::min<float>(float const&, float const&)
+  [57] __gnu_cxx::new_allocator<int>::allocate(unsigned long long, void const*) [72] std::allocator_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::select_on_container_copy_construction(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [86] std::fabs(float)
+  [58] __gnu_cxx::__alloc_traits<std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > >::_S_select_on_copy(std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > const&) [18] std::_Rb_tree_iterator<std::pair<int const, fChar> >::_Rb_tree_iterator(std::_Rb_tree_node_base*) [33] int& std::forward<int&>(std::remove_reference<int&>::type&)
+  [59] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() [45] std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::at(int const&) [87] int&& std::forward<int>(std::remove_reference<int>::type&)
+  [60] bool __gnu_cxx::__is_null_pointer<char>(char*) [28] std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::end() [88] __gdtoa
+  [15] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_ptr() const [73] std::tuple<int, int>::tuple<int&, int&, true>(int&, int&) [89] __mingw_pformat
+  [17] __gnu_cxx::__aligned_membuf<std::pair<int const, fChar> >::_M_addr() const [74] std::tuple<int, int>::operator=(std::tuple<int, int>&&) [90] __pformat_cvt
+  [20] std::_Select1st<std::pair<int const, fChar> >::operator()(std::pair<int const, fChar> const&) const [75] void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [91] __pformat_emit_float
+  [12] std::_Rb_tree_node<std::pair<int const, fChar> >::_M_valptr() const [76] std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::at(unsigned long long) [92] __pformat_putchars
+  [37] std::_Rb_tree_iterator<std::pair<int const, fChar> >::operator==(std::_Rb_tree_iterator<std::pair<int const, fChar> > const&) const [77] std::vector<GameObject*, std::allocator<GameObject*> >::at(unsigned long long) [24] roundf
+  [61] std::map<int, fChar, std::less<int>, std::allocator<std::pair<int const, fChar> > >::key_comp() const [29] std::vector<Tile*, std::allocator<Tile*> >::at(unsigned long long)
