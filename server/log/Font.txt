@@ -1,3 +1,0 @@
-Apr/30/2020(Thu)19:12:42 : Font.txt initialized
-Apr/30/2020(Thu)19:12:42 : Loading font map...
-Apr/30/2020(Thu)19:12:42 : Font map loaded.
