@@ -5,15 +5,29 @@
 #include <tuple>
 #include <math.h>
 #include <random>
+#include <sstream>
+#include <pthread.h>
 
 class GameObject;
 
 typedef std::tuple<float,float> point;
 
+extern pthread_t logic_thread;
+extern pthread_t network_thread;
+
+extern pthread_mutex_t serverLock;
+extern pthread_mutex_t workerLock;
+
+extern pthread_cond_t freeSocket;
+extern pthread_cond_t claimedSocket;
 
 //=========
 //--VECTORS--
 //=========
+
+void lockThreads();
+	
+void unlockThreads();
 
 template <class T>
 inline std::vector<T> operator+(std::vector<T> v,T t) {
@@ -56,7 +70,9 @@ void dumpVec(const std::vector<T>& v) {
 
 }
 
-std::string pad(const std::string&,char,int);
+void pad(std::string&,char,int);
+
+int toInt(std::string);
 
 //isdigit
 bool isdigit(const std::string& s);
@@ -202,7 +218,11 @@ void decompose(std::tuple<T,T> tup,T &x, T &y) {
 
 //--DEBUG--
 template <class T>
-void inline debug(T s) { std::cout << s << std::endl; }
+void inline debug(T s) {
+	lockThreads();
+	std::cout << s << std::endl;
+	unlockThreads();
+}
 
 template <class T>
 void inline debug(const std::vector<T>& s) {dumpVec(s);}

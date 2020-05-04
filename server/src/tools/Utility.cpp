@@ -6,6 +6,25 @@
 #include <string>
 #include <algorithm>
 
+pthread_t logic_thread;
+pthread_t network_thread;
+
+pthread_mutex_t serverLock = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t workerLock = PTHREAD_MUTEX_INITIALIZER;
+
+pthread_cond_t freeSocket = PTHREAD_COND_INITIALIZER;
+pthread_cond_t claimedSocket = PTHREAD_COND_INITIALIZER;
+
+void lockThreads() {
+	pthread_mutex_lock(&serverLock);
+	pthread_mutex_lock(&workerLock);
+}
+	
+void unlockThreads() {
+	pthread_mutex_unlock(&serverLock);
+	pthread_mutex_unlock(&workerLock);
+}
+
 int rfind(char c, const std::string& s) {
 
 	for(int i=s.length()-1;i>0;i--) {
@@ -42,6 +61,16 @@ std::string clean(std::string &s) {
 	return news;
 }
 
+int toInt(std::string num) {
+	for(int i=0;i<num.size();i++) {
+		if(num[i] != '0') {
+			num.erase(0,i);
+			break;
+		}
+	}
+	return std::stoi(num);
+}
+
 int tsize(const std::string &s) {
 	int size=0;
 	bool ignoreNext = false;
@@ -66,7 +95,11 @@ int tsize(const std::string &s) {
 }
 
 //pad string s to length len
-std::string pad(const std::string &s,char c,int len) {
+void pad(std::string &s,char c,int len) {
+	if(s.size() > len) {
+		debug("Cannot pad string "+s+" to shorter length");
+		return s;
+	}
 	std::string padded;
 	for(int i=0;i<len;i++) {
 			padded += c;
@@ -76,7 +109,7 @@ std::string pad(const std::string &s,char c,int len) {
 	for(int i=start;i<len;i++) {
 			padded[i] = s[j++];
 	}
-	return padded;
+	s = padded;
 }
 
 std::string strip(const std::string &s) {

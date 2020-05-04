@@ -17,9 +17,9 @@ std::string Tile::serialize(int tx, int ty) {
 	std::string x = std::to_string(tx);
 	std::string y = std::to_string(ty);
 	//ID
-	id = pad(id,'0',4);
-	x = pad(x,'0',4);
-	y = pad(y,'0',4);
+	pad(id,'0',4);
+	pad(x,'0',4);
+	pad(y,'0',4);
 	
 	tile = id+x+y;
 	

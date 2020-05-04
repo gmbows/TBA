@@ -6,7 +6,7 @@ basedir = os.path.dirname(os.path.realpath(__file__))+"/../../"
 
 makefile = open(basedir+"makefile","w+")
 
-filesources = ["src/ui/","src/tools/","src/common/","src/game/","src/"]
+filesources = ["../shared/","src/ui/","src/tools/","src/common/","src/game/","src/"]
 
 def getDeps(filename):
 	try:
@@ -27,9 +27,14 @@ def getDeps(filename):
 				line = " "+line + line[:line.rfind('.')+1]+"cpp "	
 				deps += line
 			else:
-				line = line.replace("#include ","").replace('"',"").replace("../","").replace("\n","") + " "
-				line = line + line[:line.rfind('.')+1]+"cpp"
-				line = "src/"+line.replace(" "," src/")+ " "
+				if "shared" in line:
+					line = line.replace("#include ","").replace('"',"").replace("../","").replace("\n","") + " "
+					line = line + line[:line.rfind('.')+1]+"cpp"
+					line = "../"+line.replace(" "," ../")+ " "
+				else:
+					line = line.replace("#include ","").replace('"',"").replace("../","").replace("\n","") + " "
+					line = line + line[:line.rfind('.')+1]+"cpp"
+					line = "src/"+line.replace(" "," src/")+ " "
 				deps += line
 	f.close()
 	return deps

@@ -6,10 +6,16 @@ struct Client {
 	WSADATA WSAData;
     SOCKET server;
     SOCKADDR_IN addr;
+	
+	bool reading = false;
+	std::string packetBuffer;
  
-
 	bool TBA_send(const std::string&);	
 	bool TBA_receive();
+	
+	void handlePacket(char *buf);
+	
+	void dispatchPacket(int);
 	
 	bool TBA_connect();
 	

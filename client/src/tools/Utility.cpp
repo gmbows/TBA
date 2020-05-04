@@ -42,6 +42,34 @@ std::string clean(std::string &s) {
 	return news;
 }
 
+void copyBuf(const char* c,int len,std::string &s) {
+	s="";
+	for(int i=0;i<len;i++) {
+		if(c[i] != '\x00') s += c[i];
+	}
+}
+
+
+int toInt(std::string num) {
+	for(int i=0;i<num.size();i++) {
+		if(num[i] != '0') {
+			num.erase(0,i);
+			break;
+		}
+	}
+	return std::stoi(num);
+}
+
+unsigned long int toFlag(std::string num) {
+	for(int i=0;i<num.size();i++) {
+		if(num[i] != '0') {
+			num.erase(0,i);
+			break;
+		}
+	}
+	return std::strtoul(num.c_str(),NULL,0);
+}
+
 int tsize(const std::string &s) {
 	int size=0;
 	bool ignoreNext = false;

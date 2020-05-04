@@ -24,6 +24,28 @@ Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,flo
 	this->active = true;
 }
 
+std::string Projectile::serialize() {
+	std::string proj;
+	//	00000000 00 00 000|c1|c2|c3|c4|...
+	std::string type = std::to_string((int)this->type);
+	std::string display = std::to_string(this->getDisplayID());
+	std::string id = std::to_string(this->objectID);
+	std::string ang = std::to_string((int)(this->angle*100));
+	std::string x = std::to_string((int)(this->x*100));
+	std::string y = std::to_string((int)(this->y*100));
+	//ID
+	pad(type,'0',2);
+	pad(display,'0',2);
+	pad(id,'0',4);
+	pad(ang,' ',8);
+	pad(x,'0',8);
+	pad(y,'0',8);
+	
+	proj = type+display+id+ang+x+y;
+	
+	return proj;
+}
+
 void Projectile::update() {
 
 	if(TBAGame->logicTicks >= this->destroyTime) {

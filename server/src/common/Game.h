@@ -4,6 +4,8 @@
 #include "../tools/Network.h"
 #include "../tools/Utility.h"
 
+#include "../../../shared/Shared.h"
+
 #include "../game/GameObject.h"
 #include "../game/World.h"
 #include "../game/Character.h"
@@ -39,8 +41,8 @@ struct Client {
 	
 	Client(int id = -1) {
 		if(id == -1) {
-			Character* newChar = new Character("New Client",64,{0,0});
-			this->characterID = newChar->objectID;
+			// Character* newChar = new Character("New Client",64,{0,0});
+			// this->characterID = newChar->objectID;
 		}
 	}
 };
@@ -78,14 +80,28 @@ struct Game {
 	//		NETWORK
 	//=============
 	
-	int maxclients = 10;
+	int maxClients = 5;
 	Server *server;
 	
-	std::vector<ClientThread*> workers;
+	ClientThreadSpool *workers = new ClientThreadSpool(maxClients);
 
 	std::map<int,Client*> clients;
 	
 	void processClientUpdates(Client*);
+	
+	std::string serializeObjects() {
+		std::string objects = DATA_BEGIN;
+		
+		std::string type = std::to_string((int)DATA_OBJS);
+		pad(type,'0',2);
+		objects += type;
+		
+		for(int i=0;i<this->gameObjects.size();i++) {
+			objects += this->gameObjects.at(i)->serialize();
+		}
+		objects += DATA_TERM;
+		return objects;
+	}
 
 	//=======================
 	//     GAME OBJECTS
@@ -177,11 +193,6 @@ struct Game {
 	void popupText(int, const std::string&);
 	
 	void update();
-
-	pthread_t logic_thread,network_thread;
-	pthread_mutex_t serverLock, workerLock;
-	pthread_cond_t freeSocket = PTHREAD_COND_INITIALIZER;
-	pthread_cond_t claimedSocket = PTHREAD_COND_INITIALIZER;
 
 	bool canUpdateLogic;
 	bool canUpdateGraphics;

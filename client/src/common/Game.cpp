@@ -23,6 +23,8 @@
 #include "../game/Squad.h"
 #include "../common/Keys.h"
 
+#include "../../../shared/Shared.h"
+
 //=============
 //	 	SETUP
 //=============
@@ -162,11 +164,11 @@ void Game::setupGame() {
 	
 	this->gameWorld->genWorld();
 	
-	this->client->TBA_connect();
-	
 	//Connection signals network thread
 	// Network thread signals graphics thread once it finished loading world
 	// Graphics thread signals logic thread once map texture is fully generated
+	
+	debug("Waiting for connection...");
 	
 	pthread_cond_wait(&this->graphicsEnabled,&this->graphicsLock);
 
@@ -188,54 +190,16 @@ void Game::setupGame() {
 	this->playerChar->giveItem(7);
 	this->displayTarget = this->playerChar;
 
-	//New characters are added to gameObjects automatically
-	Character *newChar,*LB,*Dog;
-	for(int i=0;i<0;i++) {
-		// newChar = new Character("Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
-		if(rand()%2 == 0) newChar->equipment->equip(new Item(4),EQUIP_PRIMARY);
-		newChar->setTarget(this->playerChar);
-		newChar->setStatus(STATUS_COMBAT);
-		//newChar->setTarget(this->playerChar);
-		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
-	}
-	newChar = new Character("Debug Trader",160,{0,-7});
-	// TBAGame->setDisplayTarget(newChar);
-	// newChar->moveTo(0,0);
-	newChar->maxMoveSpeed = this->playerChar->maxMoveSpeed*2;
-	LB = new Character("Lost Bladesman",160,{0,1});
-	LB->setTarget(this->playerChar);
-	LB->setStatus(STATUS_COMBAT);
-	Dog = new Character("Wolf",160,{5,5});
-	Dog->equipment->equip(new Item(13),EQUIP_PRIMARY);
-	Dog->giveItem(8);
-	Dog->giveItem(8);
-	Dog->giveItem(8);
-	Dog->giveItem(8);
-	// LB->equipment->primary = new Item(4);
-	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	Dog->turnSpeed = playerChar->turnSpeed*2;
-	// newChar->lookAt(LB);
-	//newChar->setTarget(LB);
-	Dog->setTarget(LB);
-	Dog->setStatus(STATUS_COMBAT);
-	//newChar->equipment->primary = new Item(4);
-	//newChar->setTarget(playerChar);
-	//newChar->setStatus(STATUS_COMBAT);
-	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
-	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);	
-
 	this->gameWorld->createStructure({0,0}, ruins, 4);
-	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
-	GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
+	// new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+	// GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
 	
-	this->createSquad("Player squad")->add(this->playerChar);
-
-	for(int i=0;i<5;i++) {
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,7},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,6},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,5},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+	for(int i=0;i<0;i++) {
+		// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,7},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,6},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,5},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
 	}
 
 	checkHelp();
@@ -374,6 +338,123 @@ std::string Game::serializeInput() {
 	
 }
 
+void Game::deserializeObjects(const std::string &content) {
+
+	pthread_mutex_lock(&this->networkLock);
+
+	int i=0;
+	
+	
+
+	while(i < content.size()) {
+		std::string type;// = content.substr(i,2);
+		// i+=2;
+		unpack(i,type,content,PAD_SHORT);
+		// debug(content.substr(0,2000));
+		switch(toInt(type)) {
+			case OBJ_CHARACTER: {
+				// debug("Reconstructing character...");
+				
+				std::string id,name,x,y,movement,aim,status,targetID;
+				
+				std::string limbtype,hp,max;
+				
+				unpack(i,id,content,PAD_INT);
+				unpack(i,name,content,PAD_STR);
+				unpack(i,x,content,PAD_FLOAT);
+				unpack(i,y,content,PAD_FLOAT);
+				unpack(i,movement,content,PAD_SHORT);
+				unpack(i,aim,content,PAD_FLOAT);
+				unpack(i,status,content,PAD_LONG);
+				unpack(i,targetID,content,PAD_INT);
+				
+				for(int j=0;j<name.size();j++) {
+					if(name[j] != ' ') {
+						name.erase(0,j);
+						break;
+					}
+				}
+
+				Character *newCharf = this->findObject(std::stoi(id));
+				if(newCharf == nullptr) {
+					newCharf = new Character(name,64,{toInt(x)/100.0f,toInt(y)/100.0f});
+					newCharf->objectID = std::stoi(id);
+				}
+
+				newCharf->move_forward = (bool)toInt(movement.substr(0,1));
+				newCharf->move_back = (bool)toInt(movement.substr(1,1));
+				newCharf->targetAng = toInt(aim)/100.0f;
+				newCharf->status = toFlag(status);
+				if(std::stoi(targetID) >= 0) newCharf->setTarget(TBAGame->findObject(std::stoi(targetID)));
+
+				//Limbs
+				for(int j=0;j<4;j++) {
+					unpack(i,limbtype,content,PAD_SHORT);
+					unpack(i,hp,content,PAD_INT);
+					unpack(i,max,content,PAD_INT);
+					newCharf->body->getLimb((LimbType)toInt(limbtype))->health = toInt(hp);
+					newCharf->body->getLimb((LimbType)toInt(limbtype))->maxHealth = toInt(max);
+				}
+
+				// debug("Done");
+				break;
+			}
+			case OBJ_CONTAINER: {
+				debug("Reconstructing container...");
+				std::string displayid,id,name,x,y;
+				unpack(i,displayid,content,PAD_SHORT);
+				unpack(i,id,content,PAD_INT); 
+				unpack(i,name,content,PAD_STR); 
+				unpack(i,x,content,PAD_FLOAT);
+				unpack(i,y,content,PAD_FLOAT); 
+				
+				
+				
+				Container *newContainer = this->findObject(toInt(id));
+				if(newContainer == nullptr) {
+					newContainer = new Container(name,{toInt(x)/100.0f,toInt(y)/100.0f},64);
+					newContainer->objectID = toInt(id);
+				}
+				
+				// debug("Done");
+				break;
+			}
+			case OBJ_PROJECTILE: {
+				// debug("Reconstructing projectile...");
+				int displayID = toInt(content.substr(i+0,2)); //pad(display,'0',2);
+				int objectID = toInt(content.substr(i+2,4));//pad(id,'0',4);
+				int ang = toInt(content.substr(i+2+4,8));//pad(name,' ',64);
+				float x = toInt(content.substr(i+2+4+8,8));//pad(x,'0',4);
+				float y = toInt(content.substr(i+2+4+8+8,8));//pad(y,'0',4);
+				// Projectile *proj = new Projectile(name,{x/100.0f,y/100.0f},64);
+				// debug(newContainer->getName());
+				// debug(ang/100.0f);
+				i += 2+4+8+8+8;
+				break;
+			}
+			case OBJ_INTERACTIVE: {
+				// debug("Reconstructing interactive...");debug(i);
+				int displayID = toInt(content.substr(i+0,2)); //pad(display,'0',2);
+				int objectID = toInt(content.substr(i+2,4));//pad(id,'0',4);
+				std::string name = content.substr(i+2+4,64);//pad(name,' ',64);
+				float x = toInt(content.substr(i+2+4+64,8));//pad(x,'0',4);
+				float y = toInt(content.substr(i+2+4+64+8,8));//pad(y,'0',4);
+				// ResourceNode *node = new Resource(name,{x/100.0f,y/100.0f},64);
+				// debug(newContainer->getName());
+				// debug(name);
+				i += 2+4+64+8+8;
+				break;
+			}
+			default:
+				debug("Unhandled object type");
+				debug(content.substr(i,20));
+				break;
+		}
+	}
+	// debug("Done");
+	pthread_mutex_unlock(&this->networkLock);
+}
+
 //=============
 //		UPDATE
 //=============
@@ -386,6 +467,8 @@ void logic_thread_routine(Game *game) {
 	while(!game->client->active) {
 		pthread_cond_wait(&game->logicEnabled,&game->logicLock);
 	}	
+	
+	debug("Game logic enabled");
 	
 	while(game->gameRunning) {
 		// debug("Updating logic");
@@ -405,11 +488,12 @@ void logic_thread_routine(Game *game) {
 	}
 }
 void network_thread_routine(Game *game) {
-	while(!game->client->active) {
-		pthread_cond_wait(&game->networkEnabled,&game->networkLock);
-	}
-	debug("Client is connected, network thread now accepting messages from server");
+	TBAGame->client->TBA_connect();
 	while(1) {
+		while(!game->client->active) {
+			pthread_cond_wait(&game->networkEnabled,&game->networkLock);
+			debug("Client is connected, network thread now accepting messages from server");
+		}
 		TBAGame->client->TBA_receive();
 	}
 		
@@ -421,10 +505,29 @@ void Game::spawn_threads() {
 }
 
 void Game::updateGameObjects() {
-	for(int i=0;i<this->gameObjects.size();i++) {
-		this->gameObjects.at(i)->update();
+	// pthread_mutex_lock(&this->logicLock);
+	if(this->needsUpdate) {
+		// debug("OH FUCK!!");
+		this->deserializeObjects(this->objectUpdates);
+		this->needsUpdate = false;
+		// debug("RAPE!");
 	}
+	
+	// debug("Finished importing game objects");
 
+	std::vector<Tile*> nearbyTiles = this->gameWorld->getTilesInRadius(this->playerChar->x,this->playerChar->y,15);
+	Tile* thisTile;
+	for(int i=0;i<nearbyTiles.size();i++) {
+		thisTile = nearbyTiles.at(i);
+		// this->gameObjects.at(i)->update();
+		if(thisTile->isOccupied()) {
+			for(int j=0;j<thisTile->occupiers.size();j++) {
+				thisTile->occupiers.at(j)->update();
+			}
+		}
+	}
+	// debug("Finish");
+	// pthread_mutex_unlock(&this->logicLock);
 }
 
 void Game::updateGameUIObjects() {

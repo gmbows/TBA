@@ -17,6 +17,8 @@ struct Limb {
 
 	LimbType type;
 	
+	std::string serialize();
+	
 	Limb(int max,LimbType _type): maxHealth(max), type(_type) {
 		this->health = max;
 	}
@@ -33,6 +35,8 @@ struct Body {
 	int numLimbs = 4;
 	
 	std::vector<Limb*> limbs;
+	
+	std::string serialize();
 	
 	float getVitality();
 	float getVitality(LimbType);

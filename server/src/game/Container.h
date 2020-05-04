@@ -17,6 +17,8 @@ class Container: public GameObject {
 		std::string name;
 		Inventory* inventory;
 		Tile* location;
+		
+		std::string serialize();
 
 		std::tuple<float,float> inline getLocation() {return {this->x,this->y};}
 

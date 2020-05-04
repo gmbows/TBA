@@ -62,6 +62,10 @@ struct Game {
 	Client *client = new Client();
 	
 	std::string serializeInput();
+	void deserializeObjects(const std::string &s);
+	
+	std::string objectUpdates;
+	bool needsUpdate = false;
 
 	//=======================
 	//     GAME OBJECTS

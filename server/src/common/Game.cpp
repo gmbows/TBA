@@ -148,7 +148,6 @@ void Game::setupGame() {
 	GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
 	this->createSquad("Player squad")->add(this->playerChar);
 
-
 	for(int i=0;i<5;i++) {
 		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
 		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
@@ -168,10 +167,11 @@ void Game::setupGame() {
 	debug("Game setup complete\n");
 	
 	debug("Creating game server");
-	this->server = new Server(this->serverLock);
+	this->server = new Server(serverLock);
 	debug("Game server setup complete\n");
 	
 	this->gameRunning = true;
+
 	
 }
 
@@ -314,6 +314,8 @@ void network_thread_routine(Game *game) {
 	
 	int newSocket;
 	
+	debug("Networking enabled");
+	
 	game->server->TBA_start();
 	
 	//If all client slots are taken this should technically be waiting for a signal from claimedSocket
@@ -329,40 +331,47 @@ void network_thread_routine(Game *game) {
 		//		
 		TBAGame->clients.insert({newSocket,new Client()});
 		
-		TBAGame->server->TBA_send(newSocket,TBAGame->gameWorld->serialize());
-
-		pthread_cond_signal(&TBAGame->freeSocket);
+		pthread_cond_signal(&freeSocket);
 	}
 }
 
-void await_socket(int &socket,ClientThread* worker) {
-	pthread_mutex_lock(&TBAGame->workerLock);
+void await_socket(ClientThread* worker) {
+	
+	pthread_mutex_lock(&workerLock);
 	int client;
 	while(TBAGame->server->connections.size() == 0) {
-		pthread_cond_wait(&TBAGame->freeSocket,&TBAGame->workerLock);
+		pthread_cond_wait(&freeSocket,&workerLock);
 	}
-	
-	socket = TBAGame->server->pop_socket_queue();
-	// TBAGame->clients.erase(TBAGame->clients.find(socket));
-	pthread_cond_signal(&TBAGame->claimedSocket);
+	worker->client = TBAGame->server->pop_socket_queue();
 	worker->active = true;
-	pthread_mutex_unlock(&TBAGame->workerLock);
+	pthread_cond_signal(&claimedSocket);
+	pthread_mutex_unlock(&workerLock);
 }
 
 void worker_thread_routine(ClientThread *worker) {
-	int socket;
 	while(1) {
-		await_socket(socket,worker);
-		for(int i=0;i<TBAGame->workers.size();i++) {
-			if(TBAGame->workers.at(i)->active) {
-				debug("Slot "+std::to_string(i)+": Active");
+		await_socket(worker);
+		debug("Received new connection on client thread "+std::to_string(worker->id));
+		for(int i=0;i<TBAGame->workers->size;i++) {
+			if(TBAGame->workers->getThread(i)->active) {
+				debug("Slot "+std::to_string(i)+": "+std::to_string(TBAGame->workers->getThread(i)->client));
 			} else {
-				debug("Slot "+std::to_string(i)+": Inactive");
+				debug("Slot "+std::to_string(i)+": -");
 			}
 		}
-		//We don't really care about this return value
-		// because it returns only when the socket was closed
-		TBAGame->server->TBA_service(socket);
+
+		//Send client world and object info on initial connection
+		TBAGame->server->TBA_send(worker->client,TBAGame->gameWorld->serialize());
+		// std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects());
+		
+		// while(TBAGame->server->TBA_service(worker->client)) {
+		while(1) {
+			TBAGame->server->TBA_service(worker->client);
+			if(!TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects())) break;
+			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		}
+		std::cout << "Server slot " << worker->id << " freed" << std::endl;
 		worker->active = false;
 	}
 }
@@ -371,6 +380,11 @@ void logic_thread_routine(Game *game) {
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
+	
+	//Wait for everything to start up
+	std::this_thread::sleep_for(std::chrono::milliseconds(30));
+	
+	TBAGame->displayText("Game logic enabled");
 	
 	while(game->gameRunning) {
 		// debug("Updating logic");
@@ -392,14 +406,11 @@ void logic_thread_routine(Game *game) {
 }
 
 void Game::spawn_threads() {
-	if(pthread_create(&this->network_thread,NULL,network_thread_routine,this) != 0) this->gameRunning = false;
-	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&network_thread,NULL,network_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 
-	for(int i=0;i<this->maxclients;i++) {
-		ClientThread *worker = new ClientThread();
-		if(pthread_create(&worker->thread,NULL,worker_thread_routine,worker) != 0) this->gameRunning = false;
-		this->workers.push_back(worker);
-	}
+	if(!this->workers->initialize(worker_thread_routine)) this->gameRunning = false;
+	debug("All threads spawned successfully");
 }
 
 //=============
@@ -415,7 +426,6 @@ void Game::updateGameObjects() {
 	for(int i=0;i<this->gameObjects.size();i++) {
 		this->gameObjects.at(i)->update();
 	}
-
 }
 
 void Game::updateGameUIObjects() {

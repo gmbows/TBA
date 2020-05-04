@@ -19,7 +19,7 @@ bin/Clock.o: src/common/Clock.cpp src/common/Clock.h
 bin/Common.o: src/common/Common.cpp src/common/Common.h  src/common/Game.h src/common/Game.cpp  
 	g++ -std=c++11 -c src/common/Common.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Common.o
 
-bin/Game.o: src/common/Game.cpp src/common/Game.h src/tools/Log.h src/tools/Log.cpp src/tools/Network.h src/tools/Network.cpp src/tools/Utility.h src/tools/Utility.cpp src/game/GameObject.h src/game/GameObject.cpp src/game/World.h src/game/World.cpp src/game/Character.h src/game/Character.cpp src/game/Command.h src/game/Command.cpp  
+bin/Game.o: src/common/Game.cpp src/common/Game.h src/tools/Log.h src/tools/Log.cpp src/tools/Network.h src/tools/Network.cpp src/tools/Utility.h src/tools/Utility.cpp ../shared/Shared.h ../shared/Shared.cpp src/game/GameObject.h src/game/GameObject.cpp src/game/World.h src/game/World.cpp  
 	g++ -std=c++11 -c src/common/Game.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Game.o
 
 bin/Tile.o: src/common/Tile.cpp src/common/Tile.h src/game/Character.h src/game/Character.cpp src/game/Block.h src/game/Block.cpp  

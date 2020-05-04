@@ -15,7 +15,8 @@ std::string World::serialize() {
 	
 	std::string type = std::to_string((int)DATA_WORLD);
 	
-	world += pad(type,'0',2);
+	pad(type,'0',2);
+	world += type;
 	for(int i=0;i<this->size;i++) {
 		for(int j=0;j<this->size;j++) {
 			world += this->tileVector.at(i)->at(j)->serialize(j,i);

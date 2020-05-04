@@ -23,6 +23,8 @@ struct ResourceNode : public GameObject {
 	float progress;
 	int primaryResource;
 	bool harvestable = false;
+
+	std::string serialize();
 	
 	int inline getDisplayID() {return this->displayID;}
 	

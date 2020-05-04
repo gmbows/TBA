@@ -30,6 +30,8 @@ class GameObject {
 		Character* getAsCharacter();
 		ResourceNode* getAsResource();
 		Container* getAsContainer();
+		
+		virtual std::string serialize() { return "SERIALIZATION_METHOD_UNDEFINED";}
 
 		//Update function to be overridden for each object type
 		virtual void update() {}

@@ -26,6 +26,8 @@ class Projectile: public GameObject {
 
 		GameObject* owner;
 		GameObject* trackSubject = nullptr;
+		
+		std::string serialize();
 
 		Projectile(GameObject*, std::tuple<float,float>,float,float,float);
 

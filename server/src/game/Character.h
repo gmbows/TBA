@@ -104,9 +104,14 @@ class Character: public GameObject {
 		std::tuple<float,float> getApproximateLocation();
 		
 		//=============
+		//	  		NETWORK
+		//=============
+		std::string serialize();
+
+		//=============
 		//	  		BODY
 		//=============
-		
+				
 		Body *body = new Body();
 		
 		//Checks limb HP and assigns statuses accordingly

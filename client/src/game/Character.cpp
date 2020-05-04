@@ -373,13 +373,16 @@ void Character::kill() {
 }
 // Delete this character, remove from game
 void Character::cleanup() {
+	debug("Evicting");
 	this->location->evict(this);
 	this->target = nullptr;
 	this->location = nullptr;
-	delete this->inventory;
+	debug("Deleting inventory");
 	if(this->isPlayer()) {
-		new Character("Generic",160,{0,0});
+		// new Character("Generic",160,{0,0});
 	}
+	debug("Erasing from gameobjects");
 	TBAGame->removeObject(this);
+	debug("Deleting");
 	delete this;
 }

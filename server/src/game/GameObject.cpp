@@ -22,8 +22,10 @@ GameObject::GameObject(objType obj): type(obj) {
 			TBAGame->gameObjects.push_back(this);
 			break;
 		case OBJ_CONTAINER:
+			TBAGame->gameObjects.push_back(this);
 			break;
 		case OBJ_INTERACTIVE:
+			TBAGame->gameObjects.push_back(this);
 			break;
 		case UI_FLOATINGTEXT:
 			TBAGame->gameUIObjects.push_back(this);

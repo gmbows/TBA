@@ -32,9 +32,9 @@ int main(int argc, char** argv) {
 	// pthread_cond_signal(&TBAGame->graphics);
 
 	TBAGame->gameLog->writeln("Entering game loop");
-	debug("START OK");
+	// debug("START OK");
 	while(TBAGame->gameRunning) {
-		// TBAGame->update();
+		TBAGame->update();
 	}
 
 	delete TBAGame;

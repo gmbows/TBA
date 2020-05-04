@@ -13,6 +13,8 @@
 #include "ItemManifest.h"
 #include "Squad.h"
 
+#include "../../../shared/Shared.h"
+
 #include <cmath>
 #include <tuple>
 #include <random>
@@ -63,6 +65,47 @@ Character::Character(const std::string& _name, int capacity, std::tuple<float,fl
 Character::Character(const std::string& _name, int capacity, std::tuple<float,float> loc,std::vector<int> inv): Character(_name,capacity,loc) {
 	this->giveItems(inv);
 	this->evaluateEquipment();
+}
+
+std::string Character::serialize() {
+	std::string character;
+	//	00000000 00 00 000|c1|c2|c3|c4|...
+	
+	std::string type = std::to_string((int)this->type);
+	std::string id = std::to_string(this->objectID);
+	std::string name = this->getName();
+	std::string x = std::to_string((int)(this->x*100));
+	std::string y = std::to_string((int)(this->y*100));
+	
+	std::string movement = std::to_string((int)this->move_forward)+std::to_string((int)this->move_back);
+	std::string aim = std::to_string((int)(this->viewAng*100)); 
+	
+	std::string stat = std::to_string(this->status);
+	
+	std::string targetID = std::to_string(this->hasTarget() ? this->getTarget()->objectID : -1);
+	
+	//Body doesn't need padding because it's just a 
+	// concatenation of limb serializations which are already padded
+	std::string sbody = this->body->serialize();
+	
+	pad(type,'0',PAD_SHORT);
+	pad(id,'0',PAD_INT);
+	pad(name,' ',PAD_STR);
+	pad(x,'0',PAD_FLOAT);
+	pad(y,'0',PAD_FLOAT);
+	
+	pad(movement,'0',PAD_SHORT);
+	pad(aim,'0',PAD_FLOAT);
+	pad(stat,'0',PAD_LONG);
+	
+	pad(targetID,'0',PAD_INT);
+	
+	
+	// debug(STATUS_COMBAT);
+	
+	character = type+id+name+x+y+movement+aim+stat+targetID+sbody;
+	
+	return character;
 }
 
 

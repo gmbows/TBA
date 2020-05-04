@@ -7,6 +7,28 @@
 #include "../tools/Utility.h"
 #include <tuple>
 
+std::string Container::serialize() {
+	std::string container;
+	//	00000000 00 00 000|c1|c2|c3|c4|...
+	std::string type = std::to_string((int)this->type);
+	std::string id = std::to_string(this->objectID);
+	std::string display = std::to_string(this->getDisplayID());
+	std::string name = this->getName();
+	std::string x = std::to_string((int)(this->x*100));
+	std::string y = std::to_string((int)(this->y*100));
+	//ID
+	pad(type,'0',PAD_SHORT);
+	pad(display,'0',PAD_SHORT);
+	pad(id,'0',PAD_INT);
+	pad(name,' ',PAD_STR);
+	pad(x,'0',PAD_FLOAT);
+	pad(y,'0',PAD_FLOAT);
+	
+	container = type+display+id+name+x+y;
+	
+	return container;
+}
+
 Container::Container(const std::string &_name,std::tuple<float,float> location, int size): name(_name), GameObject(OBJ_CONTAINER) {
 	this->inventory = new Inventory(size);
 	decompose(location,this->x,this->y);

@@ -56,6 +56,11 @@ void dumpVec(const std::vector<T>& v) {
 
 }
 
+void copyBuf(const char*,int,std::string&);
+
+int toInt(std::string);
+unsigned long int toFlag(std::string);
+
 //isdigit
 bool isdigit(const std::string& s);
 bool issymbol(char);

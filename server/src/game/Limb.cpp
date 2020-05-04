@@ -1,6 +1,30 @@
 #include "Limb.h"
 #include <map>
 
+#include "../tools/Utility.h"
+#include "../../../shared/Shared.h"
+
+std::string Body::serialize() {
+	std::string serial;
+	for(int i=0;i<this->limbs.size();i++) {
+		serial += this->limbs.at(i)->serialize();
+	}
+	return serial;
+}
+
+std::string Limb::serialize() {
+	std::string limb = std::to_string((int)this->type);
+	std::string health = std::to_string(this->getHealth());
+	std::string max = std::to_string(this->getMaxHealth());
+
+	pad(limb,'0',PAD_SHORT);
+	pad(health,'0',PAD_INT);
+	pad(max,'0',PAD_INT);
+
+	return limb+health+max;
+
+}
+
 std::map<LimbType,std::string> limbMap = {
 	{LIMB_HEAD,"Head"},
 	{LIMB_TORSO,"Body"},
