@@ -43,6 +43,12 @@ bool Inventory::add(const std::vector<Item*>& itemVec) {
 	return true;
 }
 
+int Inventory::find(int uuid) {
+	for(int i=0;i<this->contents->size();i++) {
+		if(uuid == this->contents->at(i)->UUID) return i;
+	}
+	return -1;
+}
 
 
 int Inventory::find(Item* item) {

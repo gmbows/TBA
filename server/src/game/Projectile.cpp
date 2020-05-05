@@ -5,6 +5,8 @@
 #include "Squad.h"
 #include "GameObject.h"
 
+#include "../../../shared/Shared.h"
+
 #include <SDL2/SDL.h>
 
 Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,float dmg,float _ang,float _velocity): owner(_owner), damage(dmg), angle(_ang), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
@@ -22,6 +24,8 @@ Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,flo
 	this->destroyTime = TBAGame->logicTicks + this->maxAge;
 
 	this->active = true;
+	
+	TBAGame->generatePacket(EVENT_PROJ_CREATE,this->serialize());
 }
 
 std::string Projectile::serialize() {
@@ -30,18 +34,23 @@ std::string Projectile::serialize() {
 	std::string type = std::to_string((int)this->type);
 	std::string display = std::to_string(this->getDisplayID());
 	std::string id = std::to_string(this->objectID);
+	
+	std::string sactive = std::to_string((int)this->active);
 	std::string ang = std::to_string((int)(this->angle*100));
+	std::string vel = std::to_string((int)(this->velocity*100));
 	std::string x = std::to_string((int)(this->x*100));
 	std::string y = std::to_string((int)(this->y*100));
 	//ID
-	pad(type,'0',2);
-	pad(display,'0',2);
-	pad(id,'0',4);
-	pad(ang,' ',8);
-	pad(x,'0',8);
-	pad(y,'0',8);
+	pad(type,'0',PAD_SHORT);
+	pad(display,'0',PAD_SHORT);
+	pad(id,'0',PAD_INT);
+	pad(sactive,'0',PAD_BOOL);
+	pad(ang,'0',PAD_FLOAT);
+	pad(vel,'0',PAD_FLOAT);
+	pad(x,'0',PAD_FLOAT);
+	pad(y,'0',PAD_FLOAT);
 	
-	proj = type+display+id+ang+x+y;
+	proj = type+display+id+sactive+ang+vel+x+y;
 	
 	return proj;
 }
@@ -86,6 +95,7 @@ void Projectile::relocate() {
 			this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
 			this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
 			this->active = false;
+			TBAGame->generatePacket(EVENT_PROJ_COLLIDE,this->serialize());
 			return;
 		}
 		// Check collision with characters
@@ -109,6 +119,7 @@ void Projectile::relocate() {
 					this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
 					this->trackSubject = occupant;
 					this->active = false;
+					TBAGame->generatePacket(EVENT_PROJ_COLLIDE,this->serialize());
 					return;
 
 				}

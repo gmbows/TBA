@@ -42,6 +42,15 @@ std::string clean(std::string &s) {
 	return news;
 }
 
+void unpad(std::string &s) {
+	for(int i=0;i<s.size();i++) {
+		if(s[i] != ' ') {
+			s.erase(0,i);
+			return;
+		}
+	}
+}
+
 void copyBuf(const char* c,int len,std::string &s) {
 	s="";
 	for(int i=0;i<len;i++) {

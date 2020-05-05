@@ -2,9 +2,20 @@
 #include "ItemManifest.h"
 #include "Item.h"
 
+#include "../../../shared/Shared.h"
 #include "../tools/Utility.h"
 
 Inventory::Inventory(int _capacity): capacity(_capacity) {
+}
+
+std::string Inventory::serialize() {
+	std::string invsize = std::to_string(this->contents->size());
+	pad(invsize,'0',PAD_INT);
+	std::string s = invsize;
+	for(int i=0;i<this->contents->size();i++) {
+		s += this->contents->at(i)->serialize();
+	}
+	return s;	
 }
 
 //===========

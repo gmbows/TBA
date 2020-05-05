@@ -11,6 +11,8 @@ struct Inventory {
 	int capacity;
 	std::vector<Item*> *contents = new std::vector<Item*>;
 	
+	std::string serialize();
+	
 	Inventory(int);
 	bool add(int);
 	bool add(Item*);

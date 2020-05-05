@@ -1,12 +1,12 @@
 #pragma once
 #include "../tools/Utility.h"
 #include "Inventory.h"
-
 #include <string>
 #include <utility>
 #include <tuple>
 
 class Character;
+class Projectile;
 class ResourceNode;
 class Container;
 
@@ -28,6 +28,7 @@ class GameObject {
 		objType type = OBJ_GENERIC;
 	
 		Character* getAsCharacter();
+		Projectile* getAsProjectile();
 		ResourceNode* getAsResource();
 		Container* getAsContainer();
 

@@ -17,11 +17,15 @@ class Item {
 		//item index in manifest vector
 		int id;
 		
+		int UUID;
+		
 		std::string name;
 		std::string description;
 		int weight;
 		int size;
 		time_t created;
+		
+		std::string serialize();
 
 		flag types;
 		// ItemType primaryType;

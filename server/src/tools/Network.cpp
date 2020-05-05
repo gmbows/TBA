@@ -6,10 +6,12 @@
 #include <sstream>
 
 int Server::pop_socket_queue() {
+	
+	pthread_mutex_lock(&this->serverLock);
 
 	int socket = this->connections.front();
 	this->connections.pop();
-
+	pthread_mutex_unlock(&this->serverLock);
 	return socket;
 }
 
@@ -61,7 +63,14 @@ int Server::TBA_accept() {
 	return client;
 }
 
+bool Server::TBA_dispatch(std::string content) {
+	// for(int i=0;i<
+	return true;
+}
+
 bool Server::TBA_send(SOCKET client,std::string content) {
+
+	// pthread_mutex_lock(&this->serverLock);
 
 	char c[PACKET_SIZE];
 	int i = 0;
@@ -83,6 +92,7 @@ bool Server::TBA_send(SOCKET client,std::string content) {
 	}
 	
 	std::cout << "[Sent " << initial_size << "<" << packets << ">" << " bytes over socket " << client << "]" << std::endl;
+	// pthread_mutex_unlock(&this->serverLock);
 	return true;
 
 }

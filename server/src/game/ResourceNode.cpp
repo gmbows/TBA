@@ -10,12 +10,12 @@ std::string ResourceNode::serialize() {
 	std::string x = std::to_string((int)(this->x*100));
 	std::string y = std::to_string((int)(this->y*100));
 	//ID
-	pad(type,'0',2);
-	pad(display,'0',2);
-	pad(id,'0',4);
-	pad(name,' ',64);
-	pad(x,'0',8);
-	pad(y,'0',8);
+	pad(type,'0',PAD_SHORT);
+	pad(display,'0',PAD_SHORT);
+	pad(id,'0',PAD_INT);
+	pad(name,' ',PAD_STR);
+	pad(x,'0',PAD_FLOAT);
+	pad(y,'0',PAD_FLOAT);
 	
 	node = type+display+id+name+x+y;
 	

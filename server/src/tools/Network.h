@@ -8,9 +8,14 @@
 struct ClientThread {
 	int id;
 	int active = false;
+	bool updateClient = false;
 	int client;
 	
 	pthread_t thread;
+	pthread_cond_t canUpdateClient = PTHREAD_COND_INITIALIZER;
+	pthread_mutex_t updateLock = PTHREAD_MUTEX_INITIALIZER;
+	
+	std::queue<std::string> pendingPackets;
 	
 	void client_thread_routine() {}
 	
@@ -72,11 +77,14 @@ struct Server {
 	
 	bool active = false;
 	
+	pthread_mutex_t serverLock;
+	
 	bool isFull();
 
 	int TBA_accept();
 	bool TBA_service(SOCKET);
 	bool TBA_send(SOCKET,std::string);
+	bool TBA_dispatch(std::string);
 	 
 	void TBA_close(SOCKET);
 	 
@@ -85,6 +93,9 @@ struct Server {
 	void safe_print(const std::string&);
 	 	
 	Server(pthread_mutex_t lock) {
+		
+		this->serverLock = lock;
+		
 		WSAStartup(MAKEWORD(2,0), &this->WSAData);
 		this->server = socket(AF_INET, SOCK_STREAM, 0);
 	 

@@ -662,7 +662,7 @@ void Character::sendAttack(GameObject *target) {
 			if(this->hasAmmo(I_WEAPON_BOW)) {
 				float inaccuracy = 12;
 				inaccuracy = (-(inaccuracy/2)+rand()%(int)inaccuracy);
-				new Projectile(this,this->getLocation(),damage,(inaccuracy+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
+				// new Projectile(this,this->getLocation(),damage,(inaccuracy+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
 				this->inventory->remove(this->getAmmo(I_WEAPON_BOW));
 			} else {
 				this->addStatus(STATUS_NO_AMMO);

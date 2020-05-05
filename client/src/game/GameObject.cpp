@@ -5,6 +5,7 @@
 #include "ResourceNode.h"
 #include "Character.h"
 #include "Inventory.h"
+#include "Projectile.h"
 
 // class Character;
 // class Container;
@@ -45,6 +46,10 @@ Character* GameObject::getAsCharacter() {
 
 Container* GameObject::getAsContainer() {
 	return static_cast<Container*>(this);
+}
+
+Projectile* GameObject::getAsProjectile() {
+	return static_cast<Projectile*>(this);
 }
 
 Inventory* GameObject::getInventory() {

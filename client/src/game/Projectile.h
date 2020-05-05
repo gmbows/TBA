@@ -23,11 +23,19 @@ class Projectile: public GameObject {
 		std::string inline getInfo() {return "Name:\t"+this->getName();}
 
 		Tile* location;
+		
+		void updateLocation() {
+			if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
+				this->location->removeObject(this);
+				this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+				this->location->objects.push_back(this);
+			}
+		}
 
 		GameObject* owner;
 		GameObject* trackSubject = nullptr;
 
-		Projectile(GameObject*, std::tuple<float,float>,float,float,float);
+		Projectile(std::tuple<float,float>,float,float);
 
 		unsigned int lastUpdate;
 		unsigned int destroyTime;

@@ -14,6 +14,7 @@ pthread_mutex_t workerLock = PTHREAD_MUTEX_INITIALIZER;
 
 pthread_cond_t freeSocket = PTHREAD_COND_INITIALIZER;
 pthread_cond_t claimedSocket = PTHREAD_COND_INITIALIZER;
+pthread_cond_t canUpdateClients = PTHREAD_COND_INITIALIZER;
 
 void lockThreads() {
 	pthread_mutex_lock(&serverLock);
@@ -98,7 +99,7 @@ int tsize(const std::string &s) {
 void pad(std::string &s,char c,int len) {
 	if(s.size() > len) {
 		debug("Cannot pad string "+s+" to shorter length");
-		return s;
+		return;
 	}
 	std::string padded;
 	for(int i=0;i<len;i++) {

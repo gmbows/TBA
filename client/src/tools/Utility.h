@@ -44,6 +44,8 @@ std::vector<T> appendToLast(std::vector<T> v, T t) {
 	return v;
 }
 
+void unpad(std::string&);
+
 //dumpvec
 template <class T>
 void dumpVec(const std::vector<T>& v) {

@@ -10,22 +10,30 @@ void Client::dispatchPacket(int type) {
 			std::cout << "[Data type: World]" << std::endl;
 			TBAGame->gameWorld->deserialize(this->packetBuffer);
 			pthread_cond_signal(&TBAGame->graphicsEnabled);
-			// TBAGame->gameWorld->genWorld_new(TBAGame->gameWindow->renderer);
 			break;
 		case DATA_OBJS:
-			std::cout << "[Data type: Object]" << std::endl;
+			std::cout << "[Data type: Objects]" << std::endl;
 			pthread_mutex_lock(&TBAGame->networkLock);
-			TBAGame->objectUpdates = this->packetBuffer;
+			TBAGame->objectUpdates += this->packetBuffer;
 			pthread_mutex_unlock(&TBAGame->networkLock);
 			TBAGame->needsUpdate = true;
-			// pthread_cond_signal(&TBAGame->graphicsEnabled);
+			break;
+		case EVENT_PROJ_COLLIDE:
+			break;
+		case EVENT_PROJ_CREATE:
+			break;
+			std::cout << "[Data type: Event]" << std::endl;
+			pthread_mutex_lock(&TBAGame->networkLock);
+			TBAGame->objectUpdates += this->packetBuffer;
+			pthread_mutex_unlock(&TBAGame->networkLock);
+			TBAGame->needsUpdate = true;
 			break;
 		default:
 			std::cout << "[Data type: " << type << " unknown]" << std::endl;
 			break;
 	}
-	this->TBA_send("ACK");
 	debug("[Dispatch complete]\n");
+	this->TBA_send("ACK");
 }
 
 void Client::handlePacket(char* buf) {
@@ -51,6 +59,8 @@ void Client::handlePacket(char* buf) {
 			// std::cout << "RECEIVED PACKET SEGMENT OF SIZE " << packet.size() << std::endl;
 			// std::cout << "DATA STREAM TERMINATED" << std::endl;
 			//Do something with content....
+			
+			if(contains(packet,DATA_TERM)) debug("OH FUCK!!!!!!!!!!!!!!!!!!"+packet);
 			
 			this->packetBuffer += packet;
 			

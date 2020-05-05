@@ -42,12 +42,22 @@ void checkItemTypes() {
 	}
 }
 
+std::string Item::serialize() {
+	std::string id = std::to_string(this->id);
+	std::string uuid = std::to_string(this->UUID);
+	pad(id,'0',PAD_INT);
+	pad(uuid,'0',PAD_INT);
+	return id+uuid;
+}
+
 Item::Item(int _id): id(_id) {
 
 	if(id >= itemManifest.size()) {
 		debug("ERROR: Adding invalid item with id "+std::to_string(id)+", using invalid item");
 		id = 0;
 	}
+	
+	this->UUID = TBAGame->itemTotal++;
 
 	itemTraits itemInfo = itemManifest.at(id);
 

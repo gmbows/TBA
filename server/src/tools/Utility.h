@@ -20,6 +20,7 @@ extern pthread_mutex_t workerLock;
 
 extern pthread_cond_t freeSocket;
 extern pthread_cond_t claimedSocket;
+extern pthread_cond_t canUpdateClients;
 
 //=========
 //--VECTORS--

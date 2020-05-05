@@ -274,6 +274,17 @@ std::vector<std::string> Game::getItemNames(const std::vector<Item*> &items) {
 //		NETWORK
 //=============
 
+void Game::generatePacket(NetworkDataType type,std::string content) {
+	std::string packetType = std::to_string(int(type));
+	pad(packetType,'0',PAD_SHORT);
+	content = DATA_BEGIN+packetType+content+DATA_TERM;
+
+	for(int i=0;i<this->maxClients;i++) {
+		if(!this->workers->getThread(i)->active) continue;
+		this->workers->getThread(i)->pendingPackets.push(content);
+	}
+}
+
 void Client::deserialize() {
 	//	00000000 00 00 000|c1|c2|c3|c4|...
 	int block = 8;
@@ -337,20 +348,20 @@ void network_thread_routine(Game *game) {
 
 void await_socket(ClientThread* worker) {
 	
-	pthread_mutex_lock(&workerLock);
+	// pthread_mutex_lock(&workerLock);
 	int client;
 	while(TBAGame->server->connections.size() == 0) {
 		pthread_cond_wait(&freeSocket,&workerLock);
 	}
 	worker->client = TBAGame->server->pop_socket_queue();
-	worker->active = true;
 	pthread_cond_signal(&claimedSocket);
 	pthread_mutex_unlock(&workerLock);
 }
 
 void worker_thread_routine(ClientThread *worker) {
-	while(1) {
+	while(1) {	
 		await_socket(worker);
+		worker->active = true;
 		debug("Received new connection on client thread "+std::to_string(worker->id));
 		for(int i=0;i<TBAGame->workers->size;i++) {
 			if(TBAGame->workers->getThread(i)->active) {
@@ -362,14 +373,33 @@ void worker_thread_routine(ClientThread *worker) {
 
 		//Send client world and object info on initial connection
 		TBAGame->server->TBA_send(worker->client,TBAGame->gameWorld->serialize());
-		// std::this_thread::sleep_for(std::chrono::milliseconds(100));
+		TBAGame->server->TBA_service(worker->client);
 		TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects());
+		// TBAGame->server->TBA_service(worker->client);
 		
-		// while(TBAGame->server->TBA_service(worker->client)) {
-		while(1) {
-			TBAGame->server->TBA_service(worker->client);
-			if(!TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects())) break;
-			std::this_thread::sleep_for(std::chrono::milliseconds(500));
+		
+		while(worker->active) {
+			pthread_cond_wait(&worker->canUpdateClient,&worker->updateLock);
+			
+			// TBAGame->server->TBA_service(worker->client);
+			for(int i=0;i<worker->pendingPackets.size();i++) {
+				if(!TBAGame->server->TBA_send(worker->client,worker->pendingPackets.front())) {
+					worker->active = false;
+					break;
+				} else {
+					TBAGame->server->TBA_service(worker->client);
+					worker->pendingPackets.pop();
+				}
+			}
+			if(worker->updateClient) {
+				if(!TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects())) {
+					worker->active = false;
+					break;
+				} else {
+					TBAGame->server->TBA_service(worker->client);
+					worker->updateClient = false;
+				}
+			}
 		}
 		std::cout << "Server slot " << worker->id << " freed" << std::endl;
 		worker->active = false;
@@ -411,6 +441,14 @@ void Game::spawn_threads() {
 
 	if(!this->workers->initialize(worker_thread_routine)) this->gameRunning = false;
 	debug("All threads spawned successfully");
+}
+
+void Game::signalAllClientThreads() {
+	for(int i=0;i<this->maxClients;i++) {
+		if(!this->workers->getThread(i)->active) continue;
+		this->workers->getThread(i)->updateClient = true;
+		pthread_cond_signal(&this->workers->getThread(i)->canUpdateClient);
+	}
 }
 
 //=============
@@ -462,17 +500,8 @@ void Game::update_logic() {
 
 void Game::update() {
 	
-	// std::cout << "Game objects: " << this->gameObjects.size() << "\r" << std::flush;
-
-	int start = SDL_GetTicks();
-	// this->update_graphics();
-
-	int elapsed = SDL_GetTicks()-start;
-
-	int real_wait = (1000/this->graphicsTickRate)-elapsed;
-	if(real_wait <= 0) debug("Falling behind! (graphics)");
-	// SDL_Delay(real_wait);
-	std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
+	this->signalAllClientThreads();
+	std::this_thread::sleep_for(std::chrono::milliseconds(this->clientUpdateRate));
 
 
 }

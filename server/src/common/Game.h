@@ -89,11 +89,15 @@ struct Game {
 	
 	void processClientUpdates(Client*);
 	
+	void generatePacket(NetworkDataType,std::string);
+	
+	void signalAllClientThreads();
+	
 	std::string serializeObjects() {
 		std::string objects = DATA_BEGIN;
 		
 		std::string type = std::to_string((int)DATA_OBJS);
-		pad(type,'0',2);
+		pad(type,'0',PAD_SHORT);
 		objects += type;
 		
 		for(int i=0;i<this->gameObjects.size();i++) {
@@ -127,6 +131,11 @@ struct Game {
 	void removeUIObject(GameObject*);
 	void removeObject(int);
 	
+	//To ensure unique object IDs
+	unsigned int objectTotal = 0;
+	
+	unsigned int itemTotal = 0;
+	
 	//==============
 	//     	SQUADS
 	//==============
@@ -134,8 +143,6 @@ struct Game {
 	std::vector<Squad*> squads;
 	Squad* createSquad(std::string s = "None");
 
-	//To ensure unique object IDs
-	int objectTotal = 0;
 	
 	//====================
 	//	 UPDATE LOGIC
@@ -149,8 +156,8 @@ struct Game {
 	int timeToNextLogicUpdate;
 	int timeToNextGraphicsUpdate;
 
-	//Amount of times game game window updates per second
-	int graphicsTickRate = 60;
+	//Ms delay between client updates
+	int clientUpdateRate = 500;
 
 	//Amount of times game OBJECTS (NPC's, general game state) update per second
 	int logicTickRate = 30;

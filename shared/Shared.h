@@ -5,9 +5,12 @@
 
 
 enum NetworkDataType: int {
-	DATA_WORLD = 1,
-	DATA_CHAR = 2,
-	DATA_OBJS = 3,
+	DATA_WORLD,
+	DATA_CHAR,
+	DATA_OBJS,
+	
+	EVENT_PROJ_CREATE,
+	EVENT_PROJ_COLLIDE,
 };
 
 const std::string DATA_BEGIN= "##DATA_BEGIN##";

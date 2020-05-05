@@ -91,15 +91,16 @@ struct Game {
 	void removeUIObject(GameObject*);
 	void removeObject(int);
 	
+	//To ensure unique object IDs
+	unsigned int objectTotal = 0;
+	unsigned int itemTotal = 0;
+	
 	//==============
 	//     	SQUADS
 	//==============
 	unsigned int numSquads;
 	std::vector<Squad*> squads;
 	Squad* createSquad(std::string s = "None");
-
-	//To ensure unique object IDs
-	int objectTotal = 0;
 	
 	//====================
 	//	 UPDATE LOGIC

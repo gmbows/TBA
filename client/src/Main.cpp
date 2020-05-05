@@ -5,8 +5,7 @@
 #include "common/Common.h"
 
 int main(int argc, char** argv) {
-	// std::cout << "BLACK" << std::endl;
-	// return 0;
+
 	
 	if(argc > 1) {
 		TBAGame->debugMode = true;

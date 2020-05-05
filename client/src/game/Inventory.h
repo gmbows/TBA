@@ -18,6 +18,8 @@ struct Inventory {
 	bool add(const std::vector<Item*>&);
 	int find(Item*);
 	int find(const std::string&);
+	//searches by UUID only
+	int find(int);
 	
 	int getFirstInstance(const std::string&);
 

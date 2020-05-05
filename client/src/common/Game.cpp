@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <random>
+#include <memory>
 
 #include "../ui/Window.h"
 #include "../ui/Screen.h"
@@ -22,6 +23,8 @@
 #include "../game/Structure.h"
 #include "../game/Squad.h"
 #include "../common/Keys.h"
+
+#include "../game/Projectile.h"
 
 #include "../../../shared/Shared.h"
 
@@ -340,16 +343,15 @@ std::string Game::serializeInput() {
 
 void Game::deserializeObjects(const std::string &content) {
 
-	pthread_mutex_lock(&this->networkLock);
-
 	int i=0;
 	
-	
-
 	while(i < content.size()) {
-		std::string type;// = content.substr(i,2);
+		std::string type;
 		// i+=2;
+		// debug("Unpacking content type");
+		debug(content.substr(i,20));
 		unpack(i,type,content,PAD_SHORT);
+		// debug("Done unpacking content typ
 		// debug(content.substr(0,2000));
 		switch(toInt(type)) {
 			case OBJ_CHARACTER: {
@@ -368,12 +370,7 @@ void Game::deserializeObjects(const std::string &content) {
 				unpack(i,status,content,PAD_LONG);
 				unpack(i,targetID,content,PAD_INT);
 				
-				for(int j=0;j<name.size();j++) {
-					if(name[j] != ' ') {
-						name.erase(0,j);
-						break;
-					}
-				}
+				unpad(name);
 
 				Character *newCharf = this->findObject(std::stoi(id));
 				if(newCharf == nullptr) {
@@ -383,9 +380,18 @@ void Game::deserializeObjects(const std::string &content) {
 
 				newCharf->move_forward = (bool)toInt(movement.substr(0,1));
 				newCharf->move_back = (bool)toInt(movement.substr(1,1));
+				
+				// newCharf->x = toInt(x)/100.0f;
+				// newCharf->y = toInt(y)/100.0f;
+				
 				newCharf->targetAng = toInt(aim)/100.0f;
 				newCharf->status = toFlag(status);
-				if(std::stoi(targetID) >= 0) newCharf->setTarget(TBAGame->findObject(std::stoi(targetID)));
+				
+				if(std::stoi(targetID) >= 0) {
+					newCharf->setTarget(TBAGame->findObject(std::stoi(targetID)));
+				} else {
+					newCharf->target = nullptr;
+				}
 
 				//Limbs
 				for(int j=0;j<4;j++) {
@@ -395,12 +401,27 @@ void Game::deserializeObjects(const std::string &content) {
 					newCharf->body->getLimb((LimbType)toInt(limbtype))->health = toInt(hp);
 					newCharf->body->getLimb((LimbType)toInt(limbtype))->maxHealth = toInt(max);
 				}
-
+				
+				//Inventory
+				std::string size,itemid,uuid;
+				unpack(i,size,content,PAD_INT);
+				Item* newItem;
+				for(int j=0;j<toInt(size);j++) {
+					unpack(i,itemid,content,PAD_INT);
+					unpack(i,uuid,content,PAD_INT);
+					if(newCharf->inventory->find(toInt(uuid)) == -1) {
+						newItem = new Item(toInt(itemid));
+						newItem->UUID = toInt(uuid);
+						newCharf->giveItem(newItem);
+					} else {
+						//Update item....
+					}
+				}
 				// debug("Done");
 				break;
 			}
 			case OBJ_CONTAINER: {
-				debug("Reconstructing container...");
+				// debug("Reconstructing container...");
 				std::string displayid,id,name,x,y;
 				unpack(i,displayid,content,PAD_SHORT);
 				unpack(i,id,content,PAD_INT); 
@@ -408,7 +429,7 @@ void Game::deserializeObjects(const std::string &content) {
 				unpack(i,x,content,PAD_FLOAT);
 				unpack(i,y,content,PAD_FLOAT); 
 				
-				
+				unpad(name);
 				
 				Container *newContainer = this->findObject(toInt(id));
 				if(newContainer == nullptr) {
@@ -421,38 +442,61 @@ void Game::deserializeObjects(const std::string &content) {
 			}
 			case OBJ_PROJECTILE: {
 				// debug("Reconstructing projectile...");
-				int displayID = toInt(content.substr(i+0,2)); //pad(display,'0',2);
-				int objectID = toInt(content.substr(i+2,4));//pad(id,'0',4);
-				int ang = toInt(content.substr(i+2+4,8));//pad(name,' ',64);
-				float x = toInt(content.substr(i+2+4+8,8));//pad(x,'0',4);
-				float y = toInt(content.substr(i+2+4+8+8,8));//pad(y,'0',4);
-				// Projectile *proj = new Projectile(name,{x/100.0f,y/100.0f},64);
-				// debug(newContainer->getName());
-				// debug(ang/100.0f);
-				i += 2+4+8+8+8;
+				
+				std::string displayid,id,active,ang,vel,x,y;
+				unpack(i,displayid,content,PAD_SHORT);
+				unpack(i,id,content,PAD_INT); 
+				
+				unpack(i,active,content,PAD_BOOL);
+				unpack(i,ang,content,PAD_FLOAT);
+				unpack(i,vel,content,PAD_FLOAT);
+				unpack(i,x,content,PAD_FLOAT);
+				unpack(i,y,content,PAD_FLOAT); 
+				// debug("Done unpacking projectile info");				
+				// std::unique_ptr<Projectile> newProj(this->findObject(toInt(id))->getAsProjectile());
+				Projectile *newProj = this->findObject(toInt(id))->getAsProjectile();
+				if(newProj == nullptr) {
+					// newProj.reset(new Projectile({toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f));
+					newProj = new Projectile({toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f);
+					newProj->objectID = toInt(id);
+				}
+				// debug("Done generating projectile object");	
+				if(newProj->active == false) break;
+				newProj->active = (bool)toInt(active);
+				newProj->x = toInt(x)/100.0f;
+				newProj->y = toInt(y)/100.0f;
+				newProj->updateLocation();
+				newProj->angle = toInt(ang)/100.0f;
+				newProj->velocity = toInt(vel)/100.0f;
+				// debug("Done updating projectile object");
 				break;
 			}
 			case OBJ_INTERACTIVE: {
-				// debug("Reconstructing interactive...");debug(i);
-				int displayID = toInt(content.substr(i+0,2)); //pad(display,'0',2);
-				int objectID = toInt(content.substr(i+2,4));//pad(id,'0',4);
-				std::string name = content.substr(i+2+4,64);//pad(name,' ',64);
-				float x = toInt(content.substr(i+2+4+64,8));//pad(x,'0',4);
-				float y = toInt(content.substr(i+2+4+64+8,8));//pad(y,'0',4);
-				// ResourceNode *node = new Resource(name,{x/100.0f,y/100.0f},64);
-				// debug(newContainer->getName());
-				// debug(name);
-				i += 2+4+64+8+8;
+				// debug("Reconstructing Resource node...");
+				std::string displayid,id,name,x,y;
+				unpack(i,displayid,content,PAD_SHORT);
+				unpack(i,id,content,PAD_INT); 
+				unpack(i,name,content,PAD_STR); 
+				unpack(i,x,content,PAD_FLOAT);
+				unpack(i,y,content,PAD_FLOAT); 
+				
+				unpad(name);
+				
+				ResourceNode *newNode = this->findObject(toInt(id));
+				if(newNode == nullptr) {
+					newNode = new ResourceNode(name,{toInt(x)/100.0f,toInt(y)/100.0f},{{2,{2,1}},{100,{8,1}}},10,1);
+					newNode->objectID = toInt(id);
+				}
+				// debug("Done");
 				break;
 			}
 			default:
-				debug("Unhandled object type");
+				// debug("Unhandled object type");
 				debug(content.substr(i,20));
 				break;
 		}
 	}
 	// debug("Done");
-	pthread_mutex_unlock(&this->networkLock);
 }
 
 //=============
@@ -507,16 +551,20 @@ void Game::spawn_threads() {
 void Game::updateGameObjects() {
 	// pthread_mutex_lock(&this->logicLock);
 	if(this->needsUpdate) {
-		// debug("OH FUCK!!");
+		// debug("Unpacking game objects");
+		pthread_mutex_lock(&this->networkLock);
 		this->deserializeObjects(this->objectUpdates);
+		this->objectUpdates = "";
 		this->needsUpdate = false;
-		// debug("RAPE!");
+		// debug("Done unpacking objects");
+		pthread_mutex_unlock(&this->networkLock);
 	}
 	
 	// debug("Finished importing game objects");
 
 	std::vector<Tile*> nearbyTiles = this->gameWorld->getTilesInRadius(this->playerChar->x,this->playerChar->y,15);
 	Tile* thisTile;
+	
 	for(int i=0;i<nearbyTiles.size();i++) {
 		thisTile = nearbyTiles.at(i);
 		// this->gameObjects.at(i)->update();
@@ -524,6 +572,14 @@ void Game::updateGameObjects() {
 			for(int j=0;j<thisTile->occupiers.size();j++) {
 				thisTile->occupiers.at(j)->update();
 			}
+			// debug("Done updating character");
+		}
+		
+		if(thisTile->hasObjects()) {
+			for(int j=0;j<thisTile->objects.size();j++) {
+				thisTile->objects.at(j)->update();
+			}
+			// debug("Done updating objects");
 		}
 	}
 	// debug("Finish");

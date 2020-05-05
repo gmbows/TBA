@@ -88,6 +88,8 @@ std::string Character::serialize() {
 	// concatenation of limb serializations which are already padded
 	std::string sbody = this->body->serialize();
 	
+	std::string inv = this->inventory->serialize();
+	
 	pad(type,'0',PAD_SHORT);
 	pad(id,'0',PAD_INT);
 	pad(name,' ',PAD_STR);
@@ -103,7 +105,7 @@ std::string Character::serialize() {
 	
 	// debug(STATUS_COMBAT);
 	
-	character = type+id+name+x+y+movement+aim+stat+targetID+sbody;
+	character = type+id+name+x+y+movement+aim+stat+targetID+sbody+inv;
 	
 	return character;
 }

@@ -7,7 +7,7 @@
 
 #include <SDL2/SDL.h>
 
-Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,float dmg,float _ang,float _velocity): owner(_owner), damage(dmg), angle(_ang), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
+Projectile::Projectile(std::tuple<float,float> _location,float _ang,float _velocity): angle(_ang), velocity(_velocity), GameObject(OBJ_PROJECTILE) {
 
 	float _x,_y;
 	decompose(_location,_x,_y);
@@ -51,9 +51,9 @@ void Projectile::relocate() {
 
 	float testX = this->x;
 	float testY = this->y;
-
+	
 	Tile* thisTile = TBAGame->gameWorld->getTileAt(testX,testY);
-	Character* occupant;
+	// Character* occupant;
 
 	//Interpolate between old and new locations to check collision
 	for(int j=0;j<(TBAGame->logicTicks-this->lastUpdate)*4;j++) {
@@ -66,32 +66,32 @@ void Projectile::relocate() {
 			this->active = false;
 			return;
 		}
-		// Check collision with characters
-		if(thisTile->isOccupied()) {
-			for(int i=0;i<thisTile->occupiers.size();i++) {
+		// //  Check collision with characters
+		// if(thisTile->isOccupied()) {
+			// for(int i=0;i<thisTile->occupiers.size();i++) {
 
-				occupant = thisTile->occupiers.at(i);
+				// occupant = thisTile->occupiers.at(i);
 
-				// Do not collide with creator or dead characters or squad members
-				if((char*)occupant == (char*)this->owner) continue;
-				if(!occupant->isAlive()) continue;
-				if(owner->getAsCharacter()->hasSquad()) {
-					if(owner->getAsCharacter()->squad->isMember(occupant)) continue;
-				}
+				// // Do not collide with creator or dead characters or squad members
+				// if((char*)occupant == (char*)this->owner) continue;
+				// if(!occupant->isAlive()) continue;
+				// if(owner->getAsCharacter()->hasSquad()) {
+					// if(owner->getAsCharacter()->squad->isMember(occupant)) continue;
+				// }
 
-				if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
-					//Arrow damage
-					occupant->receiveAttack(this->damage,this->owner);
-					//Do not embed arrows into characters
-					this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
-					this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
-					this->trackSubject = occupant;
-					this->active = false;
-					return;
+				// if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
+					// // Arrow damage
+					// occupant->receiveAttack(this->damage,this->owner);
+					// // Do not embed arrows into characters
+					// this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
+					// this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
+					// this->trackSubject = occupant;
+					// this->active = false;
+					// return;
 
-				}
-			}
-		}
+				// }
+			// }
+		// }
 		// Increment interpolation
 		testX += (this->velocity/4)*std::cos(this->angle);
 		testY += (this->velocity/4)*std::sin(this->angle);
