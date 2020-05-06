@@ -35,7 +35,7 @@ class Projectile: public GameObject {
 		GameObject* owner;
 		GameObject* trackSubject = nullptr;
 
-		Projectile(std::tuple<float,float>,float,float);
+		Projectile(GameObject*, std::tuple<float,float>,float,float);
 
 		unsigned int lastUpdate;
 		unsigned int destroyTime;

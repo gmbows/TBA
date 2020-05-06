@@ -52,6 +52,8 @@ struct Game {
 	//=============
 	//	  BASIC
 	//=============
+	
+	std::string command;
 
 	bool gameRunning;
 	bool paused = false;
@@ -80,7 +82,7 @@ struct Game {
 	//		NETWORK
 	//=============
 	
-	int maxClients = 5;
+	int maxClients = 20;
 	Server *server;
 	
 	ClientThreadSpool *workers = new ClientThreadSpool(maxClients);
@@ -93,18 +95,25 @@ struct Game {
 	
 	void signalAllClientThreads();
 	
-	std::string serializeObjects() {
-		std::string objects = DATA_BEGIN;
+	void serializeObjects(ClientThread *worker) {
 		
 		std::string type = std::to_string((int)DATA_OBJS);
 		pad(type,'0',PAD_SHORT);
-		objects += type;
+		
+		std::string packet = type;
+		
+		std::string object;
 		
 		for(int i=0;i<this->gameObjects.size();i++) {
-			objects += this->gameObjects.at(i)->serialize();
+			object = this->gameObjects.at(i)->serialize();
+			if(packet.size() + object.size() > PACKET_SIZE) {
+				worker->pendingPackets.push(packet);
+				packet = type+object;
+			} else {
+				packet += object;
+			}
 		}
-		objects += DATA_TERM;
-		return objects;
+		// return objects;
 	}
 
 	//=======================
@@ -206,6 +215,6 @@ struct Game {
 
 	void spawn_threads();
 
-	void update_logic();
+	// void update_logic();
 
 };

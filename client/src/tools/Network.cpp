@@ -4,35 +4,41 @@
 #include <unistd.h>
 
 void Client::dispatchPacket(int type) {
-	std::cout << "[Got " << this->packetBuffer.size() << " bytes from server]" << std::endl;
+	// std::cout << "[Got " << this->packetBuffer.size() << " bytes from server]" << std::endl;
 	switch(type) {
+		case SERV_MSG:
+			std::cout << "[SERV] " << this->packetBuffer << std::endl;
+			break;
 		case DATA_WORLD:
-			std::cout << "[Data type: World]" << std::endl;
+			// break;
+			// std::cout << "[Data type: World]" << std::endl;
 			TBAGame->gameWorld->deserialize(this->packetBuffer);
 			pthread_cond_signal(&TBAGame->graphicsEnabled);
 			break;
 		case DATA_OBJS:
-			std::cout << "[Data type: Objects]" << std::endl;
+			// break;
+			// std::cout << "[Data type: Objects]" << std::endl;
 			pthread_mutex_lock(&TBAGame->networkLock);
 			TBAGame->objectUpdates += this->packetBuffer;
 			pthread_mutex_unlock(&TBAGame->networkLock);
 			TBAGame->needsUpdate = true;
 			break;
 		case EVENT_PROJ_COLLIDE:
-			break;
+			// break;
 		case EVENT_PROJ_CREATE:
-			break;
-			std::cout << "[Data type: Event]" << std::endl;
+			// std::cout << "[Data type: Event]" << std::endl;
+			// break;
 			pthread_mutex_lock(&TBAGame->networkLock);
 			TBAGame->objectUpdates += this->packetBuffer;
 			pthread_mutex_unlock(&TBAGame->networkLock);
 			TBAGame->needsUpdate = true;
 			break;
 		default:
-			std::cout << "[Data type: " << type << " unknown]" << std::endl;
+			// std::cout << "[Data type: " << type << " unknown]" << std::endl;
 			break;
 	}
-	debug("[Dispatch complete]\n");
+	// this->packetBuffer.clear();
+	// debug("[Dispatch complete]\n");
 	this->TBA_send("ACK");
 }
 
@@ -46,42 +52,32 @@ void Client::handlePacket(char* buf) {
 		packet.erase(packet.size()-diff,diff);
 	}
 	
-	int size = packet.size();
+	if(packet.size() == 0) return;
 	
-	if(size >= STREAM_INFO_LEN) {
-		if(packet.substr(0,STREAM_INFO_LEN) == DATA_BEGIN) {
-			std::cout << "[Received new data stream]" << std::endl;
-			packet.erase(0,STREAM_INFO_LEN);
-			this->reading = true;
-		}
-		if(this->reading and packet.substr(packet.size()-STREAM_INFO_LEN,STREAM_INFO_LEN) == DATA_TERM) {
-			packet.erase(packet.size()-STREAM_INFO_LEN,STREAM_INFO_LEN);
-			// std::cout << "RECEIVED PACKET SEGMENT OF SIZE " << packet.size() << std::endl;
-			// std::cout << "DATA STREAM TERMINATED" << std::endl;
-			//Do something with content....
-			
-			if(contains(packet,DATA_TERM)) debug("OH FUCK!!!!!!!!!!!!!!!!!!"+packet);
-			
-			this->packetBuffer += packet;
-			
-			int type = std::stoi(this->packetBuffer.substr(0,2));
-			
-			this->packetBuffer.erase(0,2);
-			
-			this->dispatchPacket(type);
-			this->packetBuffer = "";
-			this->reading = false;
-			return;
-		}
+	if(remaining == 0) {
+		remaining = std::stoi(packet.substr(0,PAD_INT));
+		packet.erase(0,PAD_INT);
+	}
+	
+	if(remaining <= packet.size()) {
+		
+		this->packetBuffer += packet.substr(0,remaining);
+		
+		int type = std::stoi(this->packetBuffer.substr(0,2));
+		
+		this->packetBuffer.erase(0,2);
+		
+		this->dispatchPacket(type);
+		
+		packet.erase(0,remaining);
+		
+		this->packetBuffer = packet;
+		remaining = 0;
+	} else {
+		this->packetBuffer += packet;
+		remaining -= packet.size();
 	}
 
-	if(this->reading) {
-		this->packetBuffer += packet;
-		// std::cout << "RECEIVED PACKET SEGMENT OF SIZE " << packet.size() << std::endl;
-	} else {
-		if(packet.size() > 0) std::cout << "[SERV] " << packet << std::endl;
-	}
-	
 }
 
 bool Client::TBA_receive() {
@@ -137,10 +133,10 @@ bool Client::TBA_connect() {
 	this->server = socket(AF_INET, SOCK_STREAM, 0);
 	char greeting[PACKET_SIZE];
 	if(connect(this->server, (SOCKADDR *)&addr, sizeof(addr)) == 0) {
-		read(this->server,greeting,sizeof(greeting));
+		// read(this->server,greeting,sizeof(greeting));
 		std::cout << "Connected to server on socket " << this->server << std::endl;
-		std::string greet(greeting);	
-		debug(greeting);
+		// std::string greet(greeting);	
+		// debug(greeting);
 		pthread_cond_signal(&TBAGame->networkEnabled);
 		this->active = true;
 		return true;

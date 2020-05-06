@@ -8,6 +8,7 @@ struct Client {
     SOCKADDR_IN addr;
 	
 	bool reading = false;
+	int remaining = 0;
 	std::string packetBuffer;
  
 	bool TBA_send(const std::string&);	

@@ -3,6 +3,7 @@
 #include <pthread.h>
 
 #include "common/Common.h"
+#include <windows.h>
 
 int main(int argc, char** argv) {
 	
@@ -33,6 +34,7 @@ int main(int argc, char** argv) {
 
 	TBAGame->gameLog->writeln("Entering game loop");
 	// debug("START OK");
+
 	while(TBAGame->gameRunning) {
 		TBAGame->update();
 	}

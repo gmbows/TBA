@@ -1,10 +1,12 @@
 #pragma once
 #include <string>
 
-#define PACKET_SIZE 4096
+#define PACKET_SIZE 1024
 
 
 enum NetworkDataType: int {
+	SERV_MSG,
+	
 	DATA_WORLD,
 	DATA_CHAR,
 	DATA_OBJS,
@@ -13,8 +15,8 @@ enum NetworkDataType: int {
 	EVENT_PROJ_COLLIDE,
 };
 
-const std::string DATA_BEGIN= "##DATA_BEGIN##";
-const std::string DATA_TERM = "###DATA_END###";
+const std::string DATA_BEGIN= "";//"##DATA_BEGIN##";
+const std::string DATA_TERM = "";//"###DATA_END###";
 const int STREAM_INFO_LEN = DATA_BEGIN.size();
 
 const int PAD_BOOL = 1;

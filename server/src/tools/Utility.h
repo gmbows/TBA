@@ -14,6 +14,7 @@ typedef std::tuple<float,float> point;
 
 extern pthread_t logic_thread;
 extern pthread_t network_thread;
+extern pthread_t client_update_thread;
 
 extern pthread_mutex_t serverLock;
 extern pthread_mutex_t workerLock;
@@ -29,6 +30,8 @@ extern pthread_cond_t canUpdateClients;
 void lockThreads();
 	
 void unlockThreads();
+
+int vecavg(const std::vector<int>&);
 
 template <class T>
 inline std::vector<T> operator+(std::vector<T> v,T t) {

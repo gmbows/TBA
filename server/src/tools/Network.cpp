@@ -1,6 +1,7 @@
 #include "Network.h"
 #include "../common/Common.h"
 #include "../../../shared/Shared.h"
+#include "../tools/Utility.h"
 #include <unistd.h>
 #include <pthread.h>
 #include <sstream>
@@ -56,9 +57,9 @@ int Server::TBA_accept() {
 		std::cout << "[Received new connection on socket " << client << "]" << std::endl;
 	}
 	if(!this->isFull()) {
-		this->TBA_send(client,"Connection successful");
+		this->TBA_send(client,"0"+std::to_string((int)SERV_MSG)+"Connection successful");
 	} else {
-		this->TBA_send(client,"Server full, please wait");
+		this->TBA_send(client,"0"+std::to_string((int)SERV_MSG)+"Server full, please wait");
 	}
 	return client;
 }
@@ -77,6 +78,9 @@ bool Server::TBA_send(SOCKET client,std::string content) {
 	int err;
 	int packets = 0;
 	int initial_size = content.size();
+	std::string size = std::to_string(initial_size);
+	pad(size,'0',PAD_INT);
+	content = size+content;
 	while(content.size() > 0) {
 		memset(c, 0, sizeof(c));
 		i=0;
@@ -91,7 +95,15 @@ bool Server::TBA_send(SOCKET client,std::string content) {
 		packets++;
 	}
 	
-	std::cout << "[Sent " << initial_size << "<" << packets << ">" << " bytes over socket " << client << "]" << std::endl;
+	int packNum = (++this->sentPackets)%this->packetAvgRange;
+	this->lastPackets.at(packNum) = initial_size;
+	
+	if(this->showTransfers) {
+		if(packNum == 0) {
+			// std::cout << "[Sent " << initial_size << "<" << packets << ">" << " bytes over socket " << client << "]\r" << std::flush;
+			std::cout << "[Avg. packet size " << vecavg(this->lastPackets) << "<" << this->packetAvgRange << "> bytes (max " << PACKET_SIZE<< ")]\n" << std::flush;
+		}
+	}
 	// pthread_mutex_unlock(&this->serverLock);
 	return true;
 

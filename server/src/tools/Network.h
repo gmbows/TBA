@@ -76,6 +76,12 @@ struct Server {
 	int pop_socket_queue();
 	
 	bool active = false;
+	bool showTransfers = false;
+	
+	int packetAvgRange = 500;
+	int sentPackets = 0;
+	
+	std::vector<int> lastPackets;
 	
 	pthread_mutex_t serverLock;
 	
@@ -102,6 +108,10 @@ struct Server {
 		this->serverAddr.sin_addr.s_addr = INADDR_ANY;
 		this->serverAddr.sin_family = AF_INET;
 		this->serverAddr.sin_port = htons(5555);
+		
+		for(int i=0;i<this->packetAvgRange;i++) {
+			this->lastPackets.push_back(0);
+		}
 	}
 	
 	~Server() {

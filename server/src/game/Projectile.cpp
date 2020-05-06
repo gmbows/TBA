@@ -35,6 +35,8 @@ std::string Projectile::serialize() {
 	std::string display = std::to_string(this->getDisplayID());
 	std::string id = std::to_string(this->objectID);
 	
+	std::string ownerid = std::to_string(this->owner->objectID);
+	
 	std::string sactive = std::to_string((int)this->active);
 	std::string ang = std::to_string((int)(this->angle*100));
 	std::string vel = std::to_string((int)(this->velocity*100));
@@ -44,13 +46,14 @@ std::string Projectile::serialize() {
 	pad(type,'0',PAD_SHORT);
 	pad(display,'0',PAD_SHORT);
 	pad(id,'0',PAD_INT);
+	pad(ownerid,'0',PAD_INT);
 	pad(sactive,'0',PAD_BOOL);
 	pad(ang,'0',PAD_FLOAT);
 	pad(vel,'0',PAD_FLOAT);
 	pad(x,'0',PAD_FLOAT);
 	pad(y,'0',PAD_FLOAT);
 	
-	proj = type+display+id+sactive+ang+vel+x+y;
+	proj = type+display+id+ownerid+sactive+ang+vel+x+y;
 	
 	return proj;
 }
@@ -95,7 +98,7 @@ void Projectile::relocate() {
 			this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
 			this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
 			this->active = false;
-			TBAGame->generatePacket(EVENT_PROJ_COLLIDE,this->serialize());
+			// TBAGame->generatePacket(EVENT_PROJ_COLLIDE,this->serialize());
 			return;
 		}
 		// Check collision with characters
@@ -115,11 +118,13 @@ void Projectile::relocate() {
 					//Arrow damage
 					occupant->receiveAttack(this->damage,this->owner);
 					//Do not embed arrows into characters
+					this->cleanup();
+					return;
 					this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
 					this->y = testY - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::sin(this->angle);
 					this->trackSubject = occupant;
 					this->active = false;
-					TBAGame->generatePacket(EVENT_PROJ_COLLIDE,this->serialize());
+					// TBAGame->generatePacket(EVENT_PROJ_COLLIDE,this->serialize());
 					return;
 
 				}

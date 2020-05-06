@@ -8,6 +8,7 @@
 
 pthread_t logic_thread;
 pthread_t network_thread;
+pthread_t client_update_thread;
 
 pthread_mutex_t serverLock = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t workerLock = PTHREAD_MUTEX_INITIALIZER;
@@ -24,6 +25,14 @@ void lockThreads() {
 void unlockThreads() {
 	pthread_mutex_unlock(&serverLock);
 	pthread_mutex_unlock(&workerLock);
+}
+
+int vecavg(const std::vector<int> &v) {
+	int sum=0;
+	for(int i=0;i<v.size();i++) {
+		sum += v.at(i);
+	}
+	return sum/v.size();
 }
 
 int rfind(char c, const std::string& s) {

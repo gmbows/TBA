@@ -280,8 +280,11 @@ void Game::generatePacket(NetworkDataType type,std::string content) {
 	content = DATA_BEGIN+packetType+content+DATA_TERM;
 
 	for(int i=0;i<this->maxClients;i++) {
+		if(this->workers->getThread(i) == nullptr) continue;
 		if(!this->workers->getThread(i)->active) continue;
+		pthread_mutex_lock(&this->workers->getThread(i)->updateLock);
 		this->workers->getThread(i)->pendingPackets.push(content);
+		pthread_mutex_unlock(&this->workers->getThread(i)->updateLock);
 	}
 }
 
@@ -373,15 +376,16 @@ void worker_thread_routine(ClientThread *worker) {
 
 		//Send client world and object info on initial connection
 		TBAGame->server->TBA_send(worker->client,TBAGame->gameWorld->serialize());
-		TBAGame->server->TBA_service(worker->client);
-		TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects());
 		// TBAGame->server->TBA_service(worker->client);
-		
-		
+		TBAGame->serializeObjects(worker);
+		// TBAGame->server->TBA_service(worker->client);
+
+	
 		while(worker->active) {
 			pthread_cond_wait(&worker->canUpdateClient,&worker->updateLock);
 			
 			// TBAGame->server->TBA_service(worker->client);
+			// pthread_mutex_lock(&worker->updateLock);
 			for(int i=0;i<worker->pendingPackets.size();i++) {
 				if(!TBAGame->server->TBA_send(worker->client,worker->pendingPackets.front())) {
 					worker->active = false;
@@ -390,15 +394,18 @@ void worker_thread_routine(ClientThread *worker) {
 					TBAGame->server->TBA_service(worker->client);
 					worker->pendingPackets.pop();
 				}
+			// pthread_mutex_unlock(&worker->updateLock);
 			}
 			if(worker->updateClient) {
-				if(!TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects())) {
-					worker->active = false;
-					break;
-				} else {
-					TBAGame->server->TBA_service(worker->client);
-					worker->updateClient = false;
-				}
+				TBAGame->serializeObjects(worker);
+				worker->updateClient = false;
+				// if(!TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects())) {
+					// worker->active = false;
+					// break;
+				// } else {
+					// TBAGame->server->TBA_service(worker->client);
+					// worker->updateClient = false;
+				// }
 			}
 		}
 		std::cout << "Server slot " << worker->id << " freed" << std::endl;
@@ -421,22 +428,33 @@ void logic_thread_routine(Game *game) {
 		// pthread_mutex_lock(&game->updateLock);
 		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
 		start = SDL_GetTicks();
-		if(!game->paused) game->update_logic();
+		if(!game->paused) {
+			game->updateGameObjects();
+			game->logicTicks++;
+		}
 		// debug("Done updating logic");
 		elapsed = SDL_GetTicks()-start;
 
 		// pthread_mutex_unlock(&game->updateLock);
 
 		real_wait = (1000/game->logicTickRate)-elapsed;
-		if(real_wait <= 0) debug("Falling behind! (logic)");
+		if(real_wait < 0) debug("Falling behind! (logic) by "+std::to_string(-real_wait)+"ms");
 		// debug(real_wait);
 		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
 
 	}
 }
 
+void client_signal_routine(Game *game) {
+	while(game->gameRunning) {
+		game->signalAllClientThreads();
+		std::this_thread::sleep_for(std::chrono::milliseconds(game->clientUpdateRate));
+	}
+}
+
 void Game::spawn_threads() {
 	if(pthread_create(&network_thread,NULL,network_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&client_update_thread,NULL,client_signal_routine,this) != 0) this->gameRunning = false;
 	if(pthread_create(&logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 
 	if(!this->workers->initialize(worker_thread_routine)) this->gameRunning = false;
@@ -444,7 +462,9 @@ void Game::spawn_threads() {
 }
 
 void Game::signalAllClientThreads() {
+	// debug("Signaling all clients");
 	for(int i=0;i<this->maxClients;i++) {
+		if(this->workers->getThread(i) == nullptr) continue;
 		if(!this->workers->getThread(i)->active) continue;
 		this->workers->getThread(i)->updateClient = true;
 		pthread_cond_signal(&this->workers->getThread(i)->canUpdateClient);
@@ -472,36 +492,18 @@ void Game::updateGameUIObjects() {
 	}
 }
 
-void Game::update_logic() {
-
-	//Suspend logic ticks if game is paused
-	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
-	//Update all active game objects
-	this->lastLogicUpdate = SDL_GetTicks();
-	int start = SDL_GetTicks();
-	if(!this->paused) {
-		this->updateGameObjects();
-		this->logicTicks++;
-	}
-	// debug("Done updating graphics");
-	int elapsed = SDL_GetTicks()-start;
-	
-	// pthread_mutex_unlock(&game->updateLock);
-
-	int real_wait = (1000/this->logicTickRate)-elapsed;
-	// if(real_wait <= 0) debug("Falling behind! (logic)");
-	// SDL_Delay(real_wait);
-	
-	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
-	//	}
-	
-
-}
-
 void Game::update() {
-	
-	this->signalAllClientThreads();
-	std::this_thread::sleep_for(std::chrono::milliseconds(this->clientUpdateRate));
-
+	std::cin >> this->command;
+	this->command = toLower(this->command);
+	if(this->command == "net") {
+		debug("Toggled network stats");
+		this->server->showTransfers = !this->server->showTransfers;
+	} else if(this->command == "quit" or this->command == "exit") {
+		debug("Exiting");
+		this->gameRunning = false;
+	} else {
+		debug(this->command+ ": command not found");
+	}
+	// std::this_thread::sleep_for(std::chrono::milliseconds(1000/140));
 
 }

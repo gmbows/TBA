@@ -347,9 +347,8 @@ void Game::deserializeObjects(const std::string &content) {
 	
 	while(i < content.size()) {
 		std::string type;
-		// i+=2;
 		// debug("Unpacking content type");
-		debug(content.substr(i,20));
+		// debug(content.substr(i,20));
 		unpack(i,type,content,PAD_SHORT);
 		// debug("Done unpacking content typ
 		// debug(content.substr(0,2000));
@@ -443,10 +442,11 @@ void Game::deserializeObjects(const std::string &content) {
 			case OBJ_PROJECTILE: {
 				// debug("Reconstructing projectile...");
 				
-				std::string displayid,id,active,ang,vel,x,y;
+				std::string displayid,id,ownerid,active,ang,vel,x,y;
 				unpack(i,displayid,content,PAD_SHORT);
 				unpack(i,id,content,PAD_INT); 
 				
+				unpack(i,ownerid,content,PAD_INT); 
 				unpack(i,active,content,PAD_BOOL);
 				unpack(i,ang,content,PAD_FLOAT);
 				unpack(i,vel,content,PAD_FLOAT);
@@ -457,17 +457,24 @@ void Game::deserializeObjects(const std::string &content) {
 				Projectile *newProj = this->findObject(toInt(id))->getAsProjectile();
 				if(newProj == nullptr) {
 					// newProj.reset(new Projectile({toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f));
-					newProj = new Projectile({toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f);
-					newProj->objectID = toInt(id);
+					if(this->findObject(toInt(ownerid)) == nullptr) break;
+					newProj = new Projectile(this->findObject(toInt(ownerid)), {toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f);
+					// newProj->objectID = toInt(id);
+					// newProj->active = (bool)toInt(active);
+					// newProj->x = toInt(x)/100.0f;
+					// newProj->y = toInt(y)/100.0f;
+					// newProj->updateLocation();
+					// newProj->angle = toInt(ang)/100.0f;
+					// newProj->velocity = toInt(vel)/100.0f;
 				}
 				// debug("Done generating projectile object");	
-				if(newProj->active == false) break;
-				newProj->active = (bool)toInt(active);
-				newProj->x = toInt(x)/100.0f;
-				newProj->y = toInt(y)/100.0f;
-				newProj->updateLocation();
-				newProj->angle = toInt(ang)/100.0f;
-				newProj->velocity = toInt(vel)/100.0f;
+				// if(newProj->active == false) break;
+				// newProj->active = (bool)toInt(active);
+				// newProj->x = toInt(x)/100.0f;
+				// newProj->y = toInt(y)/100.0f;
+				// newProj->updateLocation();
+				// newProj->angle = toInt(ang)/100.0f;
+				// newProj->velocity = toInt(vel)/100.0f;
 				// debug("Done updating projectile object");
 				break;
 			}
