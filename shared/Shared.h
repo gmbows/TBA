@@ -13,6 +13,9 @@ enum NetworkDataType: int {
 	
 	EVENT_PROJ_CREATE,
 	EVENT_PROJ_COLLIDE,
+	
+	EVENT_PATH_TURN,
+	
 };
 
 const std::string DATA_BEGIN= "";//"##DATA_BEGIN##";

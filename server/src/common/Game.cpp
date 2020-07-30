@@ -16,7 +16,7 @@
 #include "../game/Command.h"
 #include "../game/CommandFuncs.h"
 #include "../game/FloatingText.h"
-#include "../game/Structure.h"
+#include "../../../shared/Structure.h"
 #include "../game/Squad.h"
 
 //=============
@@ -91,8 +91,9 @@ void Game::setupGame() {
 		// this->gameWorld->genWorld_new(this->gameWindow->renderer);
 
 	//Create player and fill inventory with generic items
-	this->playerChar = new Character("Player",160,{0,0});
+	this->playerChar = new Character("Server Operator",160,{3,2});
 	this->playerChar->giveItem(2);
+	this->playerChar->viewAng = 180;
 	for(int i=0;i<10;i++) {
 		//Don't add null item
 		this->playerChar->giveItem(1+(rand()%(itemManifest.size()-1)));
@@ -121,7 +122,11 @@ void Game::setupGame() {
 	// TBAGame->setDisplayTarget(newChar);
 	// newChar->moveTo(0,0);
 	newChar->maxMoveSpeed = this->playerChar->maxMoveSpeed*2;
-	LB = new Character("Lost Bladesman",160,{0,1});
+	LB = new Character("Lost Bladesman",160,{-2,-1});
+	new Character("Worker",160,{-2,2});
+	new Character("Ondei",160,{0,6});
+	LB->giveItems({14,15,16,17});
+	LB->body->getLimb(LIMB_TORSO)->health = 100000;
 	LB->setTarget(this->playerChar);
 	LB->setStatus(STATUS_COMBAT);
 	Dog = new Character("Wolf",160,{5,5});
@@ -143,19 +148,21 @@ void Game::setupGame() {
 	//newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);	
-	this->gameWorld->createStructure({0,0}, ruins, 4);
+	this->gameWorld->createStructure({0,0}, maze, 4);
 	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 	GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
-	this->createSquad("Player squad")->add(this->playerChar);
-
-	for(int i=0;i<5;i++) {
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,7},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,6},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,5},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		LB->addToSquad(new Character("LB Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
-		LB->addToSquad(new Character("LB Archer",160,{-2+i,12},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
+	Chog->work(node);
+	// this->createSquad("Player squad")->add(this->playerChar);
+// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		new Character("Archer",160,{-2,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9});
+	for(int i=0;i<0;i++) {
+		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,7},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,6},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		// LB->addToSquad(new Character("LB Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
+		// LB->addToSquad(new Character("LB Archer",160,{-2+i,12},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
 	}
 	
 	checkHelp();
@@ -277,15 +284,16 @@ std::vector<std::string> Game::getItemNames(const std::vector<Item*> &items) {
 void Game::generatePacket(NetworkDataType type,std::string content) {
 	std::string packetType = std::to_string(int(type));
 	pad(packetType,'0',PAD_SHORT);
-	content = DATA_BEGIN+packetType+content+DATA_TERM;
-
+	content = packetType+content;
+	
 	for(int i=0;i<this->maxClients;i++) {
 		if(this->workers->getThread(i) == nullptr) continue;
 		if(!this->workers->getThread(i)->active) continue;
-		pthread_mutex_lock(&this->workers->getThread(i)->updateLock);
+		// pthread_mutex_lock(&this->workers->getThread(i)->updateLock);
 		this->workers->getThread(i)->pendingPackets.push(content);
-		pthread_mutex_unlock(&this->workers->getThread(i)->updateLock);
+		pthread_cond_signal(&this->workers->getThread(i)->canUpdateClient);
 	}
+	// pthread_mutex_unlock(&this->workers->getThread(i)->updateLock);
 }
 
 void Client::deserialize() {
@@ -399,13 +407,6 @@ void worker_thread_routine(ClientThread *worker) {
 			if(worker->updateClient) {
 				TBAGame->serializeObjects(worker);
 				worker->updateClient = false;
-				// if(!TBAGame->server->TBA_send(worker->client,TBAGame->serializeObjects())) {
-					// worker->active = false;
-					// break;
-				// } else {
-					// TBAGame->server->TBA_service(worker->client);
-					// worker->updateClient = false;
-				// }
 			}
 		}
 		std::cout << "Server slot " << worker->id << " freed" << std::endl;
@@ -501,6 +502,12 @@ void Game::update() {
 	} else if(this->command == "quit" or this->command == "exit") {
 		debug("Exiting");
 		this->gameRunning = false;
+	} else if(this->command == "pause") {
+		this->paused = !this->paused;
+		debug( this->paused ? "Game paused" : "Game unpaused" );
+	} else if(this->command == "sync") {
+		this->syncMovement = !this->syncMovement;
+		debug( this->syncMovement ? "Syncing movement" : "Not syncing movement" );
 	} else {
 		debug(this->command+ ": command not found");
 	}

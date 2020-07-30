@@ -69,7 +69,6 @@ Character::Character(const std::string& _name, int capacity, std::tuple<float,fl
 
 std::string Character::serialize() {
 	std::string character;
-	//	00000000 00 00 000|c1|c2|c3|c4|...
 	
 	std::string type = std::to_string((int)this->type);
 	std::string id = std::to_string(this->objectID);
@@ -79,6 +78,7 @@ std::string Character::serialize() {
 	
 	std::string movement = std::to_string((int)this->move_forward)+std::to_string((int)this->move_back);
 	std::string aim = std::to_string((int)(this->viewAng*100)); 
+	std::string targetaim = std::to_string((int)(this->targetAng*100));
 	
 	std::string stat = std::to_string(this->status);
 	
@@ -88,7 +88,22 @@ std::string Character::serialize() {
 	// concatenation of limb serializations which are already padded
 	std::string sbody = this->body->serialize();
 	
+	std::string haschanged = std::to_string((int)this->inventory->hasChanged);
 	std::string inv = this->inventory->serialize();
+	
+	pad(haschanged,'0',PAD_BOOL);
+	
+	std::string squad,hassquad;
+	
+	if(this->hasSquad()) {
+		hassquad = "1";
+		squad = this->squad->serialize();
+	} else {
+		hassquad = "0";
+		squad = "";
+	}
+
+	pad(hassquad,'0',PAD_BOOL);
 	
 	pad(type,'0',PAD_SHORT);
 	pad(id,'0',PAD_INT);
@@ -98,6 +113,7 @@ std::string Character::serialize() {
 	
 	pad(movement,'0',PAD_SHORT);
 	pad(aim,'0',PAD_FLOAT);
+	pad(targetaim,'0',PAD_FLOAT);
 	pad(stat,'0',PAD_LONG);
 	
 	pad(targetID,'0',PAD_INT);
@@ -105,7 +121,9 @@ std::string Character::serialize() {
 	
 	// debug(STATUS_COMBAT);
 	
-	character = type+id+name+x+y+movement+aim+stat+targetID+sbody+inv;
+	// if(this->getName() == "Lost Bladesman") debug(this->targetAng);
+	
+	character = type+id+name+x+y+movement+aim+targetaim+stat+targetID+sbody+haschanged+inv+hassquad+squad;
 	
 	return character;
 }
@@ -153,7 +171,6 @@ void Character::move() {
 
 	float newX = this->x+(std::cos(this->viewAng*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
 	float newY = this->y+(std::sin(this->viewAng*CONV_DEGREES)*((float)this->velocity*(TBAGame->logicTicks - this->lastMove)*TBAGame->moveSpeedUnit));
-
 	if(this->autoMove) {
 		this->velocity += this->maxMoveSpeed;
 	} else {
@@ -164,7 +181,10 @@ void Character::move() {
 	//If character is trying to move into a new space
 	this->resolveMove(newX,newY);
 
-	this->setLocation(newX,newY);
+	if((char*)this->location != (char*)TBAGame->gameWorld->getTileAt(newX,newY)) {
+		TBAGame->generatePacket(EVENT_PATH_TURN,this->serialize());
+		this->setLocation(newX,newY);
+	}
 
 	this->x = newX;
 	this->y = newY;
@@ -413,7 +433,7 @@ void Character::kill() {
 	this->targetPath.clear();
 	//a warrior's death
 	//this->target = nullptr;
-	this->removeStatus((StatusIndicator)0xFFFFFF);
+	// this->removeStatus((StatusIndicator)0xFFFFFF);
 	this->setStatus(STATUS_DEAD);
 }
 // Delete this character, remove from game

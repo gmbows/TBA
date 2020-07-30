@@ -1,8 +1,11 @@
-TBAGameServer.exe: bin/Shared.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o
-	g++ -std=c++11 bin/Shared.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lws2_32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o TBAGameServer.exe
+TBAGameServer.exe: bin/Shared.o bin/Structure.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/World.o bin/Main.o
+	g++ -std=c++11 bin/Shared.o bin/Structure.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lws2_32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o TBAGameServer.exe
 
 bin/Shared.o: ../shared/Shared.cpp ../shared/Shared.h  
 	g++ -std=c++11 -c ../shared/Shared.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Shared.o
+
+bin/Structure.o: ../shared/Structure.cpp ../shared/Structure.h  
+	g++ -std=c++11 -c ../shared/Structure.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Structure.o
 
 bin/Log.o: src/tools/Log.cpp src/tools/Log.h  
 	g++ -std=c++11 -c src/tools/Log.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Log.o
@@ -88,10 +91,7 @@ bin/Statistics.o: src/game/Statistics.cpp src/game/Statistics.h
 bin/StatusEffect.o: src/game/StatusEffect.cpp src/game/StatusEffect.h  
 	g++ -std=c++11 -c src/game/StatusEffect.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/StatusEffect.o
 
-bin/Structure.o: src/game/Structure.cpp src/game/Structure.h  
-	g++ -std=c++11 -c src/game/Structure.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Structure.o
-
-bin/World.o: src/game/World.cpp src/game/World.h  src/game/Character.h src/game/Character.cpp src/common/Tile.h src/common/Tile.cpp  src/game/Structure.h src/game/Structure.cpp  
+bin/World.o: src/game/World.cpp src/game/World.h  src/game/Character.h src/game/Character.cpp src/common/Tile.h src/common/Tile.cpp ../shared/Structure.h ../shared/Structure.cpp  
 	g++ -std=c++11 -c src/game/World.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/World.o
 
 bin/Main.o: src/Main.cpp  

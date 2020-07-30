@@ -15,6 +15,28 @@ GameObject* Squad::getMember(const std::string &_name) {
 	return nullptr;
 }
 
+std::string Squad::serialize() {
+	std::string name,membercount,smembers;
+	std::string member;
+	
+	name = this->name;
+	pad(name,' ',PAD_STR);
+	
+	membercount = std::to_string(this->members.size());
+	pad(membercount,'0',PAD_INT);
+	
+	for(int i=0;i<this->members.size();i++) {
+		if(this->members.at(i) == nullptr) continue;
+		member = std::to_string(this->members.at(i)->objectID);
+		// debug(i);
+		pad(member,'0',PAD_INT);
+		// debug(i);
+		smembers += member;
+	}
+	
+	return name+membercount+smembers;
+}
+
 void Squad::alert(GameObject *c) {
 	Character *thisMember;
 	//Ignore friendly fire (for now)

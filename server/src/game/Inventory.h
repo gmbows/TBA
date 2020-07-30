@@ -13,6 +13,8 @@ struct Inventory {
 	
 	std::string serialize();
 	
+	bool hasChanged = false;
+	
 	Inventory(int);
 	bool add(int);
 	bool add(Item*);

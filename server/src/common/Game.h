@@ -62,8 +62,8 @@ struct Game {
 	Log *gameLog;
 	Clock *clock = new Clock();
 
-	World* gameWorld;
-	Character* playerChar;
+	World* gameWorld = nullptr;
+	Character* playerChar = nullptr;
 	
 	void setPlayer(Character*);
 
@@ -81,6 +81,8 @@ struct Game {
 	//=============
 	//		NETWORK
 	//=============
+	
+	bool syncMovement = false;
 	
 	int maxClients = 20;
 	Server *server;
@@ -105,6 +107,8 @@ struct Game {
 		std::string object;
 		
 		for(int i=0;i<this->gameObjects.size();i++) {
+			//Don't serialize event based objects
+			if(this->gameObjects.at(i)->type == OBJ_PROJECTILE) continue;
 			object = this->gameObjects.at(i)->serialize();
 			if(packet.size() + object.size() > PACKET_SIZE) {
 				worker->pendingPackets.push(packet);
@@ -113,6 +117,7 @@ struct Game {
 				packet += object;
 			}
 		}
+		worker->pendingPackets.push(packet);
 		// return objects;
 	}
 

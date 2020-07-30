@@ -2,7 +2,7 @@
 #include "Character.h"
 #include "../common/Tile.h"
 #include "../../../shared/Shared.h"
-#include "Structure.h"
+#include "../../../shared/Structure.h"
 #include "../tools/Utility.h"
 
 #include <vector>

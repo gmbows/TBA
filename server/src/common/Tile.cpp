@@ -3,6 +3,8 @@
 #include "../tools/Utility.h"
 #include "../game/Character.h"
 
+#include "../../../shared/Shared.h"
+
 #include <iostream>
 #include <SDL2/SDL.h>
 #include <random>
@@ -16,12 +18,23 @@ std::string Tile::serialize(int tx, int ty) {
 	std::string id = std::to_string(this->id);
 	std::string x = std::to_string(tx);
 	std::string y = std::to_string(ty);
-	//ID
-	pad(id,'0',4);
-	pad(x,'0',4);
-	pad(y,'0',4);
 	
-	tile = id+x+y;
+	std::string hasblocks = std::to_string((int)this->hasBlocks());
+	std::string blocknum = std::to_string(this->blocks.size());
+	pad(blocknum,'0',PAD_SHORT);
+	std::string blocks;
+	std::string tblock;
+	for(int i=0;i<this->blocks.size();i++) {
+		tblock = std::to_string(this->blocks.at(i)->id);
+		pad(tblock,'0',PAD_SHORT);
+		blocks += tblock;
+	}
+	//ID
+	pad(id,'0',PAD_SHORT);
+	pad(x,'0',PAD_INT);
+	pad(y,'0',PAD_INT);
+	
+	tile = id+x+y+hasblocks+blocknum+blocks;
 	
 	return tile;
 }

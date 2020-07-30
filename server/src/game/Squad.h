@@ -6,8 +6,11 @@ class GameObject;
 
 struct Squad {
 
+	int id;
 	std::string name;
 	std::vector<Character*> members;
+	
+	std::string serialize();
 	
 	GameObject* getMember(const std::string&);
 	std::vector<std::string> getMemberNames() {
@@ -37,6 +40,7 @@ struct Squad {
 	}
 	
 	Squad(std::vector<Character*> m,std::string name = "NAME_UNASSIGNED"): members(m) {
+		// this->id = 
 		if(name == "NAME_UNASSIGNED") {
 			if(this->members.size() > 0) this->name = this->members.at(0)->getName()+" Squad";
 		}

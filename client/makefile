@@ -1,8 +1,11 @@
-TBAGameClient.exe: bin/Shared.o bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o
-	g++ -std=c++11 bin/Shared.o bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lws2_32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o TBAGameClient.exe
+TBAGameClient.exe: bin/Shared.o bin/Structure.o bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/World.o bin/Main.o
+	g++ -std=c++11 bin/Shared.o bin/Structure.o bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Log.o bin/Network.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lws2_32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive  -O3 -o TBAGameClient.exe
 
 bin/Shared.o: ../shared/Shared.cpp ../shared/Shared.h  
 	g++ -std=c++11 -c ../shared/Shared.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Shared.o
+
+bin/Structure.o: ../shared/Structure.cpp ../shared/Structure.h  
+	g++ -std=c++11 -c ../shared/Structure.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Structure.o
 
 bin/Font.o: src/ui/Font.cpp src/ui/Font.h src/tools/Log.h src/tools/Log.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/ui/Font.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Font.o
@@ -106,10 +109,7 @@ bin/Statistics.o: src/game/Statistics.cpp src/game/Statistics.h
 bin/StatusEffect.o: src/game/StatusEffect.cpp src/game/StatusEffect.h  
 	g++ -std=c++11 -c src/game/StatusEffect.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/StatusEffect.o
 
-bin/Structure.o: src/game/Structure.cpp src/game/Structure.h  
-	g++ -std=c++11 -c src/game/Structure.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/Structure.o
-
-bin/World.o: src/game/World.cpp src/game/World.h  src/game/Character.h src/game/Character.cpp src/common/Tile.h src/common/Tile.cpp  src/game/Structure.h src/game/Structure.cpp src/ui/Font.h src/ui/Font.cpp  
+bin/World.o: src/game/World.cpp src/game/World.h  src/game/Character.h src/game/Character.cpp src/common/Tile.h src/common/Tile.cpp ../shared/Structure.h ../shared/Structure.cpp src/ui/Font.h src/ui/Font.cpp  
 	g++ -std=c++11 -c src/game/World.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lws2_32 -lSDL2 -lSDL2_image -lpthread  -fpermissive -O3 -o bin/World.o
 
 bin/Main.o: src/Main.cpp  

@@ -26,7 +26,7 @@ Projectile::Projectile(GameObject *_owner, std::tuple<float,float> _location,flo
 
 void Projectile::update() {
 	
-	debug("Updating projcetile");
+	// debug("Updating projcetile");
 
 	if(TBAGame->logicTicks >= this->destroyTime) {
 		this->cleanup();
@@ -46,7 +46,7 @@ void Projectile::update() {
 	}
 
 	this->lastUpdate = TBAGame->logicTicks;
-	debug("Done pdating projcetile");
+	// debug("Done pdating projcetile");
 }
 
 void Projectile::relocate() {
@@ -70,7 +70,7 @@ void Projectile::relocate() {
 			this->active = false;
 			return;
 		}
-		debug("f");
+		// debug("f");
 		//  Check collision with characters
 		if(thisTile->isOccupied()) {
 			for(int i=0;i<thisTile->occupiers.size();i++) {
@@ -82,12 +82,12 @@ void Projectile::relocate() {
 				if(owner->getAsCharacter()->hasSquad()) {
 					if(owner->getAsCharacter()->squad->isMember(occupant)) continue;
 				}
-				debug("f");
+				// debug("f");
 				if(dist(occupant->getLocation(),{testX,testY}) <= this->collisionSize) {
 					// Arrow damage
 					// occupant->receiveAttack(this->damage,this->owner);
 					// Do not embed arrows into characters
-					debug("k");
+					// debug("k");
 					this->cleanup();
 					return;
 					this->x = testX - (((rand()%10)+10)/100.0f)*(1+this->velocity)*std::cos(this->angle);
@@ -97,7 +97,7 @@ void Projectile::relocate() {
 				}
 			}
 		}
-		debug("g");
+		// debug("g");
 		// Increment interpolation
 		testX += (this->velocity/4)*std::cos(this->angle);
 		testY += (this->velocity/4)*std::sin(this->angle);
@@ -114,12 +114,12 @@ void Projectile::relocate() {
 }
 
 void Projectile::cleanup() {
-	debug("b");
+	// debug("b");
 	this->updateLocation();
-	debug("s");
+	// debug("s");
 	this->location->removeObject(this);
-	debug("d");
+	// debug("d");
 	TBAGame->removeObject(this);
-	debug("F");
+	// debug("F");
 	delete this;
 }

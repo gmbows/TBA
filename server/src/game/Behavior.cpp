@@ -842,8 +842,8 @@ void Character::update() {
 	} else {
 		this->think();
 	}
-	
 	if(this->viewAng != this->targetAng) this->turn();
+	// if(this->name == "Lost Bladesman") debug("Aim: "+std::to_string(this->targetAng));
 	
 	if(this->targetPath.size() > 0) this->followPath();
 	

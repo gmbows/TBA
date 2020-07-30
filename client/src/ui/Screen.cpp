@@ -338,9 +338,7 @@ void TextScreen::update() {
 void TextBox::update() {
 	if(this->hasNewContent() or (this->lastUpdate + this->updateInterval <= TBAGame->graphicsTicks)) {
 		this->drawBorder();
-		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->toString()+"\n\nGraphics Ticks: "+std::to_string(TBAGame->graphicsTicks)+"\nLogic Ticks: "+std::to_string(TBAGame->logicTicks)+"\nPlayer location: "+std::to_string((int)std::round(TBAGame->playerChar->x))+","+std::to_string((int)std::round(TBAGame->playerChar->y))+"\nPlayer velocity: "+std::to_string((int)std::max(std::abs(std::round(TBAGame->playerChar->velocityX)),std::abs(std::round(TBAGame->playerChar->velocityY))))+" MPH");	
 		this->prepareContent();
-		//this->setContent("Inventory:"+TBAGame->playerChar->inventory->contentString+"\n\nPlayer info:\n\t"+TBAGame->playerChar->getInfo()+"\n\nTarget info:\n\t"+TBAGame->playerChar->getTargetInfo());
 		this->generateTexture(this->content);
 		this->lastUpdate = TBAGame->graphicsTicks;
 		// this->drawScreen();
@@ -393,8 +391,14 @@ void MapScreen::drawMap() {
 	// this->mapTextureRect = {-playerOffsetX+offsetX+this->x,-playerOffsetY+offsetY+this->y,this->w+(2*this->charW),this->h+(2*this->charH)};
 	this->mapTextureRect = {this->x,this->y,this->w,this->h};
 	
-	int windowOffsetX = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->x)*this->charW;
-	int windowOffsetY = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->y)*this->charH;
+	int windowOffsetX,windowOffsetY;
+	if(TBAGame->playerChar == nullptr) {
+		windowOffsetX = 5+((TBAGame->gameWorld->size/2)+0)*this->charW;
+		windowOffsetY = 5+((TBAGame->gameWorld->size/2)+0)*this->charH;
+	} else {
+		windowOffsetX = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->x)*this->charW;
+		windowOffsetY = 5+((TBAGame->gameWorld->size/2)+TBAGame->playerChar->y)*this->charH;
+	}
 	
 	SDL_Rect srect = {windowOffsetX-(this->w/2/this->zoom),windowOffsetY-(this->h/2/this->zoom),this->w/this->zoom,this->h/this->zoom};
 	

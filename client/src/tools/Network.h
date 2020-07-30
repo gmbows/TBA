@@ -31,7 +31,7 @@ struct Client {
 		
 		WSAStartup(MAKEWORD(2,0), &WSAData);
 		
-		addr.sin_addr.s_addr = inet_addr("74.103.180.136"); 
+		addr.sin_addr.s_addr = inet_addr("96.245.203.142"); 
 		addr.sin_family = AF_INET;
 		addr.sin_port = htons(5555);
 	}

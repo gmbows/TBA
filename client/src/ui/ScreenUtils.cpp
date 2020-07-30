@@ -156,8 +156,14 @@ void TextScreen::setLastLine(const std::string& goodLine) {
 }
 
 void MapScreen::generateMapTiles() {
-	int centerX = TBAGame->playerChar->x;
-	int centerY = TBAGame->playerChar->y;
+	int centerX,centerY;
+	if(TBAGame->playerChar == nullptr) {
+		centerX = 0;
+		centerY = 0;
+	} else {
+		centerX = TBAGame->playerChar->x;
+		centerY = TBAGame->playerChar->y;
+	}
 
 	this->map = TBAGame->gameWorld->getMapAt((this->w/this->charW)+2,centerX,centerY);
 	this->lastMapX = centerX;
@@ -253,8 +259,14 @@ void MapScreen::redrawActiveTiles() {
 
 void MapScreen::updateMap() {
 
-	int centerX = TBAGame->playerChar->x;
-	int centerY = TBAGame->playerChar->y;
+	int centerX,centerY;
+	if(TBAGame->playerChar == nullptr) {
+		centerX = 0;
+		centerY = 0;
+	} else {
+		centerX = TBAGame->playerChar->x;
+		centerY = TBAGame->playerChar->y;
+	}
 
 	if(centerX != this->lastMapX or centerY != this->lastMapY) {
 		this->generateMapTiles();

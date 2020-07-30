@@ -209,7 +209,7 @@ class Character: public GameObject {
 		int lastMove = 0;
 
 		//========
-		//STATUS_TRAVEL
+		//MOVEMENT
 		//========
 
 		//In format units per ms

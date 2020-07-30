@@ -95,6 +95,8 @@ void paste() {
 //==========
 
 void click(SDL_MouseButtonEvent& event) {
+	
+	if(TBAGame->playerChar == nullptr) return;
 
 
 	int centerX = 5+TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x));
@@ -157,6 +159,8 @@ void release() {
 //==========
 
 void move(SDL_Event& event) {
+	
+	if(TBAGame->playerChar == nullptr) return;
 
 	if(moving) {
 		TBAGame->gameWindow->screenVector.at(activeScreen)->x += event.motion.x-lastMove[0];
@@ -220,6 +224,8 @@ void resetAllScreens() {
 //====================
 
 void move(bool m_forward,bool m_back) {
+	
+	if(TBAGame->playerChar == nullptr) return;
 
 	if(m_forward ^ m_back) {
 		if(TBAGame->playerChar->isAlive()) {
@@ -236,6 +242,8 @@ void move(bool m_forward,bool m_back) {
 }
 
 void turn(bool turn_left,bool turn_right) {
+
+	if(TBAGame->playerChar == nullptr) return;
 
 	if(turn_left) {
 		TBAGame->playerChar->autoMove = false;

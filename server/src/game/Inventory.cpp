@@ -134,6 +134,8 @@ std::vector<std::string> Inventory::getContentString() {
 }
 
 void Inventory::setInfoString() {
+	
+	this->hasChanged = true;
 
 	std::vector<int> idList;
 	std::vector<int> checkedIDs;

@@ -18,7 +18,7 @@
 #include "../game/Command.h"
 #include "../game/CommandFuncs.h"
 #include "../game/FloatingText.h"
-#include "../game/Structure.h"
+#include "../../../shared/Structure.h"
 #include "../game/Squad.h"
 
 //=============

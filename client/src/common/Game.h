@@ -43,6 +43,9 @@ struct Game {
 	Character* playerChar;
 	
 	void setPlayer(Character*);
+	Character* getPlayer() {
+		return this->playerChar;
+	}
 
 	//Global movespeed scale to translate from int movespeeds to floats
 	const float moveSpeedUnit = .005;

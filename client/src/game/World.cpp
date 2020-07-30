@@ -1,7 +1,8 @@
 #include "World.h"
 #include "Character.h"
 #include "../common/Tile.h"
-#include "Structure.h"
+#include "../../../shared/Structure.h"
+#include "../../../shared/Shared.h"
 #include "../tools/Utility.h"
 #include "../ui/Font.h"
 
@@ -12,32 +13,40 @@
 void World::deserialize(const std::string &s) {
 	//	00000000 00 00 000|c1|c2|c3|c4|...
 	
-	int id,x,y;
-	
 	int cartesianX;
 	int cartesianY;
 		
 	// debug(s.substr(0,12));
 	// debug(s.substr(s.size()-12,12))
+	int i;
 	
-	 for(int i=0;i<s.size();i+=12) {
+	while(i < s.size()) {
 		// std::cout << s.substr(i,4) << "|" << s.substr(i+4,4) << "|" << s.substr(i+8,4) << std::endl;
-		id = std::stoi(s.substr(i+0,4));
-		x = std::stoi(s.substr(i+4,4));
-		y = std::stoi(s.substr(i+8,4));
-		// this->tileVector.at(y+(this->size/2))->erase(this->tileVector.at(y+(this->size/2))begin()+x+(this->size/2));
-		// delete this->tileVector.at(y)->at(x);
-		// debug(x);
-		// debug(y);
+		std::string id,x,y;
+		// id = std::stoi(s.substr(i+0,PAD_SHORT));
+		unpack(i,id,s,PAD_SHORT);
+		// x = std::stoi(s.substr(i+PAD_SHORT,PAD_INT));
+		unpack(i,x,s,PAD_INT);
+		unpack(i,y,s,PAD_INT);
 		
-		cartesianX = x;
-		cartesianY = y;
+		cartesianX = toInt(x);
+		cartesianY = toInt(y);
 		indexToCartesian(cartesianX,cartesianY);
 		
-		this->tileVector.at(y)->at(x) = new Tile(id,cartesianX,-cartesianY);
+		this->tileVector.at(toInt(y))->at(toInt(x)) = new Tile(toInt(id),cartesianX,-cartesianY);
+		
+		
+		std::string hasblocks,blocknum,blocks,block;
+		unpack(i,hasblocks,s,PAD_BOOL);
+		unpack(i,blocknum,s,PAD_SHORT);
+		
+		for(int j=0;j<toInt(blocknum);j++) {
+			unpack(i,block,s,PAD_SHORT);
+			this->tileVector.at(toInt(y))->at(toInt(x))->addBlock(toInt(block));
+		}
+		
 	}
-	
-	// this->tileVector.at(i)->at(j) = new Tile(;
+
 }
 
 int lightRound(float x) {

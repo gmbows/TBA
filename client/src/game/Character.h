@@ -204,7 +204,7 @@ class Character: public GameObject {
 		int lastMove = 0;
 
 		//========
-		//STATUS_TRAVEL
+		//MOVEMENT
 		//========
 
 		//In format units per ms
@@ -226,6 +226,8 @@ class Character: public GameObject {
 		void moveAway(Character*);
 		
 		bool inline hasPath() {return this->targetPath.size() > 0;}
+		
+		void updateLocation();
 
 		//========
 		//BEHAVIOR

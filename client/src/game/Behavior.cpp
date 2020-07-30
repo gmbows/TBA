@@ -239,6 +239,7 @@ void Character::setStatus(StatusIndicator newStatus) {
 
 //Align viewAng with targetAng
 void Character::turn() {
+	// if(this->name == "Lost Bladesman") debug(this->viewAng);
 	// if(this->isPlayer and !this->autoMove) return;
 	if((fabs(this->viewAng - this->targetAng)) > this->getTurnSpeed()) {
 		
@@ -275,7 +276,6 @@ void Character::turn() {
 		this->viewAng = 360+this->viewAng;
 	}
 	this->viewAng = (int)this->viewAng%360;
-	// if(this->getName()[0] == 'D') debug(this->viewAng);
 }
 //(Thinking method) Determine where to move to based on analysis of circumstances
 void Character::setLocomotion() {
@@ -301,7 +301,7 @@ void Character::setLocomotion() {
 }
 //Follow path if applicable
 void Character::followPath() {
-		this->addStatus(STATUS_TRAVEL);
+		// this->addStatus(STATUS_TRAVEL);
 		move_forward = true;
 		int tx = this->targetPath.at(0)->x;
 		int ty = -this->targetPath.at(0)->y;
@@ -837,12 +837,12 @@ void Character::update() {
 		}
 		return;
 	} else {
-		this->think();
+		// this->think();
+		if(this->viewAng != this->targetAng) this->turn();
+		// if(this->targetPath.size() > 0) this->followPath();
 	}
 	
-	if(this->viewAng != this->targetAng) this->turn();
 	
-	if(this->targetPath.size() > 0) this->followPath();
 	
 	//Physics
 	this->move();

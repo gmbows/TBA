@@ -97,6 +97,16 @@ void Character::resolveMove(float &newX, float &newY) {
 	}
 
 }
+//Update character location when moved outside of own movement function
+void Character::updateLocation() {
+	if(this->location == nullptr) return;
+	if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
+		this->location->evict(this);
+		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+		this->location->occupyWith(this);
+	}
+}
+
 // Set character location and occupy appropriate tile
 void Character::setLocation(float newX,float newY) {
 	if(this->location != nullptr) this->location->evict(this);
@@ -293,7 +303,7 @@ bool Character::addToSquad(Character *c,bool createNew) {
 // MISC / CLEANUP
 //==============
 //Get absolute, on-screen location of character tile
-std::tuple<float,float> Character::getApproximateLocation() {
+std::tuple<float,float> Character::getApproximateLocation() {debug("ERROR!");
 
 	float x = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->location->x - this->location->x));
 	float y = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->location->y + this->location->y));
@@ -303,6 +313,7 @@ std::tuple<float,float> Character::getApproximateLocation() {
 }
 // Get absolute, on-screen location of character within tile
 std::tuple<float,float> Character::getAbsoluteLocation() {
+	debug("ERROR!");
 
 	float x = TBAGame->gameWindow->mapScreen->x+(TBAGame->gameWindow->mapScreen->w/2)-(TBAGame->gameWindow->mapScreen->charW*(TBAGame->playerChar->x - this->x));
 	float y = TBAGame->gameWindow->mapScreen->y+(TBAGame->gameWindow->mapScreen->h/2)-(TBAGame->gameWindow->mapScreen->charH*(TBAGame->playerChar->y - this->y));
@@ -368,7 +379,7 @@ void Character::kill() {
 	this->targetPath.clear();
 	//a warrior's death
 	//this->target = nullptr;
-	this->removeStatus((StatusIndicator)0xFFFFFF);
+	// this->removeStatus((StatusIndicator)0xFFFFF);
 	this->setStatus(STATUS_DEAD);
 }
 // Delete this character, remove from game

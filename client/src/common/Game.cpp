@@ -20,7 +20,7 @@
 #include "../game/Command.h"
 #include "../game/CommandFuncs.h"
 #include "../game/FloatingText.h"
-#include "../game/Structure.h"
+#include "../../../shared/Structure.h"
 #include "../game/Squad.h"
 #include "../common/Keys.h"
 
@@ -180,20 +180,20 @@ void Game::setupGame() {
 	pthread_cond_signal(&this->logicEnabled);
 
 	//Create player and fill inventory with generic items
-	this->playerChar = new Character("Player",160,{0,0});
-	this->playerChar->giveItem(2);
+	// this->playerChar = new Character("DARK LORD",160,{0,0});
+	// this->playerChar->giveItem(2);
 	for(int i=0;i<10;i++) {
 		//Don't add null item
-		this->playerChar->giveItem(1+(rand()%(itemManifest.size()-1)));
+		// this->playerChar->giveItem(1+(rand()%(itemManifest.size()-1)));
 	}
-	this->playerChar->giveItem(13);
-	this->playerChar->giveItem(7);
-	this->playerChar->giveItem(7);
-	this->playerChar->giveItem(7);
-	this->playerChar->giveItem(7);
-	this->displayTarget = this->playerChar;
+	// this->playerChar->giveItem(13);
+	// this->playerChar->giveItem(7);
+	// this->playerChar->giveItem(7);
+	// this->playerChar->giveItem(7);
+	// this->playerChar->giveItem(7);
+	// this->displayTarget = this->playerChar;
 
-	this->gameWorld->createStructure({0,0}, ruins, 4);
+	// this->gameWorld->createStructure({0,0}, maze, 4);
 	// new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
 	// GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
 	
@@ -275,7 +275,7 @@ Squad* Game::createSquad(std::string s) {
 //=============
 
 void Game::setPlayer(Character *c) {
-	this->playerChar->player = false;
+	if(this->playerChar != nullptr) this->playerChar->player = false;
 	this->playerChar = c;
 	this->playerChar->player = true;
 }
@@ -321,7 +321,7 @@ std::string Game::serializeInput() {
 	// Todo: zero-padding function
 	int block = 8;
 	std::string packet;
-	std::string charID = std::to_string(TBAGame->playerChar->objectID);
+	std::string charID = "";//std::to_string(TBAGame->playerChar->objectID);
 	std::string movement = std::to_string(this->m_forward)+std::to_string(this->m_back);
 	std::string turning = std::to_string(this->turn_left)+std::to_string(this->turn_right);
 	std::string commands = "drink potion";
@@ -356,9 +356,12 @@ void Game::deserializeObjects(const std::string &content) {
 			case OBJ_CHARACTER: {
 				// debug("Reconstructing character...");
 				
-				std::string id,name,x,y,movement,aim,status,targetID;
+				std::string id,name,x,y,movement,aim,targetaim,status,targetID;
 				
 				std::string limbtype,hp,max;
+				
+				std::string hassquad,squad,squadname,squadsize;
+				std::string newmem;
 				
 				unpack(i,id,content,PAD_INT);
 				unpack(i,name,content,PAD_STR);
@@ -366,6 +369,7 @@ void Game::deserializeObjects(const std::string &content) {
 				unpack(i,y,content,PAD_FLOAT);
 				unpack(i,movement,content,PAD_SHORT);
 				unpack(i,aim,content,PAD_FLOAT);
+				unpack(i,targetaim,content,PAD_FLOAT);
 				unpack(i,status,content,PAD_LONG);
 				unpack(i,targetID,content,PAD_INT);
 				
@@ -376,18 +380,26 @@ void Game::deserializeObjects(const std::string &content) {
 					newCharf = new Character(name,64,{toInt(x)/100.0f,toInt(y)/100.0f});
 					newCharf->objectID = std::stoi(id);
 				}
-
+				
+				if(this->playerChar == nullptr) {
+					this->playerChar = newCharf;
+					this->displayTarget = this->playerChar;
+				}
+				
+				newCharf->x = toInt(x)/100.0f;
+				newCharf->updateLocation();
+				newCharf->y = toInt(y)/100.0f;
+				
 				newCharf->move_forward = (bool)toInt(movement.substr(0,1));
 				newCharf->move_back = (bool)toInt(movement.substr(1,1));
 				
-				// newCharf->x = toInt(x)/100.0f;
-				// newCharf->y = toInt(y)/100.0f;
-				
-				newCharf->targetAng = toInt(aim)/100.0f;
+				newCharf->viewAng = toInt(aim)/100.0f;
+				newCharf->targetAng = toInt(targetaim)/100.0f;
+					
 				newCharf->status = toFlag(status);
 				
 				if(std::stoi(targetID) >= 0) {
-					newCharf->setTarget(TBAGame->findObject(std::stoi(targetID)));
+					newCharf->target = TBAGame->findObject(std::stoi(targetID));
 				} else {
 					newCharf->target = nullptr;
 				}
@@ -402,12 +414,15 @@ void Game::deserializeObjects(const std::string &content) {
 				}
 				
 				//Inventory
-				std::string size,itemid,uuid;
+				std::string haschanged,size,itemid,uuid;
+				unpack(i,haschanged,content,PAD_BOOL);
 				unpack(i,size,content,PAD_INT);
 				Item* newItem;
+				std::vector<int> uuids;
 				for(int j=0;j<toInt(size);j++) {
 					unpack(i,itemid,content,PAD_INT);
 					unpack(i,uuid,content,PAD_INT);
+					uuids.push_back(toInt(uuid));
 					if(newCharf->inventory->find(toInt(uuid)) == -1) {
 						newItem = new Item(toInt(itemid));
 						newItem->UUID = toInt(uuid);
@@ -415,7 +430,40 @@ void Game::deserializeObjects(const std::string &content) {
 					} else {
 						//Update item....
 					}
+					if(toInt(haschanged)) {
+						for(int j=0;j<newCharf->inventory->contents->size();j++) {
+							if(!contains(uuids,newCharf->inventory->contents->at(j)->UUID)) {
+								newCharf->inventory->remove(newCharf->inventory->contents->at(j));
+							}
+						}
+					}
 				}
+				
+				unpack(i,hassquad,content,PAD_BOOL);
+				if(toInt(hassquad)) {
+					unpack(i,squadname,content,PAD_STR);
+					unpack(i,squadsize,content,PAD_INT);
+					// unpack(i,squadsize,content,PAD_INT);
+						// OPTIMIZE THIS LOOP!!
+						for(int j=0;j<toInt(squadsize);j++) {
+							// debug(i);
+							unpack(i,newmem,content,PAD_INT);
+							if(this->findObject(toInt(newmem)) == nullptr) continue;
+							if(newCharf->hasSquad()) {
+								if(!newCharf->squad->isMember(this->findObject(toInt(newmem))->getAsCharacter())) {
+									newCharf->addToSquad(this->findObject(toInt(newmem))->getAsCharacter(),true);
+								}
+							} else {
+								if(toInt(newmem) != newCharf->objectID) {
+									newCharf->addToSquad(this->findObject(toInt(newmem))->getAsCharacter(),true);
+								}
+							}
+						}
+					
+				}
+				
+				
+				
 				// debug("Done");
 				break;
 			}
@@ -459,6 +507,7 @@ void Game::deserializeObjects(const std::string &content) {
 					// newProj.reset(new Projectile({toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f));
 					if(this->findObject(toInt(ownerid)) == nullptr) break;
 					newProj = new Projectile(this->findObject(toInt(ownerid)), {toInt(x)/100.0f,toInt(y)/100.0f},toInt(ang)/100.0f,toInt(vel)/100.0f);
+					newProj->objectID = toInt(id);
 					// newProj->objectID = toInt(id);
 					// newProj->active = (bool)toInt(active);
 					// newProj->x = toInt(x)/100.0f;
@@ -499,7 +548,7 @@ void Game::deserializeObjects(const std::string &content) {
 			}
 			default:
 				// debug("Unhandled object type");
-				debug(content.substr(i,20));
+				// debug(content.substr(i,20));
 				break;
 		}
 	}
@@ -569,7 +618,8 @@ void Game::updateGameObjects() {
 	
 	// debug("Finished importing game objects");
 
-	std::vector<Tile*> nearbyTiles = this->gameWorld->getTilesInRadius(this->playerChar->x,this->playerChar->y,15);
+	if(this->playerChar == nullptr) return;
+	std::vector<Tile*> nearbyTiles = this->gameWorld->getTilesInRadius(this->playerChar->x,this->playerChar->y,18);
 	Tile* thisTile;
 	
 	for(int i=0;i<nearbyTiles.size();i++) {
