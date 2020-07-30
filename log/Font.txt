@@ -1,7 +1,7 @@
-Apr/20/2020(Mon)20:01:11 : Font.txt initialized
-Apr/20/2020(Mon)20:01:11 : Loading font map...
-Apr/20/2020(Mon)20:01:11 : Font map loaded.
-Apr/20/2020(Mon)20:01:11 : Opening front from path assets/font/map_tileset_0.tga
-Apr/20/2020(Mon)20:01:11 : Optimizing font surface...
-Apr/20/2020(Mon)20:01:11 : Font surface optimized
-Apr/20/2020(Mon)20:01:11 : Font texture generation complete
+Jul/30/2020(Thu)16:04:02 : Font.txt initialized
+Jul/30/2020(Thu)16:04:02 : Loading font map...
+Jul/30/2020(Thu)16:04:02 : Font map loaded.
+Jul/30/2020(Thu)16:04:02 : Opening front from path assets/font/map_tileset_0.tga
+Jul/30/2020(Thu)16:04:02 : Optimizing font surface...
+Jul/30/2020(Thu)16:04:02 : Font surface optimized
+Jul/30/2020(Thu)16:04:02 : Font texture generation complete
