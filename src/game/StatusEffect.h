@@ -5,11 +5,11 @@
 class Character;
 class Limb;
 
-enum ApplicationType {
-	APP_INSTANT,		//Ignores duration, applies magnitude once
-	APP_OT,				//Applies magnitude spread evenly over duration
-	APP_PERIODIC,	//Applies magnitude spread periodically over duration
-};
+// enum ApplicationType {
+	// APP_INSTANT,		//Ignores duration, applies magnitude once
+	// APP_OT,				//Applies magnitude spread evenly over duration
+	// APP_PERIODIC,	//Applies magnitude spread periodically over duration
+// };
 
 enum EffectType {
 	EFFECT_HEALING,

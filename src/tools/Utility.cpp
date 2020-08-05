@@ -5,6 +5,7 @@
 
 #include <string>
 #include <algorithm>
+#include <map>
 
 int rfind(char c, const std::string& s) {
 
@@ -42,6 +43,43 @@ std::string clean(std::string &s) {
 	return news;
 }
 
+void unpad(std::string &s) {
+	for(int i=0;i<s.size();i++) {
+		if(s[i] != ' ') {
+			s.erase(0,i);
+			return;
+		}
+	}
+}
+
+void copyBuf(const char* c,int len,std::string &s) {
+	s="";
+	for(int i=0;i<len;i++) {
+		if(c[i] != '\x00') s += c[i];
+	}
+}
+
+
+int toInt(std::string num) {
+	for(int i=0;i<num.size();i++) {
+		if(num[i] != '0') {
+			num.erase(0,i);
+			break;
+		}
+	}
+	return std::stoi(num);
+}
+
+unsigned long int toFlag(std::string num) {
+	for(int i=0;i<num.size();i++) {
+		if(num[i] != '0') {
+			num.erase(0,i);
+			break;
+		}
+	}
+	return std::strtoul(num.c_str(),NULL,0);
+}
+
 int tsize(const std::string &s) {
 	int size=0;
 	bool ignoreNext = false;
@@ -64,7 +102,6 @@ int tsize(const std::string &s) {
 	}
 	return size;
 }
-
 
 std::string strip(const std::string &s) {
     std::string newString = "";
@@ -132,10 +169,8 @@ bool autocomplete(std::string& target, const std::vector<GameObject*>& objList) 
 	}
 }
 
-
 //s is passed by reference 
 bool autocomplete(std::string& target, const std::vector<std::string>& wordList) {
-
 	if(target == "") {
 		return false;
 	}
@@ -280,8 +315,15 @@ std::string join(const std::string &c, const std::vector<std::string>& v) {
 
 }
 
+bool contains(const std::string &s,const std::string &token) {
+	for(int i=0;i<s.size();i++) {
+		if(s.substr(i,token.size()) == token) return true;
+	}
+	return false;
+}
+
 bool isdigit(const std::string& s) {
-    std::vector<char> digits = {'0','1','2','3','4','5','6','7','8','9'};
+    std::vector<char> digits = {'-','0','1','2','3','4','5','6','7','8','9'};
 	if(s.size() == 0) return false;
     for(int i=0;i<s.size();i++) {
         if(find(s[i], digits) == -1) {

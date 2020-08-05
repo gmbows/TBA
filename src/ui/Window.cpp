@@ -93,10 +93,11 @@ void Window::createPopup(const std::string &message,int duration,bool toggled) {
 }
 
 void Window::update(bool gdebug) {
+	
+	// debug("Updating screens");
 
 	SDL_SetRenderDrawColor(this->renderer,bgColor.r,bgColor.g,bgColor.b,bgColor.a);
 	SDL_RenderClear(this->renderer);
-
 	if(gdebug == false) this->mapScreen->update();
 	TBAGame->updateGameUIObjects();
 	//this->mapPanel->update();

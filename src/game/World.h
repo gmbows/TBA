@@ -20,9 +20,11 @@ class World {
 
 		Tile* invalid = new Tile(-1,-1,-1);
 		
-		World(int i): size(i) {}
+		Font *screenFont;
 		
-		Font *screenFont = new Font("map_tileset");
+		World(int i): size(i) {
+			this->screenFont = new Font("map_tileset");
+		}
 
 		//Generates and inserts tiles into world
 		void genWorld();
@@ -34,12 +36,20 @@ class World {
 		bool locationInBoundary(float,float);
 		void cartesianToIndex(float&,float&);
 		void indexToCartesian(int&,int&);
+		
+		//=============
+		//    PATHING
+		//=============
+		bool hasSimplePath(GameObject* c1, GameObject* c2);
+		std::vector<Tile*> simplePathTo(int,int,int,int);
+		std::vector<Tile*> simplePathTo(GameObject* c1, GameObject* c2);
+		bool validatePath(const std::vector<Tile*> &path);
 
 		void createStructure(std::tuple<int,int>, structure,int);
 		void replaceTile(std::tuple<int,int>,int);
 
 		std::vector<Tile*> getTilesInRadius(int,int,int);
-
+		
 		~World() {
 			this->tileVector.clear();
 			delete this->invalid;

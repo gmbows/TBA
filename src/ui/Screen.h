@@ -121,8 +121,8 @@ class TextBox: public TextScreen {
 		TextBox(int,int,int,int,bool);
 		TextBox() {}
 
-		Uint32 lastUpdate = 0;
-		int updateInterval = 5*1000;
+		int lastUpdate = 0;
+		int updateInterval = 10;
 
 		void prepareContent();
 		std::string getContent();

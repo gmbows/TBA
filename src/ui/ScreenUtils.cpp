@@ -12,7 +12,7 @@
 //========================
 
 void TextScreen::addContent(const std::string& str) {
-
+// debug("1");
 	std::string s = str;
 	// s=clean(s);
 	
@@ -30,14 +30,19 @@ void TextScreen::addContent(const std::string& str) {
 	int cursorX;
 
 	bool colored = false;
-
+	std::string thisLine;
 	//Read last content line into a string and delete it from content vector
 	if(this->content.at(this->content.size()-1)[this->content.at(this->content.size()-1).size()-1] == '\r') {
+		// thisLine = this->content.at(this->content.size()-1);
 		this->content.pop_back();
 	}
-	std::string thisLine = this->content.at(this->content.size()-1);
-	this->content.pop_back();
 
+	if(this->content.size() > 0) {
+		thisLine = this->content.at(this->content.size()-1);
+		this->content.pop_back();
+	} else {
+		return;
+	}
 	//Iterate through added string
 	for(int i=0;i<s.size();i++) {
 		cursorX = thisLine.size()-1;
@@ -103,6 +108,7 @@ void TextScreen::addContent(const std::string& str) {
 		}
 	}
 	this->content.push_back(thisLine);
+	
 }
 
 std::vector<std::string> TextScreen::prepareCommandForDisplay(const std::string& s) {
@@ -150,8 +156,14 @@ void TextScreen::setLastLine(const std::string& goodLine) {
 }
 
 void MapScreen::generateMapTiles() {
-	int centerX = TBAGame->playerChar->x;
-	int centerY = TBAGame->playerChar->y;
+	int centerX,centerY;
+	if(TBAGame->playerChar == nullptr) {
+		centerX = 0;
+		centerY = 0;
+	} else {
+		centerX = TBAGame->playerChar->x;
+		centerY = TBAGame->playerChar->y;
+	}
 
 	this->map = TBAGame->gameWorld->getMapAt((this->w/this->charW)+2,centerX,centerY);
 	this->lastMapX = centerX;
@@ -181,7 +193,7 @@ void MapScreen::redrawActiveTiles() {
 	int charSize;
 
 	this->checked.clear();
-
+	
 	for(int i=0;i<map.size();i++) {
 		for(int j=0;j<map.size();j++) {
 			thisTile = this->map.at(i).at(j);
@@ -247,17 +259,22 @@ void MapScreen::redrawActiveTiles() {
 
 void MapScreen::updateMap() {
 
-	int centerX = TBAGame->playerChar->x;
-	int centerY = TBAGame->playerChar->y;
+	int centerX,centerY;
+	if(TBAGame->playerChar == nullptr) {
+		centerX = 0;
+		centerY = 0;
+	} else {
+		centerX = TBAGame->playerChar->x;
+		centerY = TBAGame->playerChar->y;
+	}
 
 	if(centerX != this->lastMapX or centerY != this->lastMapY) {
 		this->generateMapTiles();
-		//this->generateMapTexture();
 	}
 
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
 
-	///SDL_RenderClear(TBAGame->gameWindow->renderer);
+	// /SDL_RenderClear(TBAGame->gameWindow->renderer);
 
 	//Source rectangle taken from screenFont->fontTexture
 	SDL_Rect sRect;
@@ -297,7 +314,9 @@ void MapScreen::updateMap() {
 				
 				charSize = this->charW;
 				
+				
 				tileID = thisTile->getDisplayID();
+				
 
 				if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
 					debug("ERROR: Missing charMap entry for tile "+tileID);
@@ -306,18 +325,28 @@ void MapScreen::updateMap() {
 
 				charInfo = this->screenFont->fontMap.at(tileID);
 
+
+
 				int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
 				int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
 
 				sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 				dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
+				if(thisTile->highlight) {
+					SDL_SetTextureColorMod(this->screenFont->fontTexture,255,255,255);
+				}
+				
+				
 				if(thisTile->hasBlocks()) {
+
 					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,thisTile->getBlockTexture(),NULL,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-				} else if(thisTile->needsUpdate) {
+
+				} else if(thisTile->needsUpdate or thisTile->highlight) {
 					SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
 					thisTile->needsUpdate = false;
 				}
+				
 				
 				if(thisTile->planted) {
 					tileID = 9;
@@ -330,7 +359,7 @@ void MapScreen::updateMap() {
 				}
 
 				for(int k=0;k<thisTile->occupiers.size();k++) {
-					
+
 					charSize = 5;
 
 					occupant = thisTile->occupiers.at(k);
@@ -343,10 +372,19 @@ void MapScreen::updateMap() {
 					sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
 					dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 
+					if(!occupant->isAlive()) {
+						SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,140,140,140);
+					}
+
 					SDL_RenderCopy(TBAGame->gameWindow->renderer,TBAGame->gameWindow->textScreen->screenFont->fontTexture,&sRect,&dRect);
 					//Draw viewAng indicator
-					SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5,windowOffsetY+2.5,windowOffsetX+2.5+std::cos(occupant->viewAng*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->viewAng*CONV_DEGREES)*10);
-				}
+					
+					if(!occupant->isAlive()) {
+						SDL_SetTextureColorMod(TBAGame->gameWindow->textScreen->screenFont->fontTexture,200,200,200);
+					} else {
+						SDL_RenderDrawLine(TBAGame->gameWindow->renderer,windowOffsetX+2.5+std::cos(occupant->viewAng*CONV_DEGREES)*5,windowOffsetY+2.5+std::sin(occupant->viewAng*CONV_DEGREES)*5,windowOffsetX+2.5+std::cos(occupant->viewAng*CONV_DEGREES)*10,windowOffsetY+2.5+std::sin(occupant->viewAng*CONV_DEGREES)*10);
+					}
+}
 
 				for(int k=0;k<thisTile->objects.size();k++) {
 					generic = thisTile->objects.at(k);
@@ -366,6 +404,8 @@ void MapScreen::updateMap() {
 					switch(generic->type) {
 						case OBJ_PROJECTILE:
 							charSize = static_cast<Projectile*>(generic)->displaySize;
+							windowOffsetX = ((TBAGame->gameWorld->size/2)+objX+.22)*this->charW;
+							windowOffsetY = ((TBAGame->gameWorld->size/2)+objY+.22)*this->charH;
 							dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
 							SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,static_cast<Projectile*>(generic)->angle*CONV_RADIANS,NULL,SDL_FLIP_NONE);
 							break;
@@ -427,10 +467,12 @@ std::string TextBox::getContent() {
 		}*/
 
 		if(TBAGame->hasDisplayTarget()) {
-            newContent += TBAGame->displayTarget->getInfo();
-			if((char*)TBAGame->displayTarget == (char*)TBAGame->playerChar) {
-				newContent += "\n\n"+TBAGame->playerChar->getInvString();
-				newContent += "\n\n"+TBAGame->playerChar->getEquipString();
+			if(TBAGame->displayTarget->type == OBJ_CHARACTER) {
+				newContent += TBAGame->displayTarget->getAsCharacter()->getInfo();
+				newContent += "\n"+TBAGame->displayTarget->getAsCharacter()->getInvString();
+				newContent += "\n"+TBAGame->displayTarget->getAsCharacter()->getEquipString();
+			} else {
+				newContent += TBAGame->displayTarget->getInfo();
 			}
         }
 	return newContent;

@@ -5,16 +5,25 @@
 
 #include <vector>
 #include <string>
+#include <map>
+#include <utility>
 
 struct Inventory {
 
 	int capacity;
 	std::vector<Item*> *contents = new std::vector<Item*>;
 	
+	void initializeManifest();
+	std::map<int,int> manifest;
+	void record(int,int);
+	
+	bool hasChanged = false;
+	
 	Inventory(int);
-	void add(Item*);
-	void add(int);
-	void add(const std::vector<int>&);
+	bool add(int);
+	bool add(Item*);
+	bool add(const std::vector<int>&);
+	bool add(const std::vector<Item*>&);
 	int find(Item*);
 	int find(const std::string&);
 	
@@ -26,13 +35,15 @@ struct Inventory {
 	Item* remove(Item*);
 
 	inline Item* getItem(int i) {return this->contents->at(i);}
+	std::vector<Item*> getItemsOfType(ItemType);
 
 	std::vector<std::string> getContentString();
 	inline bool isEmpty() { return this->contents->size() == 0; } 
-	
-	void setInfoString();
-	std::string contentString;
+
+	// void setInfoString();
+	std::string getInfoString();
 	std::string toString();
+	// std::string contentString;
 
 	~Inventory() {
 		this->contents->clear();

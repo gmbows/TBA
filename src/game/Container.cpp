@@ -7,6 +7,7 @@
 #include "../tools/Utility.h"
 #include <tuple>
 
+
 Container::Container(const std::string &_name,std::tuple<float,float> location, int size): name(_name), GameObject(OBJ_CONTAINER) {
 	this->inventory = new Inventory(size);
 	decompose(location,this->x,this->y);
@@ -32,5 +33,5 @@ Container::Container(const std::string &_name,std::tuple<float,float> location, 
 std::string Container::getInfo() {
 	return " Name:\t"+this->name + "\n" +
 				"\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n" +
-				"\tContents:"+this->inventory->contentString;
+				"\tContents:"+this->inventory->toString();
 }

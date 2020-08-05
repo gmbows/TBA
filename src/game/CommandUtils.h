@@ -30,6 +30,9 @@ std::map<std::string,std::pair<std::vector<std::string>,std::vector<std::string>
 	{"plant",{{"plant \x01w[item name]\x01","plant \x01w[partial item name]\x01"},{"Plants seed"}}},
 	{"drink",{{"drink \x01w[item name]\x01","drink \x01w[partial item name]\x01"},{"Drinks item"}}},
 	{"use",{{"use \x01w[item name]\x01","use \x01w[partial item name]\x01"},{"Uses item"}}},
+	{"work",{{"work \x01g[object name]\x01","use \x01g[partial object name]\x01"},{"Starts using object, will move character to object if nearby"}}},
+	{"goto",{{"goto [x],[y]"},{"Moves character to coordinates x,y if unobstructed"}}},
+	{"control",{{"control \x01g[character name]","control"},{"Assumes control of nearby character","Assumes control of selected character"}}},
 };
 
 int moveItems(int itemCount,Item *goodItem,Inventory *source, Inventory *destination) {
@@ -55,19 +58,19 @@ int moveItems(int itemCount,Item *goodItem,Inventory *source, Inventory *destina
 
 int findItemSource(std::string itemName,Inventory* &inv,std::string &sourceName) {
 
-	Container *testContainer;
+	GameObject *testObject;
 
 	int index = -1;
 
 	//Search containers in area
-	std::vector<GameObject*> containers = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER);
+	std::vector<GameObject*> compatible = TBAGame->playerChar->getObjectsInRadius(OBJ_CONTAINER) + TBAGame->playerChar->getObjectsInRadius(OBJ_INTERACTIVE);
 
-	for(int i=0;i<containers.size();i++) {
-		testContainer = static_cast<Container*>(containers.at(i));
-		index = testContainer->inventory->find(itemName);
+	for(int i=0;i<compatible.size();i++) {
+		testObject = compatible.at(i);
+		index = testObject->getInventory()->find(itemName);
 		if(index >= 0) {
-			inv = testContainer->inventory;
-			sourceName = testContainer->getFormattedName();
+			inv = testObject->getInventory();
+			sourceName = testObject->getFormattedName();
 		} else {
 			inv = nullptr;
 		}

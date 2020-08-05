@@ -1,7 +1,6 @@
 #include "Block.h"
 #include "../common/Tile.h"
 #include "../common/Common.h"
-#include "../ui/Font.h"
 
 Block::Block(int _id): id(_id), GameObject(OBJ_BLOCK) {
 		int rotation = 0;

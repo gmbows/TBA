@@ -1,6 +1,5 @@
 #include "CommandFuncs.h"
 #include "../common/Common.h"
-#include "../common/KeyFuncs.h"
 #include "Character.h"
 #include "Command.h"
 #include "Container.h"
@@ -50,15 +49,29 @@ std::map<std::string,std::pair<std::string,int>> dirMap = {
 
 };
 
+std::map<std::string,int> equipmentMap = {
+
+	{"primary",0},
+	{"secondary",1},
+	{"head",2},
+	{"chest",3},
+	{"body",3},
+	{"leg",4},
+	{"legs",4},
+	{"arms",5},
+	{"feet",6},
+
+};
+
 //Clear
 std::string clearFunc(Command* command,const std::vector<std::string>& args) {
-	TBAGame->gameWindow->textScreen->content.clear();
-	return "";
+	// TBAGame->gameWindow->textScreen->content.clear();
+	return "\nCLIENT ONLY";
 }
 
 //Inventory
 std::string inventoryFunc(Command* command,const std::vector<std::string>& args) {
-	return "\n"+TBAGame->playerChar->getInvString();
+	return TBAGame->playerChar->getInvString();
 }
 
 //Move + EC
@@ -101,9 +114,10 @@ std::string unpauseFunc(Command* command, const std::vector<std::string> &args) 
 //Stop
 std::string stopFunc(Command* command, const std::vector<std::string> &args) {
 	
-	// TBAGame->playerChar->direction = {0,0};
 	TBAGame->playerChar->autoMove = false;
-	return "\nStopped moving";
+	if(TBAGame->playerChar->isAlive()) TBAGame->playerChar->setStatus(STATUS_IDLE);
+	TBAGame->playerChar->targetPath.clear();
+	return "\nStopped all actions";
 
 }
 
@@ -186,15 +200,15 @@ bool attackEC(Command* command, const std::vector<std::string> &args) {
 std::string zoomFunc(Command* command, const std::vector<std::string> &args) {
 	
 	if(command->aux == "out") {
-		TBAGame->gameWindow->mapScreen->zoom /= 2;
+		// TBAGame->gameWindow->mapScreen->zoom /= 2;
 	} else if(command->aux == "in") {
-		TBAGame->gameWindow->mapScreen->zoom *= 2;
+		// TBAGame->gameWindow->mapScreen->zoom *= 2;
 	} else {
-		TBAGame->gameWindow->mapScreen->zoom = 1;
-		TBAGame->gameWindow->mapScreen->generateMapTiles();
-		return "\nReset zoom";
+		// TBAGame->gameWindow->mapScreen->zoom = 1;
+		// TBAGame->gameWindow->mapScreen->generateMapTiles();
+		return "\nCLIENT ONLY";
 	}
-	TBAGame->gameWindow->mapScreen->generateMapTiles();
+	// TBAGame->gameWindow->mapScreen->generateMapTiles();
 	return "\nZoomed "+toLower(command->aux);
 }
 bool zoomEC(Command* command, const std::vector<std::string> &args) {
@@ -231,8 +245,8 @@ std::string hurtmeFunc(Command* command, const std::vector<std::string> &args) {
 	} else {
 		damage = std::stoi(args.at(0));
 	}
-	for(int i=0;i<TBAGame->playerChar->limbs.size();i++) {
-		TBAGame->playerChar->limbs.at(i)->applyDamage(damage);
+	for(int i=0;i<TBAGame->playerChar->body->getLimbs().size();i++) {
+		TBAGame->playerChar->body->getLimbs().at(i)->applyDamage(damage);
 	}
 	return "\nHurt player for "+std::to_string(damage);
 }
@@ -260,7 +274,7 @@ bool takeEC(Command* command, const std::vector<std::string> &args) {
 		command->error = "No container selected";
 		return false;
 	}
-	if(TBAGame->displayTarget->type != OBJ_CONTAINER and TBAGame->displayTarget->type != OBJ_CHARACTER) {
+	if(!TBAGame->displayTarget->hasInventory()) {
 		command->error = "Cannot take item from "+TBAGame->displayTarget->getName();
 		return false;
 	}
@@ -365,9 +379,38 @@ bool equipEC(Command* command, const std::vector<std::string> &args) {
 	return true;
 }
 
+//Unequip
+std::string unequipFunc(Command* command, const std::vector<std::string> &args) {
+	std::string itemName = join(' ',args);
+	const std::string itemNameOriginal = itemName;
+	// int index = TBAGame->playerChar->inventory->find(itemName);
+	std::vector<std::string> itemNames = TBAGame->getItemNames(TBAGame->playerChar->equipment->slots);
+	if(autocomplete(itemName,itemNames)) {
+		for(int i=0;i<itemNames.size();i++) {
+			if(itemNames.at(i) == itemName) {
+				TBAGame->playerChar->equipment->slots.at(i) = nullptr;
+				return "\nUnequipped "+itemName;
+			}
+		}
+		//Input matched two items
+	}
+	debug(itemName);
+	if(itemNameOriginal != itemName) return "\n";
+	return "\nItem not found or not equipped";
+}
+bool unequipEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No item specified";
+		return false;
+	}
+	return true;
+
+}
+
+
 //Debug
 std::string debugFunc(Command* command, const std::vector<std::string> &args) {
-	debugKey();
+	// debugKey();
 	return "";
 }
 
@@ -479,7 +522,6 @@ std::string givemeFunc(Command* command, const std::vector<std::string> &args) {
 	TBAGame->playerChar->inventory->add(newItem);
 	return "\nGave "+TBAGame->playerChar->getName()+" "+newItem->getFormattedName();
 }
-
 bool givemeEC(Command* command, const std::vector<std::string> &args) {
 	if(args.size() == 0) {
 		command->error = "No item specified";
@@ -487,7 +529,6 @@ bool givemeEC(Command* command, const std::vector<std::string> &args) {
 	}
 	return true;
 }
-
 
 //Work
 std::string workFunc(Command* command, const std::vector<std::string> &args) {
@@ -517,6 +558,60 @@ bool workEC(Command* command, const std::vector<std::string> &args) {
 	if(!TBAGame->hasDisplayTarget() and args.size() == 0) {
 		command->error = "No resource selected";
 		return false;
+	}
+	return true;
+}
+
+//Goto
+std::string gotoFunc(Command* command, const std::vector<std::string> &args) {
+	std::string c = strip(join("",args));
+	std::vector<std::string> coords = split(',',c);
+	if(coords.size() < 2) return "\nInvalid coordinates";
+	std::string xs = coords.at(0);
+	std::string ys = coords.at(1);
+	if(!(isdigit(xs) & isdigit(ys))) return "\nInvalid coordinates";
+	if(TBAGame->playerChar->generatePathTo(std::stoi(xs),std::stoi(ys))) {
+		return "\nTraveling to "+xs+", "+ys;
+	}
+	return "\nUnable to travel to "+xs+", "+ys;
+}
+bool gotoEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		command->error = "No coordinates specified";
+		return false;
+	} else {
+		if(!contains(join("",args),",")) {
+			command->error = "Invalid coordinate format";
+			return false;
+		}
+	}
+	return true;
+}
+
+//Control
+std::string controlFunc(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		if(TBAGame->hasDisplayTarget()) {
+			TBAGame->playerChar = TBAGame->displayTarget->getAsCharacter();
+			return "\nNow controlling "+TBAGame->playerChar->getFormattedName();
+		}
+	}
+	std::string objName = join(' ',args);
+	GameObject *newDisplayTarget = TBAGame->playerChar->findObjectInRadius(objName);
+	if(newDisplayTarget == nullptr) {
+		return "\nCharacter not found";
+	} else {
+		TBAGame->playerChar = newDisplayTarget->getAsCharacter();
+		TBAGame->displayTarget = newDisplayTarget;
+		return "\nNow controlling "+newDisplayTarget->getFormattedName();
+	}
+}
+bool controlEC(Command* command, const std::vector<std::string> &args) {
+	if(args.size() == 0) {
+		if(!TBAGame->hasDisplayTarget()) {
+			command->error = "No character selected";
+			return false;
+		}
 	}
 	return true;
 }

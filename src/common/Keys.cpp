@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "KeyFuncs.h"
+#include "Keys.h"
 
 #include <map>
 
@@ -8,11 +9,6 @@
 //SPACE 32
 //ENTER 13
 //TAB 9
-
-bool shift=false;
-
-bool m_forward,m_back;
-bool turn_left,turn_right;
 
 std::map<int,int> shiftMap = {
 	{47,63}, //Forward slash
@@ -38,7 +34,9 @@ std::map<int,int> shiftMap = {
 	{93,125}, //Right  bracket
 };
 
-void Game::input() {
+	void Game::input() {
+		
+	// bool shift = false;
 
 	SDL_Event event;
 
@@ -70,14 +68,14 @@ void Game::input() {
 					case 13:
 						sendCommand();
 						break;
-					case SDLK_LSHIFT:
-						shift=true;
-						break;
+					// case SDLK_LSHIFT:
+						// shift=true;
+						// break;
 					case 96:
 						//backtick not supported
 						break;
 					case 32:
-						if(SDL_GetModState() & (KMOD_LCTRL ^ KMOD_CAPS)) {
+						if(SDL_GetModState() & (KMOD_LCTRL | KMOD_CAPS)) {
 							pause();
 						}	else {
 							processKeystroke(32);
@@ -87,8 +85,11 @@ void Game::input() {
 						if(SDL_GetModState() & (KMOD_LCTRL)) {
 							clear();
 						} else {
-							if(shift) processKeystroke(76);
-							if(!shift) processKeystroke(108);
+							if(SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT)) {
+								processKeystroke(76);
+							} else {
+								processKeystroke(108);
+							}
 						}
 						break;
 					case 117:
@@ -96,16 +97,22 @@ void Game::input() {
 							clearCommand();
 							
 						} else {
-							if(shift) processKeystroke(85);
-							if(!shift) processKeystroke(117);
+							if(SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT)) {
+								processKeystroke(85);
+							} else {
+								processKeystroke(117);
+							}
 						}
 						break;
 					case 118:
 						if(SDL_GetModState() & (KMOD_LCTRL)) {
 							paste();
 						} else {
-							if(shift) processKeystroke(86);
-							if(!shift) processKeystroke(118);
+							if(SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT)) {
+								processKeystroke(86);
+							} else {
+								processKeystroke(118);
+							}
 						}
 						break;
 					case SDLK_KP_PLUS: //DEBUG KEY
@@ -113,26 +120,26 @@ void Game::input() {
 						break;
 					case SDLK_LEFT:
 					case SDLK_RIGHT:
-						if(SDL_GetModState() & (KMOD_LCTRL ^ KMOD_CAPS)) {
+						if(SDL_GetModState() & (KMOD_LCTRL | KMOD_CAPS)) {
 							switch(keycode) {
 								case SDLK_LEFT:
-									turn_left = true;
+									this->turn_left = true;
 									break;
 								case SDLK_RIGHT:
-									turn_right = true;
+									this->turn_right = true;
 									break;
 							}
 						}
 						break;
 					case SDLK_UP:
 					case SDLK_DOWN:
-						if(SDL_GetModState() & (KMOD_LCTRL ^ KMOD_CAPS)) {
+						if(SDL_GetModState() & (KMOD_LCTRL | KMOD_CAPS)) {
 							switch(keycode) {
 								case SDLK_UP:
-									m_forward = true;
+									this->m_forward = true;
 									break;
 								case SDLK_DOWN:
-									m_back = true;
+									this->m_back = true;
 									break;
 							}
 						} else {
@@ -147,7 +154,7 @@ void Game::input() {
 						}
 						break;
 					default:
-						if(shift) {
+						if(SDL_GetModState() & (KMOD_LSHIFT | KMOD_RSHIFT)) {
 							if( keycode >= 97 and keycode <= 122) {
 								keycode = keycode - 32;
 							} else if(shiftMap.find(keycode) != shiftMap.end()) {
@@ -165,18 +172,18 @@ void Game::input() {
 			//=======
 			case SDL_KEYUP:
 				switch(keycode) {
-					case SDLK_LSHIFT:
-						shift=false;
-						SDL_FlushEvent(SDL_KEYUP);
-						break;
+					// case SDLK_LSHIFT:
+						// shift=false;
+						// SDL_FlushEvent(SDL_KEYUP);
+						// break;
 					case SDLK_UP:
 					case SDLK_DOWN:
 						switch(keycode) {
 							case SDLK_UP:
-								m_forward = false;
+								this->m_forward = false;
 								break;
 							case SDLK_DOWN:
-								m_back = false;
+								this->m_back = false;
 								break;
 							}
 						break;
@@ -184,10 +191,10 @@ void Game::input() {
 					case SDLK_RIGHT:
 						switch(keycode) {
 							case SDLK_LEFT:
-								turn_left = false;
+								this->turn_left = false;
 								break;
 							case SDLK_RIGHT:
-								turn_right = false;
+								this->turn_right = false;
 								break;
 							}
 						break;
@@ -219,6 +226,6 @@ void Game::input() {
 					break;
 			}
 		}
-		move(m_forward,m_back);
-		turn(turn_left,turn_right);
+		move(this->m_forward,this->m_back);
+		turn(this->turn_left,this->turn_right);
 	}

@@ -6,14 +6,15 @@ void Character::init_stats() {
 	//Rates in format ticks per action
 	
 	//Rate at which attacks can be initiated
-	this->defaultAttackRate = 100;
+	this->defaultAttackRate = 1;
 
 	//Unarmed damage
 	this->defaultAttackDamage = 30;
 
 	//Unarmed striking speed
 	// # of ticks it takes for an attack to connect after being initiated
-	this->defaultAttackSpeed = 20;
+	// this->defaultAttackSpeed = 20;
+	this->defaultAttackSpeed = 2;
 
 	this->maxHealth = 10;
 	this->health = this->maxHealth;

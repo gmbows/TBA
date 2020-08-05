@@ -30,6 +30,8 @@ class GameObject {
 		Character* getAsCharacter();
 		ResourceNode* getAsResource();
 		Container* getAsContainer();
+		
+		virtual std::string serialize() { return "SERIALIZATION_METHOD_UNDEFINED";}
 
 		//Update function to be overridden for each object type
 		virtual void update() {}
@@ -40,6 +42,8 @@ class GameObject {
 		virtual std::string getInfo() {return "INFO_FUNC_UNDEFINED";}
 		virtual std::tuple<float,float> getLocation() {return {0,0};}
 		virtual int getDisplayID() {return -1;}
+		
+		std::string getEntityName() {return this->getName()+"<"+std::to_string(this->objectID)+">";}
 
 		inline bool hasInventory() { return this->type == OBJ_CHARACTER or this->type == OBJ_CONTAINER or this->type == OBJ_INTERACTIVE;}
 		Inventory* getInventory();

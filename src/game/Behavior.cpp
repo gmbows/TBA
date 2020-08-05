@@ -4,9 +4,10 @@
 #include "../tools/Utility.h"
 #include "FloatingText.h"
 #include "Projectile.h"
+#include "Squad.h"
 #include <tuple>
 
-std::map<statusIndicator,const std::string> statusMap = {
+std::map<StatusIndicator,const std::string> statusMap = {
 	{STATUS_IDLE,"Idle"},
 	{STATUS_ATTACK,"Swinging weapon"},
 	{STATUS_NO_AMMO,"No ammo"},
@@ -25,71 +26,57 @@ std::map<statusIndicator,const std::string> statusMap = {
 //==========
 //	TARGETING
 //==========
-
+// Get info of this character's target or None if applicable
 std::string Character::getTargetInfo() {
 
 	if(!this->hasTarget()) {return "None";}
 	return this->getCharTarget()->getInfo();
 	
 }
-
+// Get the name of this character's target or None if not applicable
 std::string Character::getTargetName() {
 
 	if(!this->hasTarget()) {return "None";}
 
 	return this->target->getName();
 }
-
+// Set this character's target to o
 void Character::setTarget(GameObject *o) {
 	this->resetCombatTimer();
 	this->target = o;
-	if(o != nullptr and !this->isPlayer) {
+	if(o != nullptr and !this->isPlayer()) {
 		this->setTargetAngle(this->getCharTarget());
 	}	
 }
-
+// Return this character's target as a game object
 Character* Character::getCharTarget()  {
+	if(!this->hasTarget()) return nullptr;
 	return static_cast<Character*>(this->target);
 }
-
+// Return this character's target
 GameObject* Character::getTarget()  {
 	return this->target;
 }
-
-void Character::addStatus(statusIndicator newStatus) {
-	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
-		// Character must be stationary to enter combat
-		this->removeStatus(STATUS_TRAVEL);
-		this->resetCombatTimer();
-	}
-	if(newStatus != STATUS_IDLE) this->removeStatus(STATUS_IDLE);
-	this->status = (this->status | newStatus);
-}
-
-void Character::setStatus(statusIndicator newStatus) {
-	//remove all other statuses and replace with newStatus
-	// really only used for death
-	if(newStatus == STATUS_IDLE) {
-		// this->direction = {0,0};
-	} else if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
-		// Character must be stationary to enter combat
-		// this->direction = {0,0};
-		this->resetCombatTimer();// - (this->attackRate/2);
-	}
-	this->status = newStatus;
-}
-
+//Determine if target is in range based on equipment
 bool Character::targetInRange() {
 	if(!this->hasTarget()) {
 		return false;
 	}
-	//If using a ranged weapon range is irrelevant
 	if(this->getAttackRange() < 0) {
 		return true;
 	}
-	return dist(this->getLocation(),this->getCharTarget()->getLocation()) <= this->getAttackRange();
+	float range = this->getAttackRange();
+	return dist(this->getLocation(),this->getTarget()->getLocation()) <= range;
 }
-
+//Determine if work target is in range
+bool Character::workTargetInRange() {
+	if(!this->hasWorkTarget()) {
+		return false;
+	}
+	int range = 1;
+	return dist(this->getLocation(),this->workTarget->getLocation()) <= range;
+}
+//Set target to nearest character and return if target is different from existing target
 bool Character::getNearestTarget() {
 
 	//Target highest priority target in awareness range (placeholder 10)
@@ -111,7 +98,7 @@ bool Character::getNearestTarget() {
 				//	Target is targeting you 
 				// Target is attacking, in combat with, or in pursuit of you
 
-				if(occupant->isAlive() and !occupant->isPlayer) {
+				if(occupant->isAlive() and !occupant->isPlayer()) {
 					if(bestTarget == nullptr) {
 						bestTarget = occupant;
 						continue;
@@ -131,7 +118,7 @@ bool Character::getNearestTarget() {
 	}
 
 }
-
+//Determine whether a character with name similar to _name is in awareness range
 bool Character::findTargetInRadius(const std::string& _name) {
 	//Find a target with provided partial or complete name
 	//If multiple matching targets are found cycle through them
@@ -150,7 +137,7 @@ bool Character::findTargetInRadius(const std::string& _name) {
 	}
 	return false;
 }
-
+//Get list of all objects in awareness range
 GameObject* Character::findObjectInRadius(const std::string &_name) {
 	//Find a target with provided partial or complete name
 	//If multiple matching targets are found cycle through them
@@ -170,21 +157,21 @@ GameObject* Character::findObjectInRadius(const std::string &_name) {
 	}
 	return nullptr;
 }
-
+// Set targetAng to character
 void Character::setTargetAngle(Character *c) {
 	//Sets target view angle to aim at target
 	int newAng = atan2(c->y-this->y,c->x-this->x)*CONV_RADIANS;
 	if(newAng < 0) newAng = 360+newAng;
 	this->targetAng = newAng;
 }	
-
+// Set targetAng to coordinates
 void Character::setTargetLoc(int x,int y) {
 	//Sets target view angle to aim at target
 	int newAng = atan2(y-this->y,x-this->x)*CONV_RADIANS;
-	if(newAng < 0) newAng = 360+newAng;
+	// if(newAng < 0) newAng = 360+newAng;
 	this->targetAng = newAng;
 }	
-
+//Get vector of characters in awareness range
 std::vector<Character*> Character::getCharactersInRadius() {
 	std::vector<Tile*> surroundingTiles = TBAGame->gameWorld->getTilesInRadius(this->x,this->y,10); //placeholder
 	Tile* thisTile;
@@ -203,7 +190,7 @@ std::vector<Character*> Character::getCharactersInRadius() {
 	}
 	return targets;
 }
-
+// Get vector of objects of certain type in awareness range
 std::vector<GameObject*> Character::getObjectsInRadius(objType type = OBJ_GENERIC) {
 	//Find and return all objects with type "type" (or all objects if empty)
 	// within small radius of caller (2)
@@ -227,66 +214,118 @@ std::vector<GameObject*> Character::getObjectsInRadius(objType type = OBJ_GENERI
 	return objects;
 }
 
-bool Character::combatRetarget() {
+//==========
+//	STATUS
+//==========
+// Add status to current status flag
+void Character::addStatus(StatusIndicator newStatus) {
+	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
+		// Character must be stationary to enter combat
+		this->removeStatus(STATUS_TRAVEL);
+		this->resetCombatTimer();
+	}
+	if(newStatus != STATUS_IDLE) this->removeStatus(STATUS_IDLE);
+	this->status = (this->status | newStatus);
+}
+// Set status to new status flag
+void Character::setStatus(StatusIndicator newStatus) {
+	//remove all other statuses and replace with newStatus
+	// really only used for death
+	if(newStatus == STATUS_IDLE) {
+		// this->direction = {0,0};
+	} else if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
+		// Character must be stationary to enter combat
+		// this->direction = {0,0};
+		this->resetCombatTimer();// - (this->attackRate/2);
+	}
+	this->status = newStatus;
+}
 
+//==========
+//	 TRAVEL
+//==========
 
-	//Target highest priority target in awareness range (placeholder 10)
-	std::vector<Character*> targets = this->getCharactersInRadius();
-	Tile* thisTile;
-
-	Character* occupant;
-
-	for(int i=0;i<targets.size();i++) {
-		occupant = targets.at(i);
-
-		// Valid target conditions: 
-		//	Target is alive
-		//	Target is targeting you 
-		//  Target is attacking, in combat with, or in pursuit of you
-		//  If multiple targets meet these criteria, choose the closest
-
-		ConditionSet target_valid = ConditionSet({
-			occupant->isAlive(),
-			occupant->hasTarget(),
-			(char*)occupant->getCharTarget() == (char*)this,
-			occupant->hasStatus(STATUS_COMBAT),
-		});
+//Align viewAng with targetAng
+void Character::turn() {
+	// if(this->isPlayer and !this->autoMove) return;
+	if((fabs(this->viewAng - this->targetAng)) > 2*this->getTurnSpeed()) {
 		
-		if(target_valid.valid()) {
-			if(!this->hasTarget()) {
-				this->setTarget(occupant);
+		int sign;
+		if(this->targetAng > this->viewAng) {
+			if( (360 - this->targetAng + this->viewAng) < this->targetAng-this->viewAng) {
+				sign = -1;
 			} else {
-				//Check if this target is closer than current target
-				this->setTarget(closer(this->getCharTarget(),occupant));
+				sign = 1;
+			}
+		} else {
+			if( (360 - this->viewAng + this->targetAng) < this->viewAng-this->targetAng) {
+				sign = 1;
+			} else {
+				sign = -1;
+			}
+		}
+		
+		//Slow turn speed as viewAng approaches targetAng
+		float diff = 180-fabs(this->viewAng-this->targetAng);
+		if(diff == 0) {
+			this->viewAng += this->getTurnSpeed()*sign;
+		} else {
+			this->viewAng += this->getTurnSpeed()*sign;//*fabs((float)180/diff);
+		}
+
+	} else {
+		//If aim is close enough just set to target angle
+		this->viewAng = this->targetAng;
+	}
+
+	//Wrap view angle between 0 and 360 for simplicity
+	if(this->viewAng < 0) this->viewAng = 360+this->viewAng;
+	this->viewAng = (int)this->viewAng%360;
+}
+//(Thinking method) Determine where to move to based on analysis of circumstances
+void Character::setLocomotion() {
+
+	if(this->hasTarget()) {
+		if(this->hasStatus(STATUS_PURSUE)) {
+			if(!this->targetInRange()) {
+				if(TBAGame->gameWorld->hasSimplePath(this,this->getTarget())) {
+					this->simple = true;
+					this->targetPath = {this->getCharTarget()->location};
+				} else {
+					this->simple = false;
+					this->generatePathTo(this->getTarget());
+				}
+				if(this->hasStatus(STATUS_COMBAT)) this->addStatus(STATUS_PURSUE);
+			} else {
+				this->targetPath.clear();
+				this->removeStatus(STATUS_PURSUE | STATUS_TRAVEL);
+			}
+		} else if(this->hasStatus(STATUS_ESCAPE)) {
+			//Check awareness range here for targets in combat, targeting this character
+			//Using this character's target is a shortcut
+			if(this->hasTarget()) {
+				if(this->getCharTarget()->isAlive()) {
+					this->moveAway(this->getCharTarget());
+				} else {
+					this->removeStatus(STATUS_ESCAPE);
+				}
 			}
 		}
 	}
 
-	return this->hasTarget();
-	
-}
-
-/*
-void Character::moveToCharacter(Character *c) {
-	//Set target angle to aim at c
-	this->setTargetAngle(c);
-	
-	if(fabs(this->viewAng - this->targetAng) <= this->defaultFOV/2) {
-		this->move_forward = true;
-	} else {
-		this->move_forward = false;
+	if(fabs(this->velocity) < 0.5f) {
+		this->removeStatus(STATUS_TRAVEL);
 	}
-}
-*/
 
-void Character::moveTo() {
+}
+//Follow path if applicable
+void Character::followPath() {
 		this->addStatus(STATUS_TRAVEL);
 		move_forward = true;
 		int tx = this->targetPath.at(0)->x;
 		int ty = -this->targetPath.at(0)->y;
 		this->setTargetLoc(tx,ty);
-		// debug(this->targetAng);
-		// if((char*)this->location == (char*)this->targetPath.at(0)) {
+		//Move to next path node if we are touching center of the current path
 		if(dist({this->x,this->y},{tx,ty}) <= this->width) {
 			this->targetPath.erase(this->targetPath.begin());
 		}
@@ -295,11 +334,13 @@ void Character::moveTo() {
 			this->removeStatus(STATUS_TRAVEL);
 		}
 }
-
-void Character::generatePathTo(Character *c) {
-	this->generatePathTo(c->location->x,-c->location->y);
+//Generate path to character
+void Character::generatePathTo(GameObject *o) {
+	float x,y;
+	decompose(o->getLocation(),x,y);
+	this->generatePathTo(x,y);
 }
-
+//Generate path to tx,ty or adjacent block
 bool Character::generatePathTo(float tx, float ty, bool adjacent) {
 	if(TBAGame->logicTicks < this->lastPathCheck+TBAGame->pathCheckInterval) return false;
 	// if(this->targetPath.size() > 0) return false;
@@ -385,133 +426,165 @@ bool Character::generatePathTo(float tx, float ty, bool adjacent) {
 		
 	}
 	// debug(this->getName()+" is following new path ");
+	// if(this->getName() != "Lost Bladesman") return true;
 	for(int i=0;i<this->targetPath.size();i++) {
 		// debug(std::to_string(this->targetPath.at(i)->x)+", "+std::to_string(this->targetPath.at(i)->y));
 	}
 	return true;
 }
-
+//Move away from character
 void Character::moveAway(Character *c) {
+	float x,y,tx,ty;
+	// decompose(c->getLocation(),tx,ty);
+	// decompose(this->getLocation(),x,y);
+	// this->generatePathTo(x-tx,y-ty);
 	this->setTargetAngle(c);
 	this->targetAng = ((int)this->targetAng+180)%360;
 	this->move_forward = true;
 }
 
 //==========
-//	 STATUS_TRAVEL
+//  COMBAT
 //==========
 
-void Character::turn() {
-	// if(this->isPlayer and !this->autoMove) return;
-	if((fabs(this->viewAng - this->targetAng)) > this->getTurnSpeed()) {
+// (Thinking method) determine best target based on circumstances
+bool Character::combatRetarget() {
+
+	//Target highest priority target in awareness range (placeholder 10)
+	std::vector<Character*> targets = this->getCharactersInRadius();
+	Tile* thisTile;
+
+	Character* occupant;
+
+	for(int i=0;i<targets.size();i++) {
+		occupant = targets.at(i);
+
+		// Valid target conditions: 
+		//	Target is alive
+		//	Target is targeting you 
+		//  Target is attacking, in combat with, or in pursuit of you
+		//  If multiple targets meet these criteria, choose the closest
+
+		ConditionSet target_valid = ConditionSet({
+			occupant->isAlive(),
+			occupant->hasTarget(),
+			(char*)occupant->getCharTarget() == (char*)this,
+			occupant->hasStatus(STATUS_COMBAT),
+		});
 		
-		int sign;
-		if(this->targetAng > this->viewAng) {
-			if( (360 - this->targetAng + this->viewAng) < this->targetAng-this->viewAng) {
-				sign = -1;
+		if(target_valid.valid()) {
+			if(!this->hasTarget()) {
+				this->setTarget(occupant);
 			} else {
-				sign = 1;
-			}
-		} else {
-			if( (360 - this->viewAng + this->targetAng) < this->viewAng-this->targetAng) {
-				sign = 1;
-			} else {
-				sign = -1;
+				//Check if this target is closer than current target
+				this->setTarget(closer(this->getCharTarget(),occupant));
 			}
 		}
-		
-		//																			Slow turn speed as viewAng approaches targetAng
-		float diff = 180-fabs(this->viewAng-this->targetAng);
-		if(diff == 0) {
-			this->viewAng += this->getTurnSpeed()*sign;
-		} else {
-			this->viewAng += this->getTurnSpeed()*sign*fabs((float)180/diff);
-		}
-
-	} else {
-		//If aim is close enough just set to target angle
-		this->viewAng = this->targetAng;
 	}
 
-	//Wrap view angle between 0 and 360 for simplicity
-	if(this->viewAng < 0) {
-		this->viewAng = 360+this->viewAng;
-	}
-	this->viewAng = (int)this->viewAng%360;
-	// if(this->getName()[0] == 'D') debug(this->viewAng);
+	return this->hasTarget();
+	
 }
-
-void Character::setLocomotion() {
-
-	if(!this->isPlayer) {
-		if(this->hasTarget()) {
-			if(this->hasStatus(STATUS_PURSUE)) {
-				this->generatePathTo(this->getCharTarget());
-			} else if(this->hasStatus(STATUS_ESCAPE)) {
-				//Check awareness range here for targets in combat, targeting and moving towards this character
-				//Using this character's target is a shortcut
-				this->moveAway(this->getCharTarget());
-			}
-		}
-	}
-
-	if(fabs(this->velocity) < 0.5f) {
-		this->removeStatus(STATUS_TRAVEL);
-	}
-
-
-}
-
-//==========
-//  STATUS_COMBAT
-//==========
-
+//Exit combat
 void Character::exitCombat() {
-	this->removeStatus(STATUS_NO_AMMO);
-	this->removeStatus(STATUS_COMBAT);
-	this->removeStatus(STATUS_PURSUE);
+	this->removeStatus(STATUS_NO_AMMO | STATUS_COMBAT | STATUS_ATTACK | STATUS_PURSUE);
+	// this->removeStatus(STATUS_COMBAT);
+	// this->removeStatus(STATUS_ATTACK);
+	// this->removeStatus(STATUS_PURSUE);
 }
-
+//Select best choice of equipment of certain type 
+bool Character::chooseNewEquipment(ItemType type) {
+	std::vector<Item*> compatible = this->inventory->getItemsOfType(type);
+	//DETERMINE BEST ITEM CHOICE HERE
+	if(compatible.size() == 0) {
+		return false;
+	}
+	return this->equip(compatible.at(0));
+}
+//Check equipment and equip new items 
+bool Character::evaluateEquipment() {
+	bool equipped = false;
+	ItemType type;
+	EquipmentSlot slot;
+	std::vector<ItemType> implicitSlots = {I_WEAPON,I_ARMOR_HEAD,I_ARMOR_BODY,I_ARMOR_LEGS,I_ARMOR_FEET};
+	std::vector<EquipmentSlot> slots = {EQUIP_PRIMARY,EQUIP_HEAD,EQUIP_BODY,EQUIP_LEGS,EQUIP_FEET};
+	for(int i=0;i<implicitSlots.size();i++) {
+		type = implicitSlots.at(i);
+		slot = slots.at(i);
+		if(!this->equipment->hasEquipped(slot)) {
+			std::vector<Item*> compatible = this->inventory->getItemsOfType(type);
+			if(compatible.size() == 0) continue;
+			equipped = true;
+			this->equipment->equip(compatible.at(0),slot);
+		}
+	}
+	return equipped;
+}
+//Check statuses to determine if character is in combat
+bool Character::inCombat() {
+	return (this->hasStatus(STATUS_COMBAT) | this->hasStatus(STATUS_PURSUE));
+}
+//Think deeply about preparing for combat
+void Character::combatThink() {
+	if(this->equipment->hasEquipped(EQUIP_PRIMARY)) {
+		//If this character has a primary weapon
+		if(this->equipment->getSlot(EQUIP_PRIMARY)->hasType(I_WEAPON_RANGED)) {
+			//If that primary weapon is a ranged weapon
+			if(!this->hasAmmo((ItemType)this->equipment->getSlot(EQUIP_PRIMARY)->getWeaponType())) {
+				//If we have ammo for that weapon
+				this->addStatus(STATUS_NO_AMMO);
+			} else {
+				this->removeStatus(STATUS_NO_AMMO);
+			}
+			if(this->hasTarget()) {
+				if(this->hasStatus(STATUS_NO_AMMO)) {
+					//If we have a target and no ammo, swap to a melee weapon and pursue them
+					if(this->chooseNewEquipment(I_WEAPON_MELEE)) {
+						this->removeStatus(STATUS_NO_AMMO);
+					}
+				}
+			}
+		} else if(this->equipment->getSlot(EQUIP_PRIMARY)->hasType(I_WEAPON_MELEE)) {
+			if(this->hasTarget()) {
+				if(!this->targetInRange()) {
+					//Select ranged weapon with ammo and equip
+				}
+			}
+		}
+	}
+}
+//Prepare combat environment and engage in combat
 void Character::combat() {
+
+	//Wait until we are stationary to initiate combat
+	if(this->hasStatus(STATUS_TRAVEL)) return;
+	// if(this->hasStatus(STATUS_PURSUE)) return;
 
 	//====================
 	//		ACQUIRE TARGET
 	//====================
-	// TBAGame->gameLog->write_nts("2");
+
 	if(!this->hasTarget()) {
-		// TBAGame->gameLog->write_nts("2");
 		if(!this->combatRetarget()) {
-			// TBAGame->gameLog->write_nts("2");
 			this->exitCombat();
 			return;
 		}
 	}
-	
-	// TBAGame->gameLog->write_nts("2");
 
 	//============================
-	//		PREPARE STATUS_ATTACK CONDITIONS
+	//		PREPARE ATTACK CONDITIONS
 	//============================
 
 	if(!this->targetInRange()) {
-		if(this->isPlayer) {
-			//If target is out of range, treat as if character is not in combat
-			// Resetting combat timer here prevents "Running attacks"
-			// (Attacking immediately after entering combat range with pursuit target)
-			// Provides a 1-hit advantage for combat-initiators
-			
-			//this->resetCombatTimer();
-		} else {
 			// If NPC's target is out of its range, move towards it 
-			this->addStatus(STATUS_PURSUE);
-		}
+		this->addStatus(STATUS_PURSUE);
 		return;
 	}
 
 	this->setTargetAngle(this->getCharTarget());
 
 	if(!this->getCharTarget()->isAlive()) {
-		if(this->isPlayer) {
+		if(this->isPlayer()) {
 			//Placeholder for behavior when in combat with dead target
 		} else {
 			//Placeholder for behavior when in combat with dead target
@@ -519,12 +592,15 @@ void Character::combat() {
 		this->exitCombat();
 		return;
 	}
+
 	//====================
-	//		PREPARE STATUS_ATTACK
+	//		PREPARE ATTACK
 	//====================
-	
+
 	//Stop moving to prepare attack
 	//Failsafe: If character enters preparation phase while attack is ready, reset attack timer to weapon swing time
+
+	this->combatThink();
 
 	switch(this->getAttackStatus()) {
 		//Character is in combat but not ready to attack
@@ -534,19 +610,13 @@ void Character::combat() {
 		//Character is currently attacking with weapon
 		//Wait for attack to connect
 		case ATK_STATUS_ATTACKING:
-			if(this->equipment->hasPrimary() and this->equipment->primary->hasType(I_WEAPON_BOW) and !this->hasAmmo(I_WEAPON_BOW)) {
-				this->addStatus(STATUS_NO_AMMO);
-			} else {
-				this->removeStatus(STATUS_NO_AMMO);
-				this->addStatus(STATUS_ATTACK);
-			}
+			if(!this->hasStatus(STATUS_NO_AMMO)) this->addStatus(STATUS_ATTACK);
 			return;
 		//Swing makes contact, send attack and calculate damage
 		case ATK_COMPLETE:
 			this->removeStatus(STATUS_ATTACK);
 			break;
 	}
-
 
 	//====================
 	//		SEND ATTACK
@@ -555,11 +625,11 @@ void Character::combat() {
 	this->sendAttack(this->target);
 
 }
-
+//Force character to restart combat actions 
 void Character::resetCombatTimer() {
 	this->lastAttack = TBAGame->logicTicks;
 }
-
+//Get status of attacking character (preparing to attack, swinging weapon, attack complete)
 attackStatus Character::getAttackStatus() {
 
 	//Attack rate needs to be weapon/stat dependant
@@ -570,29 +640,29 @@ attackStatus Character::getAttackStatus() {
 	}
 	return ATK_NOT_READY;
 }
-
+//Determine attack type based on equipment 
 ItemType Character::getAttackType() {
-	if(this->equipment->primary == nullptr) {
+	if(this->isUnarmed()) {
 		return I_WEAPON_MELEE;
 	}
-	if(this->equipment->primary->hasType(I_WEAPON_MELEE)) return I_WEAPON_MELEE;
+	if(this->equipment->getSlot(EQUIP_PRIMARY)->hasType(I_WEAPON_MELEE)) return I_WEAPON_MELEE;
 	return I_WEAPON_RANGED;
 }
-
+//Determine if character has ammo for ItemType
 bool Character::hasAmmo(ItemType type) {
 	for(int i=0;i<this->inventory->contents->size();i++) {
 		if(this->inventory->contents->at(i)->hasType(I_AMMO | type)) return true;
 	}
 	return false;
 }
-
+//Retrieve ammo object for ItemType
 Item* Character::getAmmo(ItemType type) {
 	for(int i=0;i<this->inventory->contents->size();i++) {
 		if(this->inventory->contents->at(i)->hasType(I_AMMO | type)) return this->inventory->contents->at(i);
 	}
 	return nullptr;
 }
-
+//Attack target
 void Character::sendAttack(GameObject *target) {
 
 	//Sends attack type and specifics to target
@@ -611,7 +681,9 @@ void Character::sendAttack(GameObject *target) {
 			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
 			//												accuracy mult goes here \/
 			if(this->hasAmmo(I_WEAPON_BOW)) {
-				new Projectile(this,this->getLocation(),damage,this->viewAng*CONV_DEGREES,.5); //placeholder velocity
+				float inaccuracy = 12;
+				inaccuracy = (-(inaccuracy/2)+rand()%(int)inaccuracy);
+				new Projectile(this,this->getLocation(),damage,(inaccuracy+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
 				this->inventory->remove(this->getAmmo(I_WEAPON_BOW));
 			} else {
 				this->addStatus(STATUS_NO_AMMO);
@@ -627,7 +699,7 @@ void Character::sendAttack(GameObject *target) {
 	this->lastAttack = TBAGame->logicTicks;
 
 }
-
+//Receive attack from attacker
 void Character::receiveAttack(int damage,GameObject *attacker) {
 	//Takes attack type and specifics
 	//Performs resistance calculation, returns damage dealt
@@ -636,16 +708,6 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	if(!this->hasStatus(STATUS_COMBAT)) {
 		this->addStatus(STATUS_COMBAT);
 	}
-	/*
-	switch(this->getStatus()) {
-		case STATUS_COMBAT:
-		case STATUS_PURSUE:
-		case STATUS_ATTACK:
-			break;
-		default:
-			this->setStatus(STATUS_COMBAT);
-	}
-	*/
 	
 	// Swap target to attacker if attacker is a higher priority than current target
 	// Swap conditions: 
@@ -657,20 +719,37 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		this->setTarget(static_cast<Character*>(attacker));
 	}
 
-	//Apply damage resistance calculation
-	// this->health -= damage;
-	int targetLimb = rand()%101;
-	if(targetLimb >= 87) {
-		this->limbs.at(0)->applyDamage(damage);
-	} else if(targetLimb >= 47) {
-		this->limbs.at(1)->applyDamage(damage);
-	} else if(targetLimb >= 27) {
-		this->limbs.at(2)->applyDamage(damage);
-	}	else {
-		this->limbs.at(3)->applyDamage(damage);
+	//Alert player squad
+	if(this->hasSquad()) {
+		this->squad->alert(attacker);
 	}
 
-	this->checkLimbs();
+	//Apply damage resistance calculation
+	// this->health -= damage;
+	float def;
+	int limbRoll = rand()%101;
+	LimbType targetLimb;
+	EquipmentSlot defenseSlot;
+	if(limbRoll >= 87) {
+		defenseSlot = EQUIP_HEAD;
+		targetLimb = LIMB_HEAD;
+	} else if(limbRoll >= 47) {
+		defenseSlot = EQUIP_BODY;
+		targetLimb = LIMB_TORSO;
+	} else if(limbRoll >= 27) {
+		defenseSlot = EQUIP_BODY;
+		targetLimb = LIMB_ARMS;
+	}	else {
+		defenseSlot = EQUIP_LEGS;
+		targetLimb = LIMB_LEGS;
+	}
+
+	def = this->equipment->getDef(defenseSlot);
+	damage = std::max(0.0f,damage-def);
+
+	this->body->getLimb(targetLimb)->applyDamage(damage-def);
+
+	this->checkBody();
 
 	// Apply knockback
 	// int magnitude = damage;
@@ -679,16 +758,17 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	// this->move({magnitude*directionX,magnitude*directionY});
 
 	//Damage popups
-	if(this->isPlayer) {
-		new FloatingText(3,{std::to_string(damage)},{this->location->x,-this->location->y},{160,20,20,255});
+	std::string damageIndicator = std::to_string(damage)+" ("+this->body->toString(targetLimb)+")";
+	if(this->isPlayer()) {
+		// new FloatingText(3,{damageIndicator},{this->location->x,-this->location->y},{160,20,20,255});
 		TBAGame->displayText("\nReceived "+std::to_string(damage)+" damage from "+attacker->getName());
 	} else {
-		new FloatingText(3,{std::to_string(damage)},{this->location->x,-this->location->y},{20,160,20,255});
-		//new FloatingText(3,{"Blessings of King upon you"},this->getAbsoluteLocation(),this);
+		// new FloatingText(3,{damageIndicator},{this->location->x,-this->location->y},{20,160,20,255});
+		// new FloatingText(3,{"Blessings of King upon you"},this->getAbsoluteLocation(),this);
 	}
 
-	if(static_cast<Character*>(attacker)->isPlayer) {
-		TBAGame->displayText("\nDealt "+std::to_string(damage)+" damage to "+this->getName());
+	if(static_cast<Character*>(attacker)->isPlayer()) {
+		TBAGame->displayText("\nDealt "+std::to_string(damage)+" damage to "+this->getEntityName());
 	}
 
 
@@ -697,10 +777,17 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	//====================
 
 	if(this->health <= 0) {
-		if(static_cast<Character*>(attacker)->isPlayer) TBAGame->displayText("\nKilled "+this->getName());
+		//Globally broadcasted kill notifs
+		TBAGame->displayText("\n"+attacker->getEntityName()+" kills "+this->getEntityName());
+		if(static_cast<Character*>(attacker)->isPlayer()) TBAGame->displayText("\nKilled "+this->getName());
 		this->kill();
-		static_cast<Character*>(attacker)->setTarget(nullptr);
-		static_cast<Character*>(attacker)->say("It's a shame, really");
+		//If killed character was killer's actual target
+		if((char*)this == (char*)static_cast<Character*>(attacker)->getTarget()) {
+			static_cast<Character*>(attacker)->setTarget(nullptr);
+			static_cast<Character*>(attacker)->say("It's a shame, really");
+		} else {
+			static_cast<Character*>(attacker)->say("Oops!");
+		}
 
 		//If target is killled
 		//Decide whether to disengage or choose new target
@@ -714,85 +801,77 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	}
 
 }
-
-void Character::checkLimbs() {
-	for(int i=0;i<this->limbs.size();i++) {
-		if((float)this->limbs.at(i)->getHealth()/this->limbs.at(i)->maxHealth <= .5) {
+//Check limb health/status
+void Character::checkBody() {
+	if(this->body->getVitality() <= .2) {
+		if(this->isAlive()) this->kill();
+		return;
+	}
+	for(int i=0;i<this->body->getLimbs().size();i++) {
+		if((float)this->body->getLimbs().at(i)->getHealth()/this->body->getLimbs().at(i)->maxHealth <= .5) {
 			this->addStatus(STATUS_CRIPPLED);
+			if(this->hasStatus(STATUS_COMBAT)) {
+				this->exitCombat();
+				this->addStatus(STATUS_ESCAPE);
+			}
 		}
 	}
 }
 
+//==========
+//		MISC
+//==========
+//Say message
 void Character::say(const std::string& message) {
+	TBAGame->displayText("\n"+this->getName()+" says \""+message+"\"");
 	new FloatingText(3,TBAGame->gameWindow->textScreen->prepareCommandForDisplay(message),this->getApproximateLocation(),this);
+	// new FloatingText(3,message,this->getLocation(),this);
 }
 
 //==========
 //	  UPDATE
 //==========
 
+void Character::think() {
+	//Perform status-actions
+	
+	//Should eventually have more sophisticated criteria for escape
+	if(this->body->getVitality() <= .5) {
+		this->exitCombat();
+		this->addStatus(STATUS_ESCAPE);
+	}
+
+	if(this->inCombat()) {
+		this->combat();
+	}
+
+	if(this->hasStatus(STATUS_WORK) and this->hasWorkTarget()) {
+		this->processWork();
+	}
+	
+}
+
 void Character::update() {
-	
-	// pthread_mutex_lock(&TBAGame->updateLock);
-	
-	// TBAGame->gameLog->write_nts("1");
-	
+		
 	//Process status effects
 	this->processEffects();
 	
-	if(!this->isAlive()) {
+	if(this->isAlive()) {
+		this->think();
+	} else {
 		//safeguard against zombies
 		if(!this->hasStatus(STATUS_DEAD)) {
 			this->kill();
 		}
-	} else {
-
-		//Perform status-actions
-		
-		//Should eventually have more sophisticated criteria for escape
-		if((float)this->health/this->maxHealth <= .5) {
-			this->removeStatus(STATUS_COMBAT | STATUS_PURSUE);
-			this->addStatus(STATUS_ESCAPE);
-		}
-		
-		if(this->hasStatus(STATUS_COMBAT | STATUS_ATTACK) and !this->hasStatus(STATUS_TRAVEL | STATUS_PURSUE)) {
-			this->combat();
-		}
-		
-		if(this->hasStatus(STATUS_PURSUE)) {
-			//Pursuing target until target is in range
-			// At which point we begin combat
-			if(this->targetInRange()) {
-				this->removeStatus(STATUS_PURSUE);
-				this->move_forward = false;	
-			}
-		}
-		
-		if(this->hasStatus(STATUS_WORK) and this->hasWorkTarget()) {
-			if(dist({this->x,this->y},this->workTarget->getLocation()) > 2) {
-				float x,y;
-				decompose(this->workTarget->getLocation(),x,y);
-				this->generatePathTo(x,y,true);
-			} else {
-				if(!this->hasStatus(STATUS_TRAVEL | STATUS_COMBAT)) {
-					this->processWork();
-				}					
-			}
-		}
-
-		//Set movement-based status-actions
-		
-		this->setLocomotion();
-
-		if(this->viewAng != this->targetAng) this->turn();
-		if(this->targetPath.size() > 0) {
-			this->moveTo();
-		}
+		return;
 	}
-
-	//Physics
-	this->move();
+	if(this->viewAng != this->targetAng) this->turn();
+	// if(this->name == "Lost Bladesman") debug("Aim: "+std::to_string(this->targetAng));
 	
-	// pthread_mutex_unlock(&TBAGame->updateLock);
+	if(this->targetPath.size() > 0) this->followPath();
+	
+	//Physics
+	this->setLocomotion();
+	this->move();
 
 }

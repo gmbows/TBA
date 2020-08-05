@@ -7,12 +7,80 @@
 Inventory::Inventory(int _capacity): capacity(_capacity) {
 }
 
-void Inventory::add(Item* item) {
+//===========
+// 	  MANIFEST
+//===========
+
+void Inventory::record(int id,int change) {
+	if(this->manifest.find(id) == this->manifest.end()) {
+		this->manifest.insert({id,1});
+	} else {
+		int temp = this->manifest.at(id);
+		this->manifest.erase(id);
+		this->manifest.insert({id,temp+change});
+	}
+}
+
+
+//===========
+// 		 ADD
+//===========
+
+bool Inventory::add(Item* item) {
 
 	this->contents->push_back(item);
-	this->setInfoString();
-
+	this->record(item->id,1);
+	return true;
 }
+
+bool Inventory::add(int id) {
+
+	this->contents->push_back(new Item(id));
+	this->record(id,1);
+	return true;
+}
+
+bool Inventory::add(const std::vector<int>& itemVec) {
+
+	for(int i=0;i<itemVec.size();i++) {
+		this->contents->push_back(new Item(itemVec.at(i)));
+		this->record(itemVec.at(i),1);
+	}
+	return true;
+}
+
+bool Inventory::add(const std::vector<Item*>& itemVec) {
+
+	for(int i=0;i<itemVec.size();i++) {
+		this->contents->push_back(itemVec.at(i));
+		this->record(itemVec.at(i)->id,1);
+	}
+	return true;
+}
+
+//===========
+// 		REMOVE
+//===========
+
+Item* Inventory::remove(int index) {
+	Item *removedItem = this->getItem(index);
+	this->contents->erase(this->contents->begin()+index);
+	this->record(removedItem->id,-1);
+	return removedItem;
+}
+
+Item* Inventory::remove(Item* item) {
+	int index = this->find(item);
+	if(index >= 0) {
+		this->contents->erase(this->contents->begin()+index);
+		this->record(item->id,-1);
+	}
+	return item;
+}
+
+//===========
+// 		 FIND
+//===========
 
 int Inventory::find(Item* item) {
 	for(int i=0;i<this->contents->size();i++) {
@@ -48,44 +116,18 @@ int Inventory::itemCount(int id) {
 }
 
 std::string Inventory::toString() {
-	if(this->isEmpty()) return "\nEmpty";
-	return this->contentString;
+	if(this->isEmpty()) return "\n\tEmpty";
+	return this->getInfoString();
 }
 
-////////////////
-//INTERACTION
-//MUST SET INFO STRING
-////////////////
-
-void Inventory::add(int id) {
-
-	this->contents->push_back(new Item(id));
-	this->setInfoString();
-}
-
-void Inventory::add(const std::vector<int>& itemVec) {
-
-	for(int i=0;i<itemVec.size();i++) {
-		this->contents->push_back(new Item(itemVec.at(i)));
+std::vector<Item*> Inventory::getItemsOfType(ItemType type) {
+	std::vector<Item*> compatible;
+	for(int i=0;i<this->contents->size();i++) {
+		if(this->contents->at(i)->hasType(type)) compatible.push_back(this->contents->at(i));
 	}
-	this->setInfoString();
+	return compatible;
 }
 
-Item* Inventory::remove(int index) {
-	Item *removedItem = this->getItem(index);
-	this->contents->erase(this->contents->begin()+index);
-	this->setInfoString();
-	return removedItem;
-}
-
-Item* Inventory::remove(Item* item) {
-	int index = this->find(item);
-	if(index >= 0) {
-		this->contents->erase(this->contents->begin()+index);
-		this->setInfoString();
-	}
-	return item;
-}
 
 std::vector<std::string> Inventory::getContentString() {
 	std::vector<std::string> contents;
@@ -97,44 +139,73 @@ std::vector<std::string> Inventory::getContentString() {
 	return contents;
 }
 
-void Inventory::setInfoString() {
-
-	std::vector<int> idList;
-	std::vector<int> checkedIDs;
-	std::string invString = "\n";
-	int itemID;
-	int itemCount;
-	std::string itemName;
-
-	if(this->isEmpty()) {
-		this->contentString = "\tEmpty";
-		return;
-	}
-
-	//Populate idList with list of itemID's in inventory
-	for(int i=0;i<this->contents->size();i++) {
-		idList.push_back(this->contents->at(i)->id);
-	}
+std::string Inventory::getInfoString() {
 	
-	for(int i=0;i<this->contents->size();i++) {
-
-		itemID = this->contents->at(i)->id;
-		if(contains(checkedIDs,itemID)) {
-			continue;
-		}
-
-		itemName = replace(this->contents->at(i)->name,' ',"");
-		itemCount = count(idList,itemID);
-		if(itemCount == 1) {
-			invString += "\t-"+itemName;
+	std::string stuff = "\n";
+	std::string name;
+	int id,count;
+	for(std::map<int,int>::iterator it=this->manifest.begin();it != this->manifest.end();it++) {
+		id = it->first;
+		count = this->manifest.at(id);
+		
+		name = Item(id).getDisplayName();
+		
+		if(count == 1) {
+			stuff += "\t-"+name;
 		} else {
 			// invString += "\t-"+std::to_string(itemCount)+""+this->contents->at(i)->getPluralDisplayName();
-			invString += "\t-"+std::to_string(itemCount)+"x"+this->contents->at(i)->getDisplayName();
+			stuff += "\t-"+std::to_string(count)+"x"+name;
 			//invString += "\t-"+itemName+""+"("+std::to_string(itemCount)+")";
 		}
-		checkedIDs.push_back(itemID);
 	}
-
-	this->contentString = invString;
-
+	return stuff;
 }
+
+
+//===========
+// 		 DEFUNCT
+//===========
+
+// void Inventory::setInfoString() {
+	
+	// this->hasChanged = true;
+
+	// std::vector<int> idList;
+	// std::vector<int> checkedIDs;
+	// std::string invString = "\n";
+	// int itemID;
+	// int itemCount;
+	// std::string itemName;
+
+	// if(this->isEmpty()) {
+		// this->contentString = "\tEmpty";
+		// return;
+	// }
+
+	// Populate idList with list of itemID's in inventory
+	// for(int i=0;i<this->contents->size();i++) {
+		// idList.push_back(this->contents->at(i)->id);
+	// }
+	
+	// for(int i=0;i<this->contents->size();i++) {
+
+		// itemID = this->contents->at(i)->id;
+		// if(contains(checkedIDs,itemID)) {
+			// continue;
+		// }
+
+		// itemName = replace(this->contents->at(i)->name,' ',"");
+		// itemCount = count(idList,itemID);
+		// if(itemCount == 1) {
+			// invString += "\t-"+itemName;
+		// } else {
+			// invString += "\t-"+std::to_string(itemCount)+""+this->contents->at(i)->getPluralDisplayName();
+			// invString += "\t-"+std::to_string(itemCount)+"x"+this->contents->at(i)->getDisplayName();
+			// invString += "\t-"+itemName+""+"("+std::to_string(itemCount)+")";
+		// }
+		// checkedIDs.push_back(itemID);
+	// }
+
+	// this->contentString = invString;
+
+// }

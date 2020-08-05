@@ -3,11 +3,12 @@
 #include "../common/Tile.h"
 #include "Structure.h"
 #include "../tools/Utility.h"
-#include "../ui/Font.h"
 
 #include <vector>
 #include <random>
 #include <ctime>
+
+
 
 int lightRound(float x) {
 
@@ -103,16 +104,14 @@ void World::genWorld_new(SDL_Renderer* renderer) {
 	int cursor[2] = {0,0};
 
 	int tileID;
-	int occupierTileID;
+	// int occupierTileID;
 	int index = -1;
 	
 	int texSize = 16;
 
 	for(int y=0;y<this->size;y++) {
 		for(int x=0;x<this->size;x++) {
-			
 			thisTile = this->tileVector.at(y)->at(x);
-
 			//For each line of visible Content
 			//Get tile ID from tile and get tile texture from tileset
 
@@ -145,6 +144,7 @@ void World::genWorld_new(SDL_Renderer* renderer) {
 	std::cout << "Generating world texture... Done" << std::endl;
 }
 
+
 void World::createStructure(std::tuple<int,int> location, structure s, int tileID) {
 
 	//Takes tile at top left of structure and places tiles according to structure plan
@@ -152,10 +152,10 @@ void World::createStructure(std::tuple<int,int> location, structure s, int tileI
 	int startingX = std::get<0>(location) - (s.at(0).size()/2);
 	int startingY = std::get<1>(location) - (s.size()/2);
 
-	float indX,indY;
+	// float indX,indY;
 
 	Block* block;
-
+	
 	for(int i=0;i<s.size();i++) {
 		for(int j=0;j<s.at(i).size();j++) {
 			//Check corner types
@@ -179,6 +179,62 @@ void World::createStructure(std::tuple<int,int> location, structure s, int tileI
 //=========
 //		TILES
 //=========
+
+bool World::hasSimplePath(GameObject *c1,GameObject *c2) {
+	return this->validatePath(this->simplePathTo(c1,c2));
+}
+
+bool World::validatePath(const std::vector<Tile*> &path) {
+	int end = path.size();
+	// if(end >= 3) end -= 1;
+	for(int i=0;i<end;i++) {
+		if(!path.at(i)->isPassable()) return false;
+	}
+	return true;
+}
+
+std::vector<Tile*> World::simplePathTo(GameObject *c1, GameObject *c2) {
+	if(c1 == nullptr or c2 == nullptr) {
+		debug("(World::pathTo) ERROR: Cannot path invalid characters");
+		return {};
+	}
+	float x,y,x2,y2;
+	decompose(c1->getLocation(),x,y);
+	decompose(c2->getLocation(),x2,y2);
+	return this->simplePathTo(x,y,x2,y2);
+}
+
+std::vector<Tile*> World::simplePathTo(int x1,int y1,int x2,int y2) {
+	
+	std::vector<Tile*> path;
+	float deltax = x2-x1;
+	float deltay = y2-y1;
+	if(deltax == 0) return {};
+	float deltaerr = abs(deltay/deltax);
+	
+	int y=y1;
+	
+	int start,end;
+	int err = 0;
+	
+	if(x1 > x2) {
+		start = x2;
+		end = x1;
+	} else {
+		end = x2;
+		start = x1;
+	}
+	
+	for(int i=start;i<end;i++) {
+		path.push_back(this->getTileAt(i,y));
+		err += deltaerr;
+		if(err >= .5) {
+			y += (deltay > 0)? 1 : -1;
+			err -= 1;
+		}
+	}
+	return path;
+}
 
 void World::replaceTile(std::tuple<int,int> location, int tileID) {
 	int x = std::get<0>(location);

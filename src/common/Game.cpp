@@ -2,6 +2,7 @@
 
 #include <thread>
 #include <random>
+#include <memory>
 
 #include "../ui/Window.h"
 #include "../ui/Screen.h"
@@ -19,6 +20,11 @@
 #include "../game/CommandFuncs.h"
 #include "../game/FloatingText.h"
 #include "../game/Structure.h"
+#include "../game/Squad.h"
+#include "../common/Keys.h"
+
+#include "../game/Projectile.h"
+
 
 //=============
 //	 	SETUP
@@ -97,8 +103,11 @@ void Game::setupUI() {
 }
 
 void Game::setupGame() {
+
+	this->gameLog = new Log("Game.txt");
+	gameLog->writeln("Beginning game startup\n");
 	
-	pthread_mutex_init(&this->updateLock, NULL);
+	pthread_mutex_init(&this->logicLock, NULL);
 	
 	//this->maxWaitTime = 1000/std::max(this->logicTickRate,this->graphicsTickRate);
 	//this->minWaitTime = 1000/std::min(this->logicTickRate,this->graphicsTickRate);
@@ -108,8 +117,8 @@ void Game::setupGame() {
 			//				name,alias,argc,commandFunc,ECfunc=nullptr
 			//COMMANDSTART
 			new		Command({"help","?"},helpFunc,helpEC),
-			new 	Command({"clear","clr"},clearFunc),
-			new 	Command({"inventory"},inventoryFunc),
+			new 		Command({"clear","clr"},clearFunc),
+			new 		Command({"inventory"},inventoryFunc),
 			new		Command({"move","mv"},moveFunc,moveEC),
 			new		Command({"pause"},pauseFunc),
 			new		Command({"stop"},stopFunc),
@@ -132,67 +141,78 @@ void Game::setupGame() {
 			new		Command({"use"},useFunc,useEC),
 			new		Command({"giveme"},givemeFunc,givemeEC),
 			new		Command({"work"},workFunc,workEC),
+			new		Command({"goto"},gotoFunc,gotoEC),
+			new		Command({"control"},controlFunc,controlEC),
+			new		Command({"unequip"},unequipFunc,unequipEC),
 			////
 		};
 	
 	//Populate string command list with command names for autocomplete
 	for(int i=0;i<this->commandList.size();i++) {
-		//for(int j=0;j<this->commandList.at(i)->aliases.size();j++) {
 		this->commandStrings.push_back(this->commandList.at(i)->aliases.at(0));
-		//}
 	}
 
 	//Length of one edge of map square
-	int quadSize = 128;
+	int quadSize = 32;
 
 	this->gameWorld = new World(quadSize*2);
 	
 	gameWorld->worldTexture = SDL_CreateTexture(this->gameWindow->renderer,
-                               SDL_GetWindowPixelFormat( this->gameWindow->window),
+								SDL_GetWindowPixelFormat( this->gameWindow->window),
 								SDL_TEXTUREACCESS_TARGET,
-                               gameWorld->size*this->gameWindow->mapScreen->charW,
-                               gameWorld->size*this->gameWindow->mapScreen->charH);
+								gameWorld->size*this->gameWindow->mapScreen->charW,
+								gameWorld->size*this->gameWindow->mapScreen->charH);
 							   
 	gameWorld->screenFont->generateFontTexture(this->gameWindow->window,this->gameWindow->renderer);
-	
 	this->gameWorld->genWorld();
 	this->gameWorld->genWorld_new(this->gameWindow->renderer);
 
 	//Create player and fill inventory with generic items
-	this->playerChar = new Character(true,160,"Player",0,0);
-	this->playerChar->inventory->add(2);
+	this->playerChar = new Character("Player",160,{0,0});
+	this->playerChar->giveItem(2);
+	this->playerChar->viewAng = 180;
 	for(int i=0;i<10;i++) {
 		//Don't add null item
-		this->playerChar->inventory->add(1+(rand()%(itemManifest.size()-1)));
+		this->playerChar->giveItem(1+(rand()%(itemManifest.size()-1)));
 	}
-	this->playerChar->inventory->add(11);
-	this->playerChar->inventory->add(7);
-	this->playerChar->inventory->add(7);
-	this->playerChar->inventory->add(7);
-	this->playerChar->inventory->add(7);
+	this->playerChar->giveItem(13);
+	this->playerChar->giveItem(7);
+	this->playerChar->giveItem(7);
+	this->playerChar->giveItem(7);
+	this->playerChar->giveItem(7);
 	this->displayTarget = this->playerChar;
-
+	
 	//New characters are added to gameObjects automatically
-	Character *newChar,*LB,*Dog;
+	Character *newChar,*LB,*Dog,*Chog;
 	for(int i=0;i<0;i++) {
-		newChar = new Character(false,160,"Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
-		if(rand()%2 == 0) newChar->equipment->primary = new Item(4);
+		// newChar = new Character("Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
+		if(rand()%2 == 0) newChar->equipment->equip(new Item(4),EQUIP_PRIMARY);
 		newChar->setTarget(this->playerChar);
 		newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
-	newChar = new Character(false,160,"Debug Trader",0,-7);
+
+	newChar = new Character("Debug Trader",160,{0,-7});
+	Chog = new Character("Chog",160,{4,-2});
+
 	// TBAGame->setDisplayTarget(newChar);
 	// newChar->moveTo(0,0);
-	newChar->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	LB = new Character(false,160,"Lost Bladesman",0,6);
-	Dog = new Character(false,160,"Wolf",5,5);
-	Dog->equipment->primary = new Item(12);
-	Dog->inventory->add(8);
-	Dog->inventory->add(8);
-	Dog->inventory->add(8);
-	Dog->inventory->add(8);
+	newChar->maxMoveSpeed = this->playerChar->maxMoveSpeed*2;
+	LB = new Character("Lost Bladesman",160,{-2,-1});
+	new Character("Worker",160,{-2,2});
+	new Character("Ondei",160,{0,6});
+	LB->giveItems({14,15,16,17});
+	LB->body->getLimb(LIMB_TORSO)->health = 100000;
+	LB->setTarget(this->playerChar);
+	LB->setStatus(STATUS_COMBAT);
+	Dog = new Character("Wolf",160,{5,5});
+	Dog->equipment->equip(new Item(13),EQUIP_PRIMARY);
+	Dog->giveItem(8);
+	Dog->giveItem(8);
+	Dog->giveItem(8);
+	Dog->giveItem(8);
+
 	// LB->equipment->primary = new Item(4);
 	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
 	Dog->turnSpeed = playerChar->turnSpeed*2;
@@ -204,20 +224,38 @@ void Game::setupGame() {
 	//newChar->setTarget(playerChar);
 	//newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
-	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);
-	this->gameWorld->createStructure({0,0}, bighouse, 4);
+	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);	
+	this->gameWorld->createStructure({0,0}, maze, 4);
 	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
-	GameObject *node = new ResourceNode("Rich Stone",{2.0f,2.0f},7,10,22);		
+	GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
+	Chog->work(node);
+	// this->createSquad("Player squad")->add(this->playerChar);
+// TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+	// new Character("Archer",160,{-2,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9});
+	for(int i=0;i<1;i++) {
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,7},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,6},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		// LB->addToSquad(new Character("LB Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
+		// LB->addToSquad(new Character("LB Archer",160,{-2+i,12},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
+	}
+	
+	playerChar->setTarget(LB);
+	playerChar->setStatus(STATUS_COMBAT);
+	
 	checkHelp();
-	
 	checkItemTypes();
-	
+
 	debug("Total game objects: "+std::to_string(this->gameObjects.size()));
 	debug("Total UI objects: "+std::to_string(this->gameUIObjects.size()));
 	
-	
 	debug("Game setup complete\n");
+
 	
+	this->gameRunning = true;
+
 	
 }
 
@@ -267,14 +305,21 @@ void Game::removeUIObject(GameObject* o) {
 	}
 }
 
+Squad* Game::createSquad(std::string s) {
+	if(s == "None") s = "Squad "+std::to_string(++this->numSquads);
+	Squad* newSquad = new Squad({},s);
+	this->squads.push_back(newSquad);
+	return newSquad;
+}
+
 //=============
 //		MISC
 //=============
 
 void Game::setPlayer(Character *c) {
-	this->playerChar->isPlayer = false;
+	if(this->playerChar != nullptr) this->playerChar->player = false;
 	this->playerChar = c;
-	this->playerChar->isPlayer = true;
+	this->playerChar->player = true;
 }
 
 bool Game::togglePause() {
@@ -297,6 +342,19 @@ void Game::popupText(int duration, const std::string& message) {
 
 }
 
+std::vector<std::string> Game::getItemNames(const std::vector<Item*> &items) {
+	std::vector<std::string> itemNames;
+	for(int i=0;i<items.size();i++) {
+		if(items.at(i) == nullptr) {
+			itemNames.push_back("");
+		} else {
+			itemNames.push_back(items.at(i)->getName());
+		}
+	}
+	return itemNames;
+}
+
+
 //=============
 //		UPDATE
 //=============
@@ -305,6 +363,11 @@ void logic_thread_routine(Game *game) {
 	Uint32 start;
 	int elapsed;
 	int real_wait = 0;
+	
+	int last_latency_notif = 0;
+	int latency_notif_interval = 5000;//10 Second latency notif interval
+	
+	debug("Game logic enabled");
 	
 	while(game->gameRunning) {
 		// debug("Updating logic");
@@ -318,42 +381,46 @@ void logic_thread_routine(Game *game) {
 		// pthread_mutex_unlock(&game->updateLock);
 
 		real_wait = (1000/game->logicTickRate)-elapsed;
-		if(real_wait <= 0) debug("Falling behind! (logic)");
+		if(real_wait < 0) {
+			if(last_latency_notif + latency_notif_interval <= SDL_GetTicks()) {
+				debug("Falling behind! (logic, "+std::to_string(-real_wait)+"ms.): "+std::to_string(game->logicTicks));
+				last_latency_notif = SDL_GetTicks();
+			}
+		}
+		// debug(real_wait);
 		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
 	}
 }
-void graphics_thread_routine(Game *game) {
-	Uint32 start;
-	int elapsed;
-	int real_wait = 0;
-	
-	while(game->gameRunning) {
-		// debug("Updating graphics");
-		// pthread_mutex_lock(&game->updateLock);
-		//while(game->canUpdateGraphics == false) pthread_cond_wait(&game->graphics,&game->updateLock);
-		start = SDL_GetTicks();
-		game->update_graphics();
-		// debug("Done updating graphics");
-		elapsed = SDL_GetTicks()-start;
-		
-		// pthread_mutex_unlock(&game->updateLock);
 
-		real_wait = (1000/game->graphicsTickRate)-elapsed;
-		if(real_wait <= 0) debug("Falling behind! (graphics)");
-		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
-	}
-}	
 
 void Game::spawn_threads() {
-	// if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
 	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
 }
 
 void Game::updateGameObjects() {
-	for(int i=0;i<this->gameObjects.size();i++) {
-		this->gameObjects.at(i)->update();
-	}
 
+	if(this->playerChar == nullptr) return;
+	std::vector<Tile*> nearbyTiles = this->gameWorld->getTilesInRadius(this->playerChar->x,this->playerChar->y,18);
+	Tile* thisTile;
+	
+	for(int i=0;i<nearbyTiles.size();i++) {
+		thisTile = nearbyTiles.at(i);
+		if(thisTile->isOccupied()) {
+			for(int j=0;j<thisTile->occupiers.size();j++) {
+				thisTile->occupiers.at(j)->update();
+			}
+			// debug("Done updating character");
+		}
+		
+		if(thisTile->hasObjects()) {
+			for(int j=0;j<thisTile->objects.size();j++) {
+				thisTile->objects.at(j)->update();
+			}
+			// debug("Done updating objects");
+		}
+	}
+	// debug("Finish");
+	// pthread_mutex_unlock(&this->logicLock);
 }
 
 void Game::updateGameUIObjects() {
@@ -379,7 +446,7 @@ void Game::update_logic() {
 	// pthread_mutex_unlock(&game->updateLock);
 
 	int real_wait = (1000/this->logicTickRate)-elapsed;
-	if(real_wait <= 0) debug("Falling behind! (logic)");
+	// if(real_wait <= 0) debug("Falling behind! (logic)");
 	// SDL_Delay(real_wait);
 	
 	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
@@ -409,7 +476,7 @@ void Game::update_graphics() {
 
 void Game::update() {
 	
-	std::cout << "Game objects: " << this->gameObjects.size() << "\r" << std::flush;
+	// std::cout << "Game objects: " << this->gameObjects.size() << "\r" << std::flush;
 
 	int start = SDL_GetTicks();
 	this->update_graphics();

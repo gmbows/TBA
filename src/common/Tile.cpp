@@ -94,6 +94,8 @@ Tile::Tile(int tid, int _x, int _y): id(tid), x(_x), y(_y) {
 		this->rotation = 0;
 		this->flip = SDL_FLIP_NONE;
 	}
+	
+	this->occupiers = {};
 }
 
 void Tile::occupyWith(Character* c) {
@@ -111,14 +113,15 @@ void Tile::addBlock(Block* block) {
 }
 
 void Tile::evict(Character* occupant) {
+	// debug("Evicting");
 	int i = find(occupant, this->occupiers);
-
 	if(i >= 0) {
 		this->occupiers.erase(this->occupiers.begin() + i);
 		if(this->occupiers.size() > 1) {
-			this->occupiers.shrink_to_fit();
+			// this->occupiers.shrink_to_fit();
 		}
 	}
+	// debug("Done evicting");
 }
 
 void Tile::removeObject(GameObject* generic) {
@@ -129,6 +132,8 @@ void Tile::removeObject(GameObject* generic) {
 		if(this->objects.size() > 1) {
 			this->objects.shrink_to_fit();
 		}
+	} else {
+		// debug("Attempted to remove non-existent object "+generic->getName());
 	}
 }
 

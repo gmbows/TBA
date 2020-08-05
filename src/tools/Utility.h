@@ -5,6 +5,8 @@
 #include <tuple>
 #include <math.h>
 #include <random>
+#include <map>
+#include <utility>
 
 class GameObject;
 
@@ -22,6 +24,14 @@ inline std::vector<T> operator+(std::vector<T> v,T t) {
 }
 
 template <class T>
+inline std::vector<T> operator+(std::vector<T> v1,std::vector<T> v2) {
+	for(int i=0;i<v2.size();i++) {
+		v1.push_back(v2.at(i));
+	}
+	return v1;
+}
+
+template <class T>
 T choice_uniform(const std::vector<T> &v) {
 	return v.at(rand()%v.size());
 }
@@ -36,6 +46,8 @@ std::vector<T> appendToLast(std::vector<T> v, T t) {
 	return v;
 }
 
+void unpad(std::string&);
+
 //dumpvec
 template <class T>
 void dumpVec(const std::vector<T>& v) {
@@ -47,6 +59,11 @@ void dumpVec(const std::vector<T>& v) {
 	std::cout << "--DUMPVEC END--" << std::endl;
 
 }
+
+void copyBuf(const char*,int,std::string&);
+
+int toInt(std::string);
+unsigned long int toFlag(std::string);
 
 //isdigit
 bool isdigit(const std::string& s);
@@ -134,6 +151,8 @@ bool contains(const std::vector<T> v,T c) {
 	return false;
 }
 
+bool contains(const std::string &s,const std::string &token);
+
 template <class T>
 int count(const std::vector<T> &v, T token) {
 	int count = 0;
@@ -143,6 +162,17 @@ int count(const std::vector<T> &v, T token) {
 		}
 	}
 	return count;
+}
+
+//========
+//--MAP--
+//========
+template <class T>
+void TBA_Update(const std::map<T,T> m,const std::pair<T,T> newEntry) {
+	if(m.find(newEntry.first) != m.end()) {
+		m.erase(newEntry.first);
+	}
+	m.insert(newEntry);
 }
 
 //========

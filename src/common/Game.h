@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../ui/Window.h"
+
 #include "../tools/Log.h"
 
 #include "../game/GameObject.h"
@@ -14,6 +15,8 @@
 #include <string>
 #include <pthread.h>
 
+struct Squad;
+
 struct Game {
 
 	//=============
@@ -24,6 +27,13 @@ struct Game {
 	bool paused = false;
 	bool debugMode = false;
 
+	bool shift = false;
+
+	bool m_forward = false;
+	bool m_back = false;
+	bool turn_right = false;
+	bool turn_left = false;
+
 	Window *gameWindow;
 	Log *gameLog;
 	Clock *clock = new Clock();
@@ -32,6 +42,9 @@ struct Game {
 	Character* playerChar;
 	
 	void setPlayer(Character*);
+	Character* getPlayer() {
+		return this->playerChar;
+	}
 
 	//Global movespeed scale to translate from int movespeeds to floats
 	const float moveSpeedUnit = .005;
@@ -41,6 +54,20 @@ struct Game {
 	}
 	
 	const char colorKey = '\x01';
+
+	std::vector<std::string> getItemNames(const std::vector<Item*>&);
+	
+	//=============
+	//		NETWORK
+	//=============
+	
+	// Client *client = new Client();
+	
+	// std::string serializeInput();
+	// void deserializeObjects(const std::string &s);
+	
+	// std::string objectUpdates;
+	// bool needsUpdate = false;
 
 	//=======================
 	//     GAME OBJECTS
@@ -65,9 +92,17 @@ struct Game {
 	void removeObject(GameObject*);
 	void removeUIObject(GameObject*);
 	void removeObject(int);
-
+	
 	//To ensure unique object IDs
-	int objectTotal = 0;
+	unsigned int objectTotal = 0;
+	unsigned int itemTotal = 0;
+	
+	//==============
+	//     	SQUADS
+	//==============
+	unsigned int numSquads;
+	std::vector<Squad*> squads;
+	Squad* createSquad(std::string s = "None");
 	
 	//====================
 	//	 UPDATE LOGIC
@@ -94,7 +129,7 @@ struct Game {
 	unsigned int inline convert(unsigned int ms) { return ms/(1000/this->logicTickRate);} 
 
 	//recalculate npc pathing every 2 seconds at most
-	int pathCheckInterval = convert(2000);
+	int pathCheckInterval = convert(1000);
 
 	//==========
 	// COMMANDS
@@ -127,10 +162,13 @@ struct Game {
 	
 	void input();
 	void update();
+	
+	pthread_t logic_thread;
 
-	pthread_t logic_thread,graphics_thread;
-	pthread_mutex_t updateLock;
-	pthread_cond_t logic;
+	pthread_mutex_t logicLock = PTHREAD_MUTEX_INITIALIZER;
+	pthread_mutex_t graphicsLock;
+	pthread_cond_t logicEnabled = PTHREAD_COND_INITIALIZER;
+	pthread_cond_t graphicsEnabled = PTHREAD_COND_INITIALIZER;
 	pthread_cond_t graphics;
 
 	bool canUpdateLogic;

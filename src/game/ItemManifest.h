@@ -42,7 +42,7 @@ enum ItemType: flag {
 
 	I_FOOD =			1 << 0,
 	I_FRUIT =			1 << 1,
-	I_VEGETABLE =1 << 2,
+	I_VEGETABLE =	1 << 2,
 	I_POTION	=		1 << 21,
 	I_CONSUMABLE =		1 << 22,
 	
@@ -55,8 +55,8 @@ enum ItemType: flag {
 	I_WEAPON_BOW =		1 << 8,
 	
 	I_ARMOR =					1 << 9,
-	I_ARMOR_HEAD =		1 << 10,
-	I_ARMOR_BODY =		1 << 11,
+	I_ARMOR_HEAD =			1 << 10,
+	I_ARMOR_BODY =			1 << 11,
 	I_ARMOR_LEGS =			1 << 12,
 	I_ARMOR_FEET =			1 << 13,
 	
