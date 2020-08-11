@@ -26,7 +26,7 @@ class Item {
 		time_t created;
 
 		flag types;
-		// ItemType primaryType;
+
 		std::string getTypeAsString();
 		std::map<ItemAttribute,float> attributes;
 		std::map<Action,std::vector<std::vector<float>>> effects;
@@ -43,9 +43,7 @@ class Item {
 
 		bool hasAttribute(ItemAttribute);
 		bool hasEffectOnAction(Action);
-		// std::vector<StatusEffect*> importEffects();
 		float getAttribute(ItemAttribute);
-		// std::vector<ItemAttribute> getAttributes();
 		std::vector<StatusEffect*> getEffectsOnAction(Action);
 		void createAttributeSet(const std::vector<ItemAttribute>&,const std::vector<float>&);
 

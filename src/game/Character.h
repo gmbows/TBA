@@ -13,11 +13,14 @@ struct Tile;
 #include "StatusEffect.h"
 #include "ItemManifest.h"
 
+#include "AI.h"
+
 #include "Limb.h"
 
 #include <string>
 #include <tuple>
 #include <map>
+#include <queue>
 
 typedef unsigned long int flag;
 
@@ -137,12 +140,15 @@ class Character: public GameObject {
 
 		Equipment *equipment;
 		std::string inline getEquipString() {return this->equipment->getEquipString();}
+		inline bool hasPrimary() { return this->equipment->hasEquipped(EQUIP_PRIMARY);}
 		bool equip(Item*);
 		bool plant(Item*);
 		bool consume(Item*);
 		bool work(GameObject*);
 		bool hasAmmo(ItemType);
 		Item* getAmmo(ItemType);
+		
+		bool findAmmo();
 
 		bool chooseNewEquipment(ItemType);
 		bool evaluateEquipment();
@@ -222,15 +228,34 @@ class Character: public GameObject {
 		void resolveMove(float&, float&);
 		void moveToCharacter(Character*);
 		bool generatePathTo(float,float,bool adjacent = false);
-		void generatePathTo(GameObject*);
+		bool generatePathTo(GameObject*,bool adjacent = false);
 		void followPath();
 		void moveAway(Character*);
+		bool canReach(GameObject *o);
+		
+		bool goTo(GameObject*,bool adjacent = false);
 		
 		bool inline hasPath() {return this->targetPath.size() > 0;}
 
 		//========
 		//BEHAVIOR
 		//========
+		
+		//========
+		//		AI
+		//========
+		
+		std::priority_queue<Goal*> goals;
+		inline bool hasGoals() { return !this->goals.empty(); }
+		void addGoal(GoalType g) {
+			this->goals.push(new Goal(g));
+		}
+		Goal* currentGoal() { 
+			if(!this->hasGoals()) {
+				debug("Error (Character::currentGoal()): Returning nullpointer");
+			}
+			return this->goals.top();
+		}
 		
 		bool simple = false;
 
@@ -263,9 +288,15 @@ class Character: public GameObject {
 		}
 		void setTargetAngle(Character*);
 		void setTargetLoc(int,int);
+		GameObject* selectClosestObject(const std::vector<GameObject*>&);
+		bool canInteract(GameObject *o);
 		
 		GameObject* workTarget = nullptr;
 		bool inline hasWorkTarget() { return this->workTarget != nullptr;}
+		GameObject* getWorkTarget() { 
+			if(!this->hasWorkTarget()) debug("ERROR: (Character::getWorkTarget()): Returning nullpointer");
+			return this->workTarget;
+		}
 		void processWork();
 
 		//Status

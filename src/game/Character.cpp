@@ -13,6 +13,8 @@
 #include "ItemManifest.h"
 #include "Squad.h"
 
+#include "../tools/Algorithm.h"
+
 #include <cmath>
 #include <tuple>
 #include <random>
@@ -140,7 +142,11 @@ void Character::move() {
 	this->lastMove = TBAGame->logicTicks;
 
 }
-
+bool Character::canReach(GameObject *o) {
+	float x,y;
+	decompose(o->getLocation(),x,y);
+	return characterCanReach(this,x,y,true);
+}
 //===================
 //	  EQUIPMENT / STATS
 //===================
@@ -270,19 +276,11 @@ bool Character::work(GameObject* node) {
 void Character::processWork() {
 	//If work target is out of range, go to it
 	if(!this->workTargetInRange()) {
-		if(TBAGame->gameWorld->hasSimplePath(this,this->workTarget)) {
-			this->simple = true;
-			// this->targetPath = {TBAGame->gameWorld->simplePathTo(this,this->workTarget).at(TBAGame->gameWorld->simplePathTo(this,this->workTarget).size()-1)};
-			this->targetPath = {this->workTarget->getAsResource()->location};
-		} else {
-			if(this->simple) this->targetPath.clear();
-			this->simple = false;
-			float x,y;
-			decompose(this->workTarget->getLocation(),x,y);
-			this->generatePathTo(x,y,true);
+		if(!this->goTo(this->getWorkTarget(),true)) {
+			debug("Error: "+this->getEntityName()+" cannot reach work target");
 		}
-		// this->generatePathTo(x,y,true);
 	} else {
+		// debug(this->getEntityName()+" is in working range");
 		//Otherwise start working
 		this->targetPath.clear();
 		this->removeStatus(STATUS_TRAVEL);
@@ -314,6 +312,18 @@ bool Character::addToSquad(Character *c,bool createNew) {
 //=============
 // MISC / CLEANUP
 //==============
+GameObject* Character::selectClosestObject(const std::vector<GameObject*> &v) {
+	float cdist = 0xFFFF;
+	GameObject *closest = nullptr;
+	for(int i=0;i<v.size();i++) {
+		if(dist(this->getLocation(),v.at(i)->getLocation()) < cdist) {
+			cdist = dist(this->getLocation(),v.at(i)->getLocation());
+			closest = v.at(i);
+		}
+	}
+	if(closest == nullptr) debug("ERROR: (Character::selectClosestObject()): Returning nullptr");
+	return closest;
+}
 //Get absolute, on-screen location of character tile
 std::tuple<float,float> Character::getApproximateLocation() {
 
@@ -357,6 +367,8 @@ bool Character::isPlayer() {
 // Get detailed info about character
 std::string Character::getInfo() {
 	
+	bool debug = true;
+	
 	std::string info = " Name:\t"+this->getFormattedName() + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" ;
 				// "\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
@@ -364,23 +376,25 @@ std::string Character::getInfo() {
 				// "\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
 				if(this->hasTarget()) {
 					info += "\tTarget:\t"+this->getTargetName() + "\n";
-					info += "\tDistance to target:\t"+std::to_string(dist(this->getLocation(),this->getTarget()->getLocation())) + "\n";
+					// info += "\tDistance to target:\t"+std::to_string(dist(this->getLocation(),this->getTarget()->getLocation())) + "\n";
 					
 				}
 				//"\tVelcocity:\t"+std::to_string(this->velocityX) + "," + std::to_string(this->velocityY) + "\n" +
 				// info += "\tHealth:\t"+std::to_string(this->health) + "/" + std::to_string(this->maxHealth) + "\n\n" + 
 				// info += "\n\n"+ //"\tAttack rate: "+std::to_string(this->attackRate) + "\n\n" +
 				
-				// Pathing info
-				std::string pathing = (this->simple)? "simple" : "complex";
-				info += "Using "+pathing+ " pathing\n";
-				info += "Current path:";
-				for(int i=0;i<this->targetPath.size();i++) {
-					info += "\t"+std::to_string(this->targetPath.at(i)->x)+", "+std::to_string(this->targetPath.at(i)->y);
+				if(debug) {
+					// Pathing info
+					std::string pathing = (this->simple)? "simple" : "complex";
+					info += "Using "+pathing+ " pathing\n";
+					info += "Current path:";
+					for(int i=0;i<this->targetPath.size();i++) {
+						info += "\t"+std::to_string(this->targetPath.at(i)->x)+", "+std::to_string(this->targetPath.at(i)->y);
+					}
+					info += "\n";
+					
+					info += std::to_string(this->viewAng)+"\n";
 				}
-				info += "\n";
-				
-				info += std::to_string(this->viewAng)+"\n";
 				
 				//Limb info
 				info += this->body->getInfo();
@@ -406,6 +420,7 @@ void Character::kill() {
 	//a warrior's death
 	//this->target = nullptr;
 	// this->removeStatus((StatusIndicator)0xFFFFFF);
+	// debug("Killing "+this->getName());
 	this->setStatus(STATUS_DEAD);
 }
 // Delete this character, remove from game

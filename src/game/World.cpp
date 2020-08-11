@@ -144,7 +144,6 @@ void World::genWorld_new(SDL_Renderer* renderer) {
 	std::cout << "Generating world texture... Done" << std::endl;
 }
 
-
 void World::createStructure(std::tuple<int,int> location, structure s, int tileID) {
 
 	//Takes tile at top left of structure and places tiles according to structure plan
@@ -174,21 +173,78 @@ void World::createStructure(std::tuple<int,int> location, structure s, int tileI
 		}
 	}
 
+	// delete block;
+
 }
+
+//=========
+//		OBJECTS
+//=========
 
 //=========
 //		TILES
 //=========
 
+Tile* World::getLocationAsTile(GameObject *o) {
+	float x,y;
+	decompose(o->getLocation(),x,y);
+	return this->getTileAt(x,y);
+}
+
+Tile* World::getNearestValidAdjacentTile(GameObject *o, Tile* t) {
+	std::vector<Tile*> valid;
+	for(int i=-1;i<=1;i++) {
+		for(int j=-1;j<=0;j++) {
+			if(j == 0 and i == 0) continue;
+			if(!this->getTileAt(t->x+j,-t->y+i)->isPassable()) continue;
+			valid.push_back(this->getTileAt(t->x+j,-t->y+i));
+		}
+	}
+	float cdist = 0xFFFF;
+	Tile *closest;
+	for(int i=0;i<valid.size();i++) {
+		if(dist(o->getLocation(),{valid.at(i)->x,-valid.at(i)->y}) < cdist) {
+			cdist = dist(o->getLocation(),{valid.at(i)->x,-valid.at(i)->y});
+			closest = valid.at(i);
+		}
+	}
+	return closest;
+}
+
+int World::isCorner(Tile* t1, Tile* t2) {
+	int blocked = 0;
+	if(t1->adjacent(t2)) return false;
+	if((char*)t1 == (char*)t2) return false;
+	for(int i=-1;i<=1;i++) {
+		for(int j=-1;j<=1;j++) {
+			if(this->getTileAt(t1->x+j,(-t1->y)+i)->adjacent(t2)) {
+				if(!this->getTileAt(t1->x+j,(-t1->y)+i)->isPassable()) {
+					blocked++;
+					if(blocked == 2) {
+						return blocked;
+					}
+				}
+			}
+		}
+	}
+	return blocked;
+}
+
 bool World::hasSimplePath(GameObject *c1,GameObject *c2) {
+	float x,y,x2,y2;
+	decompose(c1->getLocation(),x,y);
+	decompose(c2->getLocation(),x2,y2);
+	if(this->getTileAt(x,y)->adjacent(this->getTileAt(x2,y2))) return true;
 	return this->validatePath(this->simplePathTo(c1,c2));
 }
 
 bool World::validatePath(const std::vector<Tile*> &path) {
 	int end = path.size();
+	if(end == 0) return false;
 	// if(end >= 3) end -= 1;
-	for(int i=0;i<end;i++) {
+	for(int i=0;i<end-1;i++) {
 		if(!path.at(i)->isPassable()) return false;
+		if(i != end-1) if(this->isCorner(path.at(i),path.at(i+1))) return false;
 	}
 	return true;
 }
@@ -207,31 +263,29 @@ std::vector<Tile*> World::simplePathTo(GameObject *c1, GameObject *c2) {
 std::vector<Tile*> World::simplePathTo(int x1,int y1,int x2,int y2) {
 	
 	std::vector<Tile*> path;
-	float deltax = x2-x1;
-	float deltay = y2-y1;
-	if(deltax == 0) return {};
-	float deltaerr = abs(deltay/deltax);
+	float dx = abs(x2-x1);
+	float sx = (x1<x2)? 1 : -1;
+	float dy = -abs(y2-y1);
+	float sy = (y1<y2)? 1 : -1;
+	float err = dx+dy;
+	float e2;
 	
-	int y=y1;
-	
-	int start,end;
-	int err = 0;
-	
-	if(x1 > x2) {
-		start = x2;
-		end = x1;
-	} else {
-		end = x2;
-		start = x1;
+	while(1) {
+		path.push_back(this->getTileAt(x1,y1));
+		if(x1 == x2 and y1 == y2) break;
+		e2 = 2*err;
+		if(e2 >= dy) {
+			err += dy;
+			x1 += sx;
+		}
+		if(e2 <= dx) {
+			err += dx;
+			y1 += sy;
+		}
 	}
 	
-	for(int i=start;i<end;i++) {
-		path.push_back(this->getTileAt(i,y));
-		err += deltaerr;
-		if(err >= .5) {
-			y += (deltay > 0)? 1 : -1;
-			err -= 1;
-		}
+	for(int i=0;i<path.size();i++) {
+		// debug(std::to_string(path.at(i)->x)+", "+std::to_string(-path.at(i)->y));
 	}
 	return path;
 }
@@ -255,6 +309,8 @@ void World::replaceTile(std::tuple<int,int> location, int tileID) {
 	delete oldTile;
 	
 	this->tileVector.at(indY)->at(indX) = newTile;
+	
+	// delete newTile;
 
 }
 

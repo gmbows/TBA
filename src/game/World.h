@@ -37,6 +37,8 @@ class World {
 		void cartesianToIndex(float&,float&);
 		void indexToCartesian(int&,int&);
 		
+		Tile* getLocationAsTile(GameObject*);
+		
 		//=============
 		//    PATHING
 		//=============
@@ -44,6 +46,10 @@ class World {
 		std::vector<Tile*> simplePathTo(int,int,int,int);
 		std::vector<Tile*> simplePathTo(GameObject* c1, GameObject* c2);
 		bool validatePath(const std::vector<Tile*> &path);
+		
+		int isCorner(Tile* t1, Tile* t2);
+		
+		Tile *getNearestValidAdjacentTile(GameObject*,Tile*);
 
 		void createStructure(std::tuple<int,int>, structure,int);
 		void replaceTile(std::tuple<int,int>,int);

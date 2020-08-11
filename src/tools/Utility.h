@@ -17,6 +17,8 @@ typedef std::tuple<float,float> point;
 //--VECTORS--
 //=========
 
+float average(const std::vector<int>&);
+
 template <class T>
 inline std::vector<T> operator+(std::vector<T> v,T t) {
 	v.push_back(t);

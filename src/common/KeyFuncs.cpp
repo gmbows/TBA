@@ -9,6 +9,8 @@
 #include "../game/ResourceNode.h"
 #include "../game/Squad.h"
 
+#include "../game/AI.h"
+
 #include <SDL2/SDL.h>
 #include <tuple>
 
@@ -83,11 +85,11 @@ void clearCommand() {
 
 void paste() {
 	std::string clipboard(SDL_GetClipboardText());
-	for(long i=0;i<92;i++) {
+	// for(long i=0;i<92;i++) {
 		// if(i != 27) TBAGame->gameWindow->textScreen->commandAppend((char)i);
-	}
+	// }
 	// debug((char)244);
-	// TBAGame->gameWindow->textScreen->commandAppend(clipboard);
+	TBAGame->gameWindow->textScreen->commandAppend(clipboard);
 }
 
 //==========
@@ -124,16 +126,43 @@ void click(SDL_MouseButtonEvent& event) {
 		if(TBAGame->gameWindow->mapScreen->enclose(event.x,event.y)) {
 
 			GameObject* testTarget = nullptr;
-
-			if(thisTile->isOccupied()) {
-				testTarget = thisTile->occupiers.at(0);
-				if((char*)TBAGame->displayTarget == (char*)testTarget) {
-					testTarget = static_cast<GameObject*>(thisTile->getNextOccupant(static_cast<Character*>(testTarget)));
-				}
-			} else if(thisTile->hasObjects()) {
-				testTarget = thisTile->objects.at(0);
+			
+			//Temp options before removing invalid objects like projectiles
+			std::vector<GameObject*> temp_options = thisTile->objects;
+			for(int i=0;i<thisTile->occupiers.size();i++) {
+				temp_options.push_back(thisTile->occupiers.at(i));
 			}
-			TBAGame->displayTarget = testTarget;
+			
+			
+			std::vector<GameObject*> options;
+			for(int i=0;i<temp_options.size();i++) {
+				if(temp_options.at(i)->type != OBJ_PROJECTILE) {
+					options.push_back(temp_options.at(i));
+				}
+			}
+			
+			float tx,ty;
+	
+			if(options.size() > 0) {
+				testTarget = options.at(0);
+				if(TBAGame->hasDisplayTarget()) {
+					decompose(TBAGame->displayTarget->getLocation(),tx,ty);
+					if((char*)TBAGame->gameWorld->getTileAt(tx,ty) == (char*)thisTile) {
+						testTarget = TBAGame->displayTarget;
+					}
+				}
+				if((char*)TBAGame->displayTarget == (char*)testTarget) {
+					int index = find(TBAGame->displayTarget,options);
+					if(index == options.size()-1) {
+						testTarget = options.at(0);
+					} else {
+						testTarget = options.at(index+1);
+					}
+		
+					// testTarget = thisTile->getNextOccupant(static_cast<Character*>(testTarget)));
+				}
+				TBAGame->displayTarget = testTarget;
+			}
 		}
 	//Presumably right click
 	} else {
@@ -151,8 +180,6 @@ void click(SDL_MouseButtonEvent& event) {
 void release() {
 	moving = false;
 }
-
-
 
 //==========
 //	  SCREEN
@@ -254,6 +281,7 @@ void turn(bool turn_left,bool turn_right) {
 	if(turn_right) {
 		TBAGame->playerChar->autoMove = false;
 		TBAGame->playerChar->viewAng += 2;
+		if(TBAGame->playerChar->viewAng < 0) TBAGame->playerChar->viewAng = 360+TBAGame->playerChar->viewAng;
 		TBAGame->playerChar->viewAng = (int)TBAGame->playerChar->viewAng%360;
 		TBAGame->playerChar->targetAng = TBAGame->playerChar->viewAng;
 	}
@@ -328,14 +356,23 @@ void debugKey() { //kp_plus
 	// TBAGame->logicTickRate /= 2;
 	
 	// GameObject *node = new ResourceNode("Rich Stone",{2.0f,2.0f},7,10,22);
-	GameObject *node = TBAGame->gameWorld->getTileAt(2,2)->objects.at(0);
+	GameObject *node = TBAGame->gameWorld->getTileAt(1,1)->objects.at(0);
 	Character *amelia;
-	for(int i=0;i<10;i++) {
+	for(int i=0;i<1;i++) {
 		amelia = new Character("Amelia",8,{-rand()%10,-rand()%20});
+		// amelia = new Character("Amelia",8,{-1,-1});
 		// amelia->maxMoveSpeed = 4;
 		amelia->turnSpeed = 4;
 		amelia->work(node);
 	}
+	TBAGame->playerChar->squad->alert(amelia);
+	// amelia->goals.push(new Goal(GOAL_USE_RANGED));
+	// debug(sizeof(Item);
+	// Tile* x = TBAGame->gameWorld->getNearestValidAdjacentTile(amelia,TBAGame->gameWorld->getTileAt(1,1));
+	// debug(x->x);
+	// debug(-x->y);
+	// debug("Added amelia to  "+std::to_string(amelia->x)+", "+std::to_string(amelia->y));
+	// debug(TBAGame->gameWorld->isCorner(TBAGame->gameWorld->getTileAt(-4,-4),TBAGame->gameWorld->getTileAt(-3,-3)));
 	// TBAGame->playerChar->addToSquad(amelia,true);
 	
 	// debug(TBAGame->playerChar->limbs.at(0)->health);

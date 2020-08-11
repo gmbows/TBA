@@ -153,7 +153,7 @@ void Game::setupGame() {
 	}
 
 	//Length of one edge of map square
-	int quadSize = 32;
+	int quadSize = 128;
 
 	this->gameWorld = new World(quadSize*2);
 	
@@ -183,67 +183,79 @@ void Game::setupGame() {
 	this->displayTarget = this->playerChar;
 	
 	//New characters are added to gameObjects automatically
-	Character *newChar,*LB,*Dog,*Chog;
+	// Character *newChar,*LB,*Dog,*Chog;
 	for(int i=0;i<0;i++) {
 		// newChar = new Character("Looter "+std::to_string(i+1),(rand()%(1+(quadSize*2)))-quadSize,(rand()%(1+(quadSize*2)))-quadSize);
-		if(rand()%2 == 0) newChar->equipment->equip(new Item(4),EQUIP_PRIMARY);
-		newChar->setTarget(this->playerChar);
-		newChar->setStatus(STATUS_COMBAT);
+		// if(rand()%2 == 0) newChar->equipment->equip(new Item(4),EQUIP_PRIMARY);
+		// newChar->setTarget(this->playerChar);
+		// newChar->setStatus(STATUS_COMBAT);
 		//newChar->setTarget(this->playerChar);
 		//new Character(false,160,"Looter",-quadSize+i+1,-quadSize+1+(i/quadSize));
 	}
 
-	newChar = new Character("Debug Trader",160,{0,-7});
-	Chog = new Character("Chog",160,{4,-2});
+	// newChar = new Character("Debug Trader",160,{0,-7});
+	// Chog = new Character("Chog",160,{4,-2});
 
 	// TBAGame->setDisplayTarget(newChar);
 	// newChar->moveTo(0,0);
-	newChar->maxMoveSpeed = this->playerChar->maxMoveSpeed*2;
-	LB = new Character("Lost Bladesman",160,{-2,-1});
-	new Character("Worker",160,{-2,2});
-	new Character("Ondei",160,{0,6});
-	LB->giveItems({14,15,16,17});
-	LB->body->getLimb(LIMB_TORSO)->health = 100000;
-	LB->setTarget(this->playerChar);
-	LB->setStatus(STATUS_COMBAT);
-	Dog = new Character("Wolf",160,{5,5});
-	Dog->equipment->equip(new Item(13),EQUIP_PRIMARY);
-	Dog->giveItem(8);
-	Dog->giveItem(8);
-	Dog->giveItem(8);
-	Dog->giveItem(8);
+	// newChar->maxMoveSpeed = this->playerChar->maxMoveSpeed*2;
+	// LB = new Character("Lost Bladesman",160,{-2,-1});
+	// new Character("Worker",160,{-2,2});
+	// new Character("Ondei",160,{0,6});
+	// LB->giveItems({14,15,16,17});
+	// LB->body->getLimb(LIMB_TORSO)->health = 100000;
+	// LB->setTarget(this->playerChar);
+	// LB->setStatus(STATUS_COMBAT);
+	// Dog = new Character("Wolf",160,{5,5});
+	// Dog->equipment->equip(new Item(13),EQUIP_PRIMARY);
+	// Dog->giveItem(8);
+	// Dog->giveItem(8);
+	// Dog->giveItem(8);
+	// Dog->giveItem(8);
 
 	// LB->equipment->primary = new Item(4);
-	Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
-	Dog->turnSpeed = playerChar->turnSpeed*2;
+	// Dog->maxMoveSpeed = playerChar->maxMoveSpeed*2;
+	// Dog->turnSpeed = playerChar->turnSpeed*2;
 	// newChar->lookAt(LB);
 	//newChar->setTarget(LB);
-	Dog->setTarget(LB);
-	Dog->setStatus(STATUS_COMBAT);
+	// Dog->setTarget(LB);
+	// Dog->setStatus(STATUS_COMBAT);
 	//newChar->equipment->primary = new Item(4);
 	//newChar->setTarget(playerChar);
 	//newChar->setStatus(STATUS_COMBAT);
 	//static_cast<Character*>(this->gameObjects.at(2))->setTarget(newChar);
 	//static_cast<Character*>(this->gameObjects.at(2))->setStatus(STATUS_COMBAT);	
-	this->gameWorld->createStructure({0,0}, maze, 4);
-	new Container("Footlocker",{-2.0f,-2.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
-	GameObject *node = new ResourceNode("Iron Rich Stone",{2.0f,2.0f},{{2,{2,1}},{100,{8,1}}},10,1);
-	Chog->work(node);
+	init_structures();
+	this->gameWorld->createStructure({0,0}, random, 4);
+	new Container("Footlocker",{-1.0f,-1.0f},160,{3,3,3,3,3,3,3,3,4,3,1,1,2,1,2,1,2,1,2,1});
+	GameObject *node = new ResourceNode("Iron Rich Stone",{1.0f,1.0f},{{2,{2,1}},{100,{8,1}}},10,13);
+	// Chog->work(node);
 	// this->createSquad("Player squad")->add(this->playerChar);
 // TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
 	// new Character("Archer",160,{-2,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9});
-	for(int i=0;i<1;i++) {
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,7},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,6},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+	for(int i=0;i<3;i++) {
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,2},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,1},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,0},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,-1},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
+		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,-2},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
 		// LB->addToSquad(new Character("LB Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
 		// LB->addToSquad(new Character("LB Archer",160,{-2+i,12},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
 	}
+
+	// GameObject *node = TBAGame->gameWorld->getTileAt(1,1)->objects.at(0);
+	Character *amelia;
+	for(int i=0;i<00;i++) {
+		amelia = new Character("Amelia",8,{-rand()%10,-rand()%20});
+		// amelia = new Character("Amelia",8,{-1,-1});
+		// amelia->maxMoveSpeed = 4;
+		amelia->turnSpeed = 4;
+		amelia->work(node);
+		playerChar->squad->alert(amelia);
+	}
 	
-	playerChar->setTarget(LB);
-	playerChar->setStatus(STATUS_COMBAT);
+	// playerChar->setTarget(LB);
+	// playerChar->setStatus(STATUS_COMBAT);
 	
 	checkHelp();
 	checkItemTypes();
@@ -365,7 +377,9 @@ void logic_thread_routine(Game *game) {
 	int real_wait = 0;
 	
 	int last_latency_notif = 0;
-	int latency_notif_interval = 5000;//10 Second latency notif interval
+	int latency_notif_interval = 100;//2 Second latency notif interval
+	
+	std::vector<int> times;
 	
 	debug("Game logic enabled");
 	
@@ -381,11 +395,15 @@ void logic_thread_routine(Game *game) {
 		// pthread_mutex_unlock(&game->updateLock);
 
 		real_wait = (1000/game->logicTickRate)-elapsed;
-		if(real_wait < 0) {
-			if(last_latency_notif + latency_notif_interval <= SDL_GetTicks()) {
+		if(last_latency_notif + latency_notif_interval <= SDL_GetTicks()) {
+			if(real_wait < 0) {
 				debug("Falling behind! (logic, "+std::to_string(-real_wait)+"ms.): "+std::to_string(game->logicTicks));
-				last_latency_notif = SDL_GetTicks();
+			} else {
+				std::cout << "Frame times: " << elapsed << "ms. at " << game->logicTicks << ", avg: " << average(times) << "ms                          \r";
 			}
+			if(times.size() >= 100) times.clear();
+			// times.push_back(elapsed);
+			last_latency_notif = SDL_GetTicks();
 		}
 		// debug(real_wait);
 		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));

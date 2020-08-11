@@ -5,7 +5,11 @@
 #include "FloatingText.h"
 #include "Projectile.h"
 #include "Squad.h"
+#include "AI.h"
+#include "../tools/Algorithm.h"
 #include <tuple>
+#include <queue>
+#include <set>
 
 std::map<StatusIndicator,const std::string> statusMap = {
 	{STATUS_IDLE,"Idle"},
@@ -217,6 +221,7 @@ std::vector<GameObject*> Character::getObjectsInRadius(objType type = OBJ_GENERI
 //==========
 //	STATUS
 //==========
+
 // Add status to current status flag
 void Character::addStatus(StatusIndicator newStatus) {
 	if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
@@ -244,9 +249,20 @@ void Character::setStatus(StatusIndicator newStatus) {
 //==========
 //	 TRAVEL
 //==========
-
+//Pathfind to an object
+bool Character::goTo(GameObject *o,bool adjacent) {
+	if(TBAGame->gameWorld->hasSimplePath(this,o)) {
+		this->simple = true;
+		this->targetPath = {TBAGame->gameWorld->getLocationAsTile(o)};
+		return true;
+	} else {
+		this->simple = false;
+		return this->generatePathTo(o,adjacent);
+	}
+}
 //Align viewAng with targetAng
 void Character::turn() {
+	this->viewAng = this->targetAng;return;
 	// if(this->isPlayer and !this->autoMove) return;
 	if((fabs(this->viewAng - this->targetAng)) > 2*this->getTurnSpeed()) {
 		
@@ -288,12 +304,8 @@ void Character::setLocomotion() {
 	if(this->hasTarget()) {
 		if(this->hasStatus(STATUS_PURSUE)) {
 			if(!this->targetInRange()) {
-				if(TBAGame->gameWorld->hasSimplePath(this,this->getTarget())) {
-					this->simple = true;
-					this->targetPath = {this->getCharTarget()->location};
-				} else {
-					this->simple = false;
-					this->generatePathTo(this->getTarget());
+				if(!this->goTo(this->getTarget())) {
+					this->exitCombat();
 				}
 				if(this->hasStatus(STATUS_COMBAT)) this->addStatus(STATUS_PURSUE);
 			} else {
@@ -335,101 +347,44 @@ void Character::followPath() {
 		}
 }
 //Generate path to character
-void Character::generatePathTo(GameObject *o) {
+bool Character::generatePathTo(GameObject *o,bool adjacent) {
 	float x,y;
 	decompose(o->getLocation(),x,y);
-	this->generatePathTo(x,y);
+	return this->generatePathTo(x,y,adjacent);
 }
 //Generate path to tx,ty or adjacent block
 bool Character::generatePathTo(float tx, float ty, bool adjacent) {
-	if(TBAGame->logicTicks < this->lastPathCheck+TBAGame->pathCheckInterval) return false;
-	// if(this->targetPath.size() > 0) return false;
-	float g,h,f;
-	float tg,th;
 	
-	Tile* targetTile = TBAGame->gameWorld->getTileAt(tx,ty);
-	Tile *thisTile;
-	Tile *testTile;
-	Tile *currentBestTile = this->location;
-	float currentBestF;
-	
-	float startingDist = dist({this->location->x,this->location->y},{tx,ty});
-
-	std::vector<Tile*> bestPath;
-	
-	std::vector<Tile*> previousBests;
-
-	thisTile = this->location;
-	
-	float tileX = this->location->x;
-	float tileY = -this->location->y;
-	
-	int iter = 0;
-	
-	if(targetTile->isPassable() == false and adjacent == false) {
-		debug(this->getName()+" cannot generate path to impassable tile "+std::to_string((int)tx)+", "+std::to_string((int)ty));
+	//Prepathing checks
+	if(TBAGame->logicTicks < this->lastPathCheck+TBAGame->pathCheckInterval) return true;
+	//Don't bother generating new path if we have a valid path already
+	if(this->hasPath() and TBAGame->gameWorld->validatePath(this->targetPath)) {
 		this->lastPathCheck = TBAGame->logicTicks;
+		return true;
+	}
+	
+	//Generate path 
+	std::vector<Tile*> path = generatePath(this,tx,ty,adjacent);
+	
+	//Reset path checking interval 
+	this->lastPathCheck = TBAGame->logicTicks;
+	
+	
+	if(path.size() == 0) {
 		return false;
 	}
 	
-	while( !(tileX == tx and tileY == ty)) {
-		
-		currentBestF = 0xFF;
 	
-		for(int i=-1;i<=1;i++) {
-			for(int j=-1;j<=1;j++) {
-				if(j==0 and i==0) continue;
-				if(tileX+j == this->location->x and tileY+i == -this->location->y) continue;
-				if(contains(previousBests,TBAGame->gameWorld->getTileAt(tileX+j,tileY+i))) continue;
-				if(!TBAGame->gameWorld->getTileAt(tileX+j,tileY+i)->isPassable()) continue;
-				// std::cout << "Testing tile " << thisTile->x+j << ", " << thisTile->y+i << std::endl;
-				// debug(thisTile->x+j);
-				tg = dist({this->location->x,-this->location->y},{tileX+j,tileY+i});
-				th = dist({tileX+j,tileY+i},{tx,ty});
-				f = tg+th;
-				// tiles.insert({thisTile,f});
-				if(f < currentBestF) {
-						// std::cout << "New best tile at " << testTile->x+j << ", " << testTile->y+i << std::endl;
-						currentBestTile = TBAGame->gameWorld->getTileAt(tileX+j,tileY+i);
-						currentBestF = f;
-						previousBests.push_back(currentBestTile);
-					
-				}
-				// std::cout << f << " \tat tile " << tileX+j << ", " << tileY+i << std::endl;
-			}
-		}
-		tileX = currentBestTile->x;
-		tileY = -currentBestTile->y;
-		if((char*)thisTile == (char*)currentBestTile or iter > 40) {
-			// debug("Pathing error");
-			// this->targetPath = {};
-			return false;
-		}
-		
-		bestPath.push_back(currentBestTile);		
-		iter++;
-		
-		if(adjacent) {
-			if(targetTile->adjacent(currentBestTile)) break;
-		}
-		
-	}
+	this->targetPath = path;	
+
+	//Debug info
 	
-	if(!this->hasPath() or bestPath.size() <= this->targetPath.size()) this->targetPath = bestPath;
-	
-	this->lastPathCheck = TBAGame->logicTicks;
-	
-	for(int i=0;i<bestPath.size();i++) {
-		
-		// if(!bestPath.at(i)->hasBlocks()) bestPath.at(i)->addBlock(2);
-		// std::cout << bestPath.at(i)->x << ", " << bestPath.at(i)->y << std::endl;
-		
-	}
-	// debug(this->getName()+" is following new path ");
-	// if(this->getName() != "Lost Bladesman") return true;
-	for(int i=0;i<this->targetPath.size();i++) {
-		// debug(std::to_string(this->targetPath.at(i)->x)+", "+std::to_string(this->targetPath.at(i)->y));
-	}
+	// debug("Done in "+std::to_string(k)+" iterations");
+	// float ratio= k/dist({this->location->x,-this->location->y},{end->x,-end->y});
+	// total_iter += ratio;
+	// trials++;
+	// debug("Average iterations per unit euclidian distance: "+std::to_string(total_iter/trials));
+	// debug("Ratio for this trial: "+std::to_string(ratio));
 	return true;
 }
 //Move away from character
@@ -442,7 +397,9 @@ void Character::moveAway(Character *c) {
 	this->targetAng = ((int)this->targetAng+180)%360;
 	this->move_forward = true;
 }
-
+bool Character::canInteract(GameObject *o) {
+	return dist({this->x,this->y},o->getLocation()) <= 1;
+}
 //==========
 //  COMBAT
 //==========
@@ -672,7 +629,7 @@ void Character::sendAttack(GameObject *target) {
 	int damage = this->getAttackDamage();
 
 	switch(this->getAttackType()) {
-		case I_WEAPON_RANGED:
+		case I_WEAPON_RANGED: {
 			// float x,y;
 			// decompose(this->getLocation(),x,y);
 			// float tx,ty;
@@ -680,6 +637,7 @@ void Character::sendAttack(GameObject *target) {
 			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
 			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
 			//												accuracy mult goes here \/
+			if(!TBAGame->gameWorld->hasSimplePath(this,this->getTarget())) break;
 			if(this->hasAmmo(I_WEAPON_BOW)) {
 				float inaccuracy = 12;
 				inaccuracy = (-(inaccuracy/2)+rand()%(int)inaccuracy);
@@ -689,6 +647,7 @@ void Character::sendAttack(GameObject *target) {
 				this->addStatus(STATUS_NO_AMMO);
 			}
 			break;
+		}
 		case I_WEAPON_MELEE:
 			// Send to target to be changed based on damage resistance
 			static_cast<Character*>(target)->receiveAttack(damage,this);
@@ -780,7 +739,7 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		//Globally broadcasted kill notifs
 		TBAGame->displayText("\n"+attacker->getEntityName()+" kills "+this->getEntityName());
 		if(static_cast<Character*>(attacker)->isPlayer()) TBAGame->displayText("\nKilled "+this->getName());
-		this->kill();
+		// this->kill();
 		//If killed character was killer's actual target
 		if((char*)this == (char*)static_cast<Character*>(attacker)->getTarget()) {
 			static_cast<Character*>(attacker)->setTarget(nullptr);
@@ -803,8 +762,11 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 }
 //Check limb health/status
 void Character::checkBody() {
-	if(this->body->getVitality() <= .2) {
-		if(this->isAlive()) this->kill();
+	if(this->body->getVitality() <= 0) {
+		if(this->isAlive()) {
+			// debug(this->getEntityName()+" has critical vitality");
+			this->kill();
+		}
 		return;
 	}
 	for(int i=0;i<this->body->getLimbs().size();i++) {
@@ -817,6 +779,20 @@ void Character::checkBody() {
 		}
 	}
 }
+//Locate ammo in a nearby object
+bool Character::findAmmo() {
+	float searchRadius = 10;
+	std::vector<GameObject*> containers = this->getObjectsInRadius(OBJ_CONTAINER);
+	if(containers.size() == 0) return false;
+	
+	GameObject *closest = this->selectClosestObject(containers);
+	
+	if(!this->goTo(closest,true)) debug(this->getEntityName()+"Can't reach closest container "+closest->getEntityName());
+	
+	// debug(closest->getName());
+	return true;
+	
+}
 
 //==========
 //		MISC
@@ -825,7 +801,6 @@ void Character::checkBody() {
 void Character::say(const std::string& message) {
 	TBAGame->displayText("\n"+this->getName()+" says \""+message+"\"");
 	new FloatingText(3,TBAGame->gameWindow->textScreen->prepareCommandForDisplay(message),this->getApproximateLocation(),this);
-	// new FloatingText(3,message,this->getLocation(),this);
 }
 
 //==========
@@ -836,26 +811,49 @@ void Character::think() {
 	//Perform status-actions
 	
 	//Should eventually have more sophisticated criteria for escape
-	if(this->body->getVitality() <= .5) {
+	if(this->body->getVitality() <= .3) {
 		this->exitCombat();
-		this->addStatus(STATUS_ESCAPE);
+		this->setStatus(STATUS_ESCAPE);
 	}
 
 	if(this->inCombat()) {
 		this->combat();
 	}
 
-	if(this->hasStatus(STATUS_WORK) and this->hasWorkTarget()) {
-		this->processWork();
+	if(this->hasStatus(STATUS_WORK)) {
+		// this->processWork();
+		// if(this->hasGoals()) {
+			// if(this->currentGoal()->type != GOAL_WORK) 
+		// }
+		this->addGoal(GOAL_WORK);
+		this->removeStatus(STATUS_WORK);
+	}
+
+	if(this->hasStatus(STATUS_NO_AMMO)) {
+		this->addGoal(GOAL_FIND_AMMO);
+		this->removeStatus(STATUS_NO_AMMO);
 	}
 	
+	if(this->hasGoals()) {
+		switch(this->goals.top()->execute(this)) {
+			case TBA_GOAL_PRECOND_FAIL:
+				// debug(this->getEntityName()+" precondition check failed, removing goal");
+				this->goals.pop();
+				break;
+			case TBA_GOAL_INCOMPLETE:
+				break;
+			case TBA_GOAL_COMPLETE:
+				this->goals.pop();
+				break;
+		}
+	}
 }
 
 void Character::update() {
-		
+
 	//Process status effects
 	this->processEffects();
-	
+
 	if(this->isAlive()) {
 		this->think();
 	} else {
@@ -866,10 +864,9 @@ void Character::update() {
 		return;
 	}
 	if(this->viewAng != this->targetAng) this->turn();
-	// if(this->name == "Lost Bladesman") debug("Aim: "+std::to_string(this->targetAng));
-	
+
 	if(this->targetPath.size() > 0) this->followPath();
-	
+
 	//Physics
 	this->setLocomotion();
 	this->move();

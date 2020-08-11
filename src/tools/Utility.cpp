@@ -25,6 +25,15 @@ int find(char c,const std::string &s) {
 	return -1;
 }
 
+float average(const std::vector<int> &v) {
+	if(v.size() == 0) return 0;
+	int sum = 0;
+	for(int i=0;i<v.size();i++) {
+		sum += v.at(i);
+	}
+	return sum/v.size();
+}
+
 //Gets size of printable/visible characters only for screen drawing
 //Color key characters (☺r, etc.) do not get drawn and should not be counted 
 // toward total string size

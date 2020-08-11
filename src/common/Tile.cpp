@@ -24,8 +24,8 @@ std::map<int,std::tuple<float,bool,bool>> tileMap {
 	{5,{.04,false,false}},	//Stone brick Bottom left
 	{6,{.04,true,false}},	//NPC
 	// {7,{.04,true,false}},	//Arrow
-	{8,{.04,true,false}},	//Chest
-	{10,{.04,true,false}},	//Rich stone
+	{8,{.04,false,false}},	//Chest
+	{10,{.04,false,false}},	//Rich stone
 	{12,{.04,true,false}},	//Path marker
 	
 };
@@ -54,6 +54,7 @@ std::string Tile::getName() {
 bool Tile::adjacent(Tile* tile) {
 	for(int i=-1;i<=1;i++) {
 		for(int j=-1;j<=1;j++) {
+			//No diagonals
 			if(abs(i+j) != 1) continue;
 			if(this->x+i == tile->x and this->y+j == tile->y) return true;
 		}
@@ -99,6 +100,10 @@ Tile::Tile(int tid, int _x, int _y): id(tid), x(_x), y(_y) {
 }
 
 void Tile::occupyWith(Character* c) {
+	if(contains(this->occupiers,c)) {
+		debug("ERROR (Tile::occupyWith()): Adding existing occupant to tile");
+		return;
+	}
 	this->occupiers.push_back(c);
 }
 
@@ -140,7 +145,7 @@ void Tile::removeObject(GameObject* generic) {
 Character* Tile::getNextOccupant(Character* c) {
 
 	int charIndex = find(c,this->occupiers);
-
+	
 	if(charIndex < 0) {
 		return c;
 	}

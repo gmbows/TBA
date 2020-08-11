@@ -13,19 +13,20 @@ struct Inventory {
 	int capacity;
 	std::vector<Item*> *contents = new std::vector<Item*>;
 	
-	void initializeManifest();
-	std::map<int,int> manifest;
+	// void initializeManifest();
+	std::map<int,unsigned int> manifest;
 	void record(int,int);
 	
 	bool hasChanged = false;
 	
 	Inventory(int);
-	bool add(int);
+	bool add(int,int amt = 1);
 	bool add(Item*);
 	bool add(const std::vector<int>&);
 	bool add(const std::vector<Item*>&);
 	int find(Item*);
 	int find(const std::string&);
+	int find(int);
 	
 	int getFirstInstance(const std::string&);
 

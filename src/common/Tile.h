@@ -4,6 +4,7 @@ class Character;
 
 #include "../game/Character.h"
 #include "../game/Block.h"
+#include "../tools/Utility.h"
 
 #include <iostream>
 #include <SDL2/SDL.h>

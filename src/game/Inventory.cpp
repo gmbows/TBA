@@ -33,24 +33,29 @@ bool Inventory::add(Item* item) {
 	return true;
 }
 
-bool Inventory::add(int id) {
-
-	this->contents->push_back(new Item(id));
-	this->record(id,1);
+bool Inventory::add(int id,int amt) {
+	Item *newItem;
+	for(int i=0;i<amt;i++) {
+		newItem = new Item(id);
+		this->contents->push_back(newItem);
+		this->record(id,1);
+	}
+	//delete newItem;
 	return true;
 }
 
 bool Inventory::add(const std::vector<int>& itemVec) {
-
+	Item *newItem;
 	for(int i=0;i<itemVec.size();i++) {
-		this->contents->push_back(new Item(itemVec.at(i)));
+		newItem = new Item(itemVec.at(i));
+		this->contents->push_back(newItem);
 		this->record(itemVec.at(i),1);
 	}
+	//delete newItem;
 	return true;
 }
 
 bool Inventory::add(const std::vector<Item*>& itemVec) {
-
 	for(int i=0;i<itemVec.size();i++) {
 		this->contents->push_back(itemVec.at(i));
 		this->record(itemVec.at(i)->id,1);
@@ -82,6 +87,13 @@ Item* Inventory::remove(Item* item) {
 // 		 FIND
 //===========
 
+int Inventory::find(int id) {
+	for(int i=0;i<this->contents->size();i++) {
+		if(id == this->contents->at(i)->id) return i;
+	}
+	return -1;
+}
+
 int Inventory::find(Item* item) {
 	for(int i=0;i<this->contents->size();i++) {
 		if(item == this->contents->at(i)) return i;
@@ -100,6 +112,9 @@ int Inventory::find(const std::string &name) {
 	return this->getFirstInstance(itemName);
 }
 
+//============
+//		OTHER
+//============
 int Inventory::getFirstInstance(const std::string &itemName) {
 		for(int i=0;i<this->contents->size();i++) {
 			if(itemName == this->contents->at(i)->name) return i;
@@ -144,7 +159,7 @@ std::string Inventory::getInfoString() {
 	std::string stuff = "\n";
 	std::string name;
 	int id,count;
-	for(std::map<int,int>::iterator it=this->manifest.begin();it != this->manifest.end();it++) {
+	for(std::map<int,unsigned int>::iterator it=this->manifest.begin();it != this->manifest.end();it++) {
 		id = it->first;
 		count = this->manifest.at(id);
 		

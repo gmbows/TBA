@@ -23,6 +23,7 @@ Screen:
 		Inactive tiles are not redrawn
 			Tiles are "activated" when a character moves near them 
 	Optimizations:
+		Memory: Blocks should NOT have their own individual textures, they should be pulled on demand from an atlas
 		Entire map texture only "clears" when player moves tiles 
 			Otherwise only updates select tiles by necessity
 			
@@ -33,7 +34,7 @@ KeyFuncs:
 	DONE* Adding characters to command brings text screen to front?
 
 General:
-	Colorkey: ☺
+	Colorkey: ☺ /x01
 	 / "/22" = non-breaking space
 		-use for item/proper names with spaces
 	All GameObjects are added to GameObject vector automatically upon creation

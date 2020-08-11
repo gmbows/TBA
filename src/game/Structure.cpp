@@ -1,5 +1,24 @@
 #include "Structure.h"
 
+#include <random>
+
+structure random;
+
+void init_structures() {
+	//Random
+	int size = 10;
+	structure s;
+	std::vector<int> r;
+	for(int i=0;i<size;i++) {
+		r.clear();
+		for(int j=0;j<size;j++) {
+			r.push_back( ((rand()%100) > 70)? 1:0);
+		}
+		s.push_back(r);
+	}
+	random = s;
+}
+
 structure house = 
 {
 

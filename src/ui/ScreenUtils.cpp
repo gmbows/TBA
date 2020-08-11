@@ -469,7 +469,7 @@ std::string TextBox::getContent() {
 		if(TBAGame->hasDisplayTarget()) {
 			if(TBAGame->displayTarget->type == OBJ_CHARACTER) {
 				newContent += TBAGame->displayTarget->getAsCharacter()->getInfo();
-				newContent += "\n"+TBAGame->displayTarget->getAsCharacter()->getInvString();
+				newContent += "\nInventory:"+TBAGame->displayTarget->getAsCharacter()->getInvString();
 				newContent += "\n"+TBAGame->displayTarget->getAsCharacter()->getEquipString();
 			} else {
 				newContent += TBAGame->displayTarget->getInfo();
