@@ -2,7 +2,7 @@
 A multiplatform text based rpg engine written in c++
 
 ## Branches
-[Singleplayer](https://github.com/garrbows/TBA/blob/singleplayer/)
+[Singleplayer](https://github.com/garrbows/TBA/blob/singleplayer/) <br>
 [Multiplayer](https://github.com/garrbows/TBA/blob/multiplayer/)
 
 ## Basic controls
