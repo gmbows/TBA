@@ -20,4 +20,4 @@ Reset window `click + drag + r`<br>
 Reset all windows `click + drag + shift+r`<br>
 
 ## Documentation
-See [todo](https://github.com/garrbows/TBA/blob/master/docs/todo.txt) for now.
+See [todo](https://github.com/garrbows/TBA/blob/singleplayer/docs/todo.txt) for now.
