@@ -14,6 +14,7 @@ struct Tile;
 #include "ItemManifest.h"
 
 #include "AI.h"
+#include "../tools/Algorithm.h"
 
 #include "Limb.h"
 
@@ -26,6 +27,7 @@ typedef unsigned long int flag;
 
 class GameObject;
 struct Squad;
+struct TBA_Interval;
 
 enum StatusIndicator: flag {
 	STATUS_IDLE = 			1 << 0,
@@ -223,6 +225,14 @@ class Character: public GameObject {
 		void setLocation(float,float);
 		void setLocomotion();
 		void move();
+		bool stop() {
+			//Return whether the player is stopped or not
+			this->move_forward = false;
+			this->move_back = false;
+			this->autoMove = false;
+			this->clearPath();
+			return !this->hasStatus(STATUS_TRAVEL);
+		}
 		//if viewang != targetang, attenuate at turnspeed
 		void turn();
 		void resolveMove(float&, float&);
@@ -230,8 +240,10 @@ class Character: public GameObject {
 		bool generatePathTo(float,float,bool adjacent = false);
 		bool generatePathTo(GameObject*,bool adjacent = false);
 		void followPath();
+		void clearPath();
 		void moveAway(Character*);
 		bool canReach(GameObject *o);
+		bool canSee(GameObject *o);
 		
 		bool goTo(GameObject*,bool adjacent = false);
 		
@@ -245,17 +257,17 @@ class Character: public GameObject {
 		//		AI
 		//========
 		
-		std::priority_queue<Goal*> goals;
+		TBA_GoalQueue goals = TBA_GoalQueue();
+		
+		//Characters cannot freely re-decide complex decisions
+		//Only every second 
+		const int AICheckInterval = 500;
+		TBA_Interval checkAI;
+		
 		inline bool hasGoals() { return !this->goals.empty(); }
-		void addGoal(GoalType g) {
-			this->goals.push(new Goal(g));
-		}
-		Goal* currentGoal() { 
-			if(!this->hasGoals()) {
-				debug("Error (Character::currentGoal()): Returning nullpointer");
-			}
-			return this->goals.top();
-		}
+		inline void addGoal(GoalType t) { this->goals.addGoal(this,t); }
+		inline Goal* currentGoal() {return this->goals.currentGoal();}
+
 		
 		bool simple = false;
 

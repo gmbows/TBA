@@ -7,6 +7,10 @@
 #include <random>
 #include <map>
 #include <utility>
+#include <pthread.h>
+
+extern pthread_mutex_t printLock;
+void init_utility();
 
 class GameObject;
 
@@ -210,6 +214,7 @@ int find(char c,const std::string &s);
 int rfind(char, const std::string&);
 
 std::string replace(const std::string&,char,const std::string&);
+
 //========
 //--TUPLE--
 //========
@@ -222,7 +227,11 @@ void decompose(std::tuple<T,T> tup,T &x, T &y) {
 
 //--DEBUG--
 template <class T>
-void inline debug(T s) { std::cout << s << std::endl; }
+void debug(T s) {
+	pthread_mutex_lock(&printLock);
+	std::cout << s << "                                       " << std::endl; 
+	pthread_mutex_unlock(&printLock);
+}
 
 template <class T>
 void inline debug(const std::vector<T>& s) {dumpVec(s);}

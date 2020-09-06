@@ -13,7 +13,7 @@ bin/ScreenUtils.o: src/ui/ScreenUtils.cpp
 bin/Window.o: src/ui/Window.cpp src/ui/Window.h src/tools/Log.h src/tools/Log.cpp src/tools/Utility.h src/tools/Utility.cpp  src/ui/Screen.h src/ui/Screen.cpp  
 	g++ -std=c++11 -c src/ui/Window.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Window.o
 
-bin/Algorithm.o: src/tools/Algorithm.cpp src/tools/Algorithm.h src/common/Tile.h src/common/Tile.cpp  src/tools/Utility.h src/tools/Utility.cpp  
+bin/Algorithm.o: src/tools/Algorithm.cpp src/tools/Algorithm.h  src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/tools/Algorithm.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Algorithm.o
 
 bin/Log.o: src/tools/Log.cpp src/tools/Log.h  
@@ -43,7 +43,7 @@ bin/Tile.o: src/common/Tile.cpp src/common/Tile.h src/game/Character.h src/game/
 bin/AI.o: src/game/AI.cpp src/game/AI.h src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/game/AI.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/AI.o
 
-bin/AI_Defs.o: src/game/AI_Defs.cpp src/game/AI_Defs.h  
+bin/AI_Defs.o: src/game/AI_Defs.cpp src/game/AI_Defs.h  src/game/AI.h src/game/AI.cpp  
 	g++ -std=c++11 -c src/game/AI_Defs.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/AI_Defs.o
 
 bin/Behavior.o: src/game/Behavior.cpp src/game/Behavior.h  
@@ -82,7 +82,7 @@ bin/Input.o: src/game/Input.cpp src/game/Input.h
 bin/Inventory.o: src/game/Inventory.cpp src/game/Inventory.h  src/game/Item.h src/game/Item.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/game/Inventory.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Inventory.o
 
-bin/Item.o: src/game/Item.cpp src/game/Item.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  src/game/StatusEffect.h src/game/StatusEffect.cpp  
+bin/Item.o: src/game/Item.cpp src/game/Item.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  src/game/StatusEffect.h src/game/StatusEffect.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/game/Item.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Item.o
 
 bin/ItemManifest.o: src/game/ItemManifest.cpp src/game/ItemManifest.h  

@@ -40,7 +40,10 @@ class GameObject {
 		virtual std::string getName() {return "NAME_FUNC_UNDEFINED";}
 		virtual std::string getFormattedName() {return "FORMATTED_NAME_FUNC_UNDEFINED";}
 		virtual std::string getInfo() {return "INFO_FUNC_UNDEFINED";}
-		virtual std::tuple<float,float> getLocation() {return {0,0};}
+		virtual std::tuple<float,float> getLocation() {
+			debug("ERROR: (GameObject::getLocation(): Using undefined location");
+			return {0,0};
+		}
 		virtual int getDisplayID() {return -1;}
 		
 		std::string getEntityName() {return this->getName()+"<"+std::to_string(this->objectID)+">";}

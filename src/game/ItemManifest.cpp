@@ -10,7 +10,7 @@ std::vector<itemTraits> itemManifest = {
 		{}},
 	{"Apple","A shiny red apple.", 1,4,I_FOOD | I_FRUIT | I_INGREDIENT | I_PLANTABLE,
 		{},
-		{}},
+		{}}, 
 	{"Raw Sapphire","A dull blue gem.", 1,1,I_CRAFTING | I_INGREDIENT | I_CURRENCY,
 		{},
 		{}},

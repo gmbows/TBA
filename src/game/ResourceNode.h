@@ -50,6 +50,8 @@ struct ResourceNode : public GameObject {
 	}
 	
 	ResourceNode(const std::string &_name,std::tuple<float,float> loc,lootTable t,int _did, int time): name(_name), duration(TBAGame->convert(time*1000)), displayID(_did), GameObject(OBJ_INTERACTIVE) {
+		// std::cout << this->duration << std::endl;
+		// std::cout << "NIGGERS" << std::endl;
 		this->x = std::get<0>(loc);
 		this->y = std::get<1>(loc);
 		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
@@ -65,8 +67,8 @@ struct ResourceNode : public GameObject {
 	void cleanup() {
 			debug("Deleting resource node");
 			delete this->inventory;
+			delete this->table;
 			TBAGame->removeObject(this);
-			delete this;
 			debug("Done deleting resource node");
 		}
 };

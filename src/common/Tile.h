@@ -43,6 +43,7 @@ struct Tile {
 	//================
 	
 	bool inline isOccupied() {return this->occupiers.size() > 0;}
+	bool hasLivingOccupants();
 	std::vector<Character*> occupiers;
 	void evict(Character*);
 	Character* getNextOccupant(Character*);

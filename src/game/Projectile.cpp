@@ -25,10 +25,19 @@ Projectile::Projectile(GameObject* _owner, std::tuple<float,float> _location,flo
 
 }
 
+void Projectile::setLocation() {
+	if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
+		this->location->removeObject(this);
+		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
+		this->location->objects.push_back(this);
+	}
+}
+
 void Projectile::update() {
 	
 
 	if(TBAGame->logicTicks >= this->destroyTime) {
+		this->setLocation();
 		this->cleanup();
 	}
 	
@@ -41,11 +50,7 @@ void Projectile::update() {
 	
 
 	//Location correction
-	if((char*)TBAGame->gameWorld->getTileAt(this->x,this->y) != (char*)this->location) {
-		this->location->removeObject(this);
-		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
-		this->location->objects.push_back(this);
-	}
+	this->setLocation();
 	
 
 	this->lastUpdate = TBAGame->logicTicks;
@@ -99,11 +104,7 @@ void Projectile::relocate() {
 		testX += (this->velocity/4)*std::cos(this->angle);
 		testY += (this->velocity/4)*std::sin(this->angle);
 		thisTile = TBAGame->gameWorld->getTileAt(testX,testY);
-		if((char*)thisTile != (char*)this->location) {
-			this->location->removeObject(this);
-			this->location = thisTile;
-			this->location->addObject(this);
-		}
+		this->setLocation();
 	}
 	this->x = testX;
 	this->y = testY;

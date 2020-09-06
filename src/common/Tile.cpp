@@ -51,6 +51,13 @@ std::string Tile::getName() {
 	return tileNameMap.at(this->id);
 }
 
+bool Tile::hasLivingOccupants() {
+	for(int i=0;i<this->occupiers.size();i++) {
+		if(this->occupiers.at(i)->isAlive()) return true;
+	}
+	return false;
+}
+
 bool Tile::adjacent(Tile* tile) {
 	for(int i=-1;i<=1;i++) {
 		for(int j=-1;j<=1;j++) {

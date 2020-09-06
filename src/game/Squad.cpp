@@ -21,8 +21,9 @@ void Squad::alert(GameObject *c) {
 	if(this->isMember(c->getAsCharacter())) return;
 	for(int i=0;i<this->members.size();i++) {
 		thisMember = this->members.at(i);
-		if(thisMember->getCharTarget() == nullptr or !thisMember->targetInRange() or !thisMember->getCharTarget()->isAlive() or (char*)thisMember->getCharTarget()->getCharTarget() != (char*)thisMember) {
-			thisMember->setTarget(static_cast<Character*>(c));
+		if(thisMember->hasTarget()) continue;
+		if(!thisMember->hasTarget() or !thisMember->targetInRange() or !thisMember->getCharTarget()->isAlive() or (char*)thisMember->getCharTarget()->getCharTarget() != (char*)thisMember) {
+			thisMember->setTarget(c->getAsCharacter());
 			thisMember->addStatus(STATUS_COMBAT);
 		}
 	}

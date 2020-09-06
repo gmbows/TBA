@@ -16,8 +16,11 @@ void Inventory::record(int id,int change) {
 		this->manifest.insert({id,1});
 	} else {
 		int temp = this->manifest.at(id);
+		//Delete entry if we're removing the last item of this type
 		this->manifest.erase(id);
-		this->manifest.insert({id,temp+change});
+		if(temp + change > 0) {
+			this->manifest.insert({id,temp+change});
+		}
 	}
 }
 

@@ -1,4 +1,4 @@
-Aug/11/2020(Tue)18:13:09 : Game.txt initialized
-Aug/11/2020(Tue)18:13:09 : Beginning game startup
+Sep/05/2020(Sat)22:52:52 : Game.txt initialized
+Sep/05/2020(Sat)22:52:52 : Beginning game startup
 
-Aug/11/2020(Tue)18:13:10 : Entering game loop
+Sep/05/2020(Sat)22:52:52 : Entering game loop

@@ -58,7 +58,11 @@ Character::Character(const std::string& _name, int capacity, std::tuple<float,fl
 	}
 
 	this->evaluateEquipment();
-
+	
+	this->checkAI = TBA_Interval(this->AICheckInterval + (-100+(rand()%200)));
+	
+	// this->addGoal(GOAL_IDLE);
+	
 	this->complete = true;
 }
 
@@ -137,15 +141,33 @@ void Character::move() {
 	//Velocity decay
 	this->velocity *= .9;
 	
-	if(this->velocity == 0) this->removeStatus(STATUS_TRAVEL);
+	if(fabs(this->velocity) < 0.5f) {
+		this->removeStatus(STATUS_TRAVEL);
+	}
 
 	this->lastMove = TBAGame->logicTicks;
 
 }
 bool Character::canReach(GameObject *o) {
-	float x,y;
-	decompose(o->getLocation(),x,y);
-	return characterCanReach(this,x,y,true);
+	float ox,oy;
+	decompose(o->getLocation(),ox,oy);
+	if(this->hasPath()) {
+		Tile* t1 = TBAGame->gameWorld->getTileAt(ox,oy);
+		//If this character already has a path
+		// that reaches the target object's location, or a tile adjacent to it
+		if((char*)this->targetPath.at(this->targetPath.size()-1) == (char*)t1) {
+			// debug("OPTIMIZED");
+			return true;
+		}
+		if(this->targetPath.at(this->targetPath.size()-1)->adjacent(t1)) {
+			// debug("OPTIMIZED");
+			return true;
+		}
+	}
+	return characterCanReach(this,ox,oy,true);
+}
+bool Character::canSee(GameObject *o) {
+	return TBAGame->gameWorld->hasSimplePath(this,o);
 }
 //===================
 //	  EQUIPMENT / STATS
@@ -265,8 +287,9 @@ bool Character::consume(Item *item) {
 // Try to work resource or object
 bool Character::work(GameObject* node) {
 	if(node->type == OBJ_INTERACTIVE) {
-		this->addStatus(STATUS_WORK);
+		// this->addStatus(STATUS_WTORK);
 		this->workTarget = node;
+		this->addGoal(GOAL_WORK);
 		return true;
 	} else {
 		return false;
@@ -369,13 +392,13 @@ std::string Character::getInfo() {
 	
 	bool debug = true;
 	
-	std::string info = " Name:\t"+this->getFormattedName() + "\n" +
+	std::string info = " Name:\t"+this->getEntityName() + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" ;
 				// "\tAim Angle:"+std::to_string(this->viewAng) + "\n" +
 				// "\tTarget Angle:"+std::to_string(this->targetAng) + "\n" ;
 				// "\tLocation:\t"+std::to_string((int)std::round(this->x)) + "," + std::to_string((int)std::round(this->y)) + "\n";
 				if(this->hasTarget()) {
-					info += "\tTarget:\t"+this->getTargetName() + "\n";
+					info += "\tTarget:\t"+this->getTarget()->getEntityName() + "\n";
 					// info += "\tDistance to target:\t"+std::to_string(dist(this->getLocation(),this->getTarget()->getLocation())) + "\n";
 					
 				}
@@ -394,6 +417,12 @@ std::string Character::getInfo() {
 					info += "\n";
 					
 					info += std::to_string(this->viewAng)+"\n";
+					if(this->hasGoals()) {
+						std::vector<GoalType> t = this->goals.get_elements();
+						for(int i=0;i<t.size();i++) {
+							info += std::to_string(t.at(i))+"\n";
+						}
+					}
 				}
 				
 				//Limb info

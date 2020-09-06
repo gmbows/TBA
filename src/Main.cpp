@@ -2,7 +2,10 @@
 #include <SDL2/SDL.h>
 #include <pthread.h>
 
+pthread_mutex_t printLock = PTHREAD_MUTEX_INITIALIZER;
+
 #include "common/Common.h"
+
 
 int main(int argc, char** argv) {
 	// std::cout << "BLACK" << std::endl;
@@ -16,6 +19,8 @@ int main(int argc, char** argv) {
 	srand(time(NULL));
 
 	SDL_Init(SDL_INIT_EVERYTHING);
+	
+	init_utility();
 	
 	//Initialize UI objects
 	TBAGame->setupUI();
@@ -32,10 +37,11 @@ int main(int argc, char** argv) {
 
 	//Let graphics thread update first
 	// pthread_cond_signal(&TBAGame->graphics);
-
+	
+	// pthread_cond_wait(&TBAGame->canUpdateInput,&TBAGame->inputLock);
+	
 	TBAGame->gameLog->writeln("Entering game loop");
 	while(TBAGame->gameRunning) {
-		TBAGame->input();
 		TBAGame->update();
 	}
 

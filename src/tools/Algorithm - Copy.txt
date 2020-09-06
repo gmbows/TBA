@@ -46,9 +46,8 @@ std::vector<Tile*> generatePath(Character *c,float tx, float ty, bool adjacent) 
 		debug(c->getName()+" cannot generate path to impassable tile "+std::to_string((int)tx)+", "+std::to_string((int)ty));
 		c->lastPathCheck = TBAGame->logicTicks;
 		return {};
-	}
-	if(!start->isPassable()) {
-		debug(c->getEntityName()+" is stuck at "+std::to_string(c->x)+", "+std::to_string(c->y));
+	} else if(!start->isPassable()) {
+		// debug(c->getName()+" is stuck");
 		c->lastPathCheck = TBAGame->logicTicks;
 		return {};
 	}
@@ -102,7 +101,8 @@ std::vector<Tile*> generatePath(Character *c,float tx, float ty, bool adjacent) 
 	
 		nodes.pop();
 		it = n.find(current);
-	
+
+
 		for(int i=-1;i<=1;i++) {
 			for(int j=-1;j<=1;j++) {
 

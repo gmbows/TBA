@@ -362,10 +362,11 @@ void debugKey() { //kp_plus
 		amelia = new Character("Amelia",8,{-rand()%10,-rand()%20});
 		// amelia = new Character("Amelia",8,{-1,-1});
 		// amelia->maxMoveSpeed = 4;
-		amelia->turnSpeed = 4;
+		// amelia->turnSpeed = 4;
 		amelia->work(node);
 	}
-	TBAGame->playerChar->squad->alert(amelia);
+	// TBAGame->playerChar->addGoal(GOAL_HEAL_SELF);
+
 	// amelia->goals.push(new Goal(GOAL_USE_RANGED));
 	// debug(sizeof(Item);
 	// Tile* x = TBAGame->gameWorld->getNearestValidAdjacentTile(amelia,TBAGame->gameWorld->getTileAt(1,1));

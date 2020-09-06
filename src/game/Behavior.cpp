@@ -54,11 +54,15 @@ void Character::setTarget(GameObject *o) {
 }
 // Return this character's target as a game object
 Character* Character::getCharTarget()  {
-	if(!this->hasTarget()) return nullptr;
+	if(!this->hasTarget()) {
+		debug("Character::getCharTarget(): Returning nullptr");
+		return nullptr;
+	}
 	return static_cast<Character*>(this->target);
 }
 // Return this character's target
 GameObject* Character::getTarget()  {
+	if(!this->hasTarget()) debug("Character::getTarget(): Returning nullptr");
 	return this->target;
 }
 //Determine if target is in range based on equipment
@@ -120,7 +124,6 @@ bool Character::getNearestTarget() {
 		this->setTarget(bestTarget);
 		return true;
 	}
-
 }
 //Determine whether a character with name similar to _name is in awareness range
 bool Character::findTargetInRadius(const std::string& _name) {
@@ -249,6 +252,10 @@ void Character::setStatus(StatusIndicator newStatus) {
 //==========
 //	 TRAVEL
 //==========
+//Clear path
+void Character::clearPath() {
+	std::vector<Tile*>().swap(this->targetPath);
+}
 //Pathfind to an object
 bool Character::goTo(GameObject *o,bool adjacent) {
 	if(TBAGame->gameWorld->hasSimplePath(this,o)) {
@@ -309,7 +316,7 @@ void Character::setLocomotion() {
 				}
 				if(this->hasStatus(STATUS_COMBAT)) this->addStatus(STATUS_PURSUE);
 			} else {
-				this->targetPath.clear();
+				this->clearPath();
 				this->removeStatus(STATUS_PURSUE | STATUS_TRAVEL);
 			}
 		} else if(this->hasStatus(STATUS_ESCAPE)) {
@@ -637,8 +644,9 @@ void Character::sendAttack(GameObject *target) {
 			// DEBUG:: Replace rand range with accuracy deviation and real projectile speed (bow, strength)
 			// new Projectile(this,this->getLocation(),((-1+rand()%1)*CONV_DEGREES)+atan2(ty-y,tx-x),.5); //placeholder velocity
 			//												accuracy mult goes here \/
-			if(!TBAGame->gameWorld->hasSimplePath(this,this->getTarget())) break;
+			if(!this->canSee(this->getTarget())) break;
 			if(this->hasAmmo(I_WEAPON_BOW)) {
+				this->setTargetLoc(this->getCharTarget()->x,this->getCharTarget()->y);
 				float inaccuracy = 12;
 				inaccuracy = (-(inaccuracy/2)+rand()%(int)inaccuracy);
 				new Projectile(this,this->getLocation(),damage,(inaccuracy+this->viewAng)*CONV_DEGREES,.5); //placeholder velocity
@@ -674,11 +682,12 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	//	Target is dead
 	//	Target is not targeting you
 	//	Target is out of range
-	if(this->getCharTarget() == nullptr or !this->targetInRange() or !this->getCharTarget()->isAlive() or (char*)this->getCharTarget()->getCharTarget() != (char*)this) {
-		this->setTarget(static_cast<Character*>(attacker));
-	}
+	
+	// if(this->getCharTarget() == nullptr or !this->targetInRange() or !this->getCharTarget()->isAlive() or (char*)this->getCharTarget()->getCharTarget() != (char*)this) {
+		// this->setTarget(static_cast<Character*>(attacker));
+	// }
 
-	//Alert player squad
+	//Alert character squad
 	if(this->hasSquad()) {
 		this->squad->alert(attacker);
 	}
@@ -735,14 +744,14 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 	// REACT POST STATUS_ATTACK
 	//====================
 
-	if(this->health <= 0) {
+	if(this->body->getVitality() <= 0) {
 		//Globally broadcasted kill notifs
+		this->kill();
 		TBAGame->displayText("\n"+attacker->getEntityName()+" kills "+this->getEntityName());
 		if(static_cast<Character*>(attacker)->isPlayer()) TBAGame->displayText("\nKilled "+this->getName());
-		// this->kill();
 		//If killed character was killer's actual target
 		if((char*)this == (char*)static_cast<Character*>(attacker)->getTarget()) {
-			static_cast<Character*>(attacker)->setTarget(nullptr);
+			// static_cast<Character*>(attacker)->setTarget(nullptr);
 			static_cast<Character*>(attacker)->say("It's a shame, really");
 		} else {
 			static_cast<Character*>(attacker)->say("Oops!");
@@ -753,9 +762,9 @@ void Character::receiveAttack(int damage,GameObject *attacker) {
 		//
 		//Should check if targets in awareness range are targeting and attacking
 
-		if(!static_cast<Character*>(attacker)->combatRetarget()) {
+		// if(!static_cast<Character*>(attacker)->combatRetarget()) {
 			//static_cast<Character*>(attacker)->setStatus(STATUS_IDLE);
-		}
+		// }
 
 	}
 
@@ -817,14 +826,14 @@ void Character::think() {
 	}
 
 	if(this->inCombat()) {
-		this->combat();
+		// this->combat();
+		// if(!this->hasGoals()) {
+			this->addGoal(GOAL_COMBAT);
+		// }
+		this->exitCombat();
 	}
 
 	if(this->hasStatus(STATUS_WORK)) {
-		// this->processWork();
-		// if(this->hasGoals()) {
-			// if(this->currentGoal()->type != GOAL_WORK) 
-		// }
 		this->addGoal(GOAL_WORK);
 		this->removeStatus(STATUS_WORK);
 	}
@@ -836,13 +845,24 @@ void Character::think() {
 	
 	if(this->hasGoals()) {
 		switch(this->goals.top()->execute(this)) {
-			case TBA_GOAL_PRECOND_FAIL:
-				// debug(this->getEntityName()+" precondition check failed, removing goal");
+			case AI_GOAL_PRECOND_FAIL:
+				if(this->getName() == "Archer" or true) {
+					debug(this->getEntityName()+" precondition check failed for goal "+std::to_string(this->currentGoal()->type)+", removing goal");
+				}
+				// free(this->goals.top());
 				this->goals.pop();
 				break;
-			case TBA_GOAL_INCOMPLETE:
+			case AI_GOAL_INCOMPLETE:
+				// debug(this->getEntityName()+" is still working on "+std::to_string(this->goals.top()->type));
 				break;
-			case TBA_GOAL_COMPLETE:
+			case AI_GOAL_COMPLETE:
+				debug(this->getEntityName()+" completed goal "+std::to_string(this->currentGoal()->type)+", removing");
+				// free(this->goals.top());
+				this->goals.pop();
+				break;
+			case AI_FATAL_ERROR:
+				debug(this->getEntityName()+" fatal error, removing goal");
+				// free(this->goals.top());
 				this->goals.pop();
 				break;
 		}

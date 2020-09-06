@@ -33,7 +33,8 @@ class Projectile: public GameObject {
 		unsigned int destroyTime;
 
 		void update();
-
+		void setLocation();
+		
 		std::tuple<float,float> getLocation() {
 			return {this->x,this->y};
 		}

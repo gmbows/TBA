@@ -10,6 +10,8 @@
 #include "../game/Command.h"
 #include "Clock.h"
 
+#include "../tools/Algorithm.h"
+
 #include <thread>
 #include <vector>
 #include <string>
@@ -142,12 +144,19 @@ struct Game {
 	// UPDATE / FOUNDATION
 	//====================
 
-	Game() {}
+	Game() {
+		this->graphicsTicks = 0;
+		this->logicTicks = 0;
+		this->logicEnabled = false;
+		this->graphicsEnabled = false;
+	}
+	
+	
 	~Game() {
 		debug("Closing game");
 		delete this->gameWindow;
-		this->gameObjects.clear();
-		this->gameUIObjects.clear();
+		// this->gameObjects.clear();
+		// this->gameUIObjects.clear();
 		std::vector<GameObject*>().swap(this->gameObjects);
 		std::vector<GameObject*>().swap(this->gameUIObjects);
 		// pthread_join(this->logic_thread,NULL);
@@ -156,6 +165,25 @@ struct Game {
 
 	void setupUI();
 	void setupGame();
+	
+	//Rate (ms) at which the program polls keyboard and mouse input
+	int input_interval = 36;
+	
+	//Performance stats
+	
+	int latency_notif_interval = 2000; //Interval at which update routines will notify that they are falling behind
+	
+	unsigned int last_perf_notif = 0;
+	int perf_notif_interval = 250; //Interval at which update routines will notify that they are falling behind
+	TBA_Interval perfNotifInterval = TBA_Interval(2000);
+	
+	//Size limited queues to keep track of last 100 updates times
+	TBA_LimitedQueue<int> logicPerf = TBA_LimitedQueue<int>(100);
+	TBA_LimitedQueue<int> graphicsPerf = TBA_LimitedQueue<int>(100);
+	
+	//Last elapsed update time for each update type
+	int lastGraphicsUpdateTime;
+	int lastLogicUpdateTime;
 
 	bool togglePause();
 	void popupText(int, const std::string&);
@@ -163,16 +191,19 @@ struct Game {
 	void input();
 	void update();
 	
+	//Threads
 	pthread_t logic_thread;
+	pthread_t graphics_thread;
+	pthread_t input_thread;
 
-	pthread_mutex_t logicLock = PTHREAD_MUTEX_INITIALIZER;
-	pthread_mutex_t graphicsLock;
-	pthread_cond_t logicEnabled = PTHREAD_COND_INITIALIZER;
-	pthread_cond_t graphicsEnabled = PTHREAD_COND_INITIALIZER;
-	pthread_cond_t graphics;
-
-	bool canUpdateLogic;
-	bool canUpdateGraphics;
+	//Locks graphics updates until logic updates
+	pthread_mutex_t graphicsLock = PTHREAD_MUTEX_INITIALIZER;
+	
+	//Signals graphics thread to proceed with update
+	pthread_cond_t canUpdateGraphics = PTHREAD_COND_INITIALIZER;
+	
+	bool logicEnabled,graphicsEnabled;
+	inline bool initialized() {return this->logicEnabled and this->graphicsEnabled;}
 
 	void spawn_threads();
 

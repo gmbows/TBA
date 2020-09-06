@@ -3,12 +3,19 @@
 #include "ItemManifest.h"
 #include "StatusEffect.h"
 
+#include "../tools/Utility.h"
+
 #include <vector>
 #include <string>
 #include <ctime>
 #include <map>
 
 void checkItemTypes();
+bool importItems();
+
+namespace ItemUtils {
+	bool hasType(int id,ItemType type);
+}
 
 class Item {
 

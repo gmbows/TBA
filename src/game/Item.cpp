@@ -7,6 +7,7 @@
 #include <map>
 #include <tuple>
 #include <ctime>
+#include <fstream>
 
 std::map<ItemType,std::string> ItemTypeMap = {
 	{I_FOOD,"Food"},
@@ -17,10 +18,10 @@ std::map<ItemType,std::string> ItemTypeMap = {
 	{I_VEGETABLE,"Vegetable"},
 	{I_WEAPON,"Weapon"},
 	{I_EQUIPMENT,"Equipment"},
-	{I_WEAPON_MELEE,"Melee weapon"},
-	{I_WEAPON_RANGED,"Ranged weapon"},
-	{I_WEAPON_SWORD,"Sword weapon"},
-	{I_WEAPON_BOW,"Bow weapon"},
+	{I_WEAPON_MELEE,"Melee"},
+	{I_WEAPON_RANGED,"Ranged"},
+	{I_WEAPON_SWORD,"Sword"},
+	{I_WEAPON_BOW,"Bow"},
 	{I_ARMOR,"Armor"},	
 	{I_ARMOR_HEAD,"Armor"},	
 	{I_ARMOR_BODY,"Body armor"},	
@@ -40,6 +41,86 @@ void checkItemTypes() {
 			debug("WARNING Item type string not found for type: "+std::to_string(i));
 		}
 	}
+}
+
+bool importItems() {
+	const std::string itemFile = "assets/objects/items.ead";
+	std::string line;
+	std::ifstream itemRaw(itemFile);
+	if(itemRaw.is_open()) {
+		
+		bool reading = false;
+		
+		const std::string name_default = "ITEM_NAME_UNDEFINED";
+		const std::string desc_default = "ITEM_DESC_UNDEFINED";
+		int weight_default = 0;
+		int size_default = 0;
+		flag types_default = I_END;
+		
+		//Default attribs and effects
+		std::map<ItemAttribute,float> attributes_default = {};
+		std::map<Action,std::vector<std::vector<float>>> effects_default = {};
+		
+		std::string name,desc;
+		int weight,size;
+		flag types;
+		std::map<ItemAttribute,float> attributes = {};
+		std::map<Action,std::vector<std::vector<float>>> effects = {};
+			
+		std::vector<std::string> lines;
+		std::vector<std::string> tline;
+	
+		while(std::getline(itemRaw,line)) {
+			
+			lines.push_back(line);
+			
+		}
+		for(int i=0;i<lines.size();i++) {
+			
+			name = name_default;
+			desc = desc_default;
+			weight = weight_default;
+			types = types_default;
+			attributes = attributes_default;
+			effects = effects_default;
+			
+			line = lines.at(i);
+			
+
+			if(line.size() < 2) continue;
+			
+			//ignore comments
+			if(line.substr(0,2) == "//") continue;
+			
+			//ignore non-items
+			if(line.substr(1,4) == "ITEM") {
+				reading = true;
+				//Ignore brace closure and newline char
+				name = line.substr(6,line.size()-1);
+				name.erase(name.size()-1);
+				debug("Reading "+name);
+				continue;
+			}
+			
+			tline = split(':',line);
+			if(tline.at(0) == "DESC") {
+				name = tline.at(1);
+			} else if(tline.at(0) == "WEIGHT") {
+				weight = std::atoi(tline.at(1));
+			}else if(tline.at(0) == "SIZE") {
+				size = std::atoi(tline.at(1));
+			}else if(tline.at(0) == "TYPES") {
+				//Reverse lookup from attribute map
+			}
+			
+			
+			
+		}
+	} else {
+		debug("Failed to open item file: "+itemFile);
+		return false;
+	}
+	return true;
 }
 
 Item::Item(int _id): id(_id) {
@@ -166,4 +247,18 @@ std::string Item::getPluralDisplayName() {
 }
 std::string Item::getDisplayName() {
 	return replace(this->name,' ',"");
+}
+
+using namespace ItemUtils;
+
+bool ItemUtils::hasType(int id,ItemType type) {
+	if(id >= itemManifest.size()) {
+		debug("ERROR (ItemUtils::hasType()): Checking type of invalid item");
+		return false;
+	}
+
+	itemTraits itemInfo = itemManifest.at(id);
+	flag types = std::get<4>(itemInfo);
+
+	return (types & type) == type; 
 }

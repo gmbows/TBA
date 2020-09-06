@@ -1,0 +1,119 @@
+//items.ead
+
+[ITEM:ITEM_INVALID]
+	DESC:ITEM_INVALID_DESC
+	WEIGHT:0
+	SIZE:0
+
+[ITEM:Iron Dagger]
+	DESC:A small iron dagger with a wooden grip.
+	WEIGHT:4
+	SIZE:1
+	TYPES:weapon:melee:sword:equipment
+	ATTRIBS:damage:5:range:0.3
+	
+[ITEM:Apple]
+	DESC:A shiny red apple.
+	WEIGHT:4
+	SIZE:1
+	TYPES:food:fruit:ingredient:plantable
+	
+[ITEM:Raw Sapphire]
+	DESC:A dull blue gem.
+	WEIGHT:1
+	SIZE:1
+	TYPES:crafting:ingredient:currency
+
+[ITEM:Healing Potion]
+	DESC:A bright red, glowing, liquid in a small glass vial. It glistens in sunlight.
+	WEIGHT:1
+	SIZE:4
+	TYPES:potion:consumable:ingredient
+	EFFECTS:consume:healing:27:5
+	
+[ITEM:Poison]
+	DESC:A black liquid in a small glass vial.
+	WEIGHT:1
+	SIZE:4
+	TYPES:potion:consumable:ingredient
+	EFFECTS:consume:harm:27:5
+	
+[ITEM:Wheat]
+	DESC:A bundle of dry, golden, wheat
+	WEIGHT:4
+	SIZE:1
+	TYPES:food:fruit:ingredient
+
+[ITEM:Wheat Seed]
+	DESC:A handful of small wheat seeds.
+	WEIGHT:4
+	SIZE:1
+	TYPES:food:fruit:ingredient
+	ATTRIBS:growth_time:100:yield_id:2:yield_amt:3
+
+[ITEM:Copper Coin]
+	DESC:A scuffed, bent, copper coin. There is a ornate building printed on it.
+	WEIGHT:1
+	SIZE:1
+	TYPES:currency:metal
+
+[ITEM:Iron Ore]
+	DESC:A smooth looking grey rock. Quite heavy.
+	WEIGHT:1
+	SIZE:1
+	TYPES:crafting:metal:ingredient
+
+[ITEM:Iron Arrow]
+	DESC:A wood-shafted arrow with an iron tip.
+	WEIGHT:1
+	SIZE:1
+	TYPES:ammo:ranged:bow:metal
+	
+[ITEM:Rusted Longsword]
+	DESC:A dull, rusted sword. It looks like it hasn't been touched for some time.
+	WEIGHT:8
+	SIZE:3
+	TYPES:weapon:melee:sword:equipment
+	ATTRIBS:damage:10:range:0.5
+
+[ITEM:Glass Vial]
+	DESC:A tiny glass vial and a small cork. Could store a splash of liquid in here.
+	WEIGHT:4
+	SIZE:1
+	TYPES:container
+	
+[ITEM:Cracked Longbow]
+	DESC:A wooden bow. Probably won't survive more than a few shots.
+	WEIGHT:3
+	SIZE:3
+	TYPES:weapon:ranged:bow:equipment
+	ATTRIBS:damage:8:range:-1
+	
+[ITEM:Old Knight's Helmet]
+	DESC:An old iron helmet, probably used by a knight. Rusted around the hinges.
+	WEIGHT:3
+	SIZE:3
+	TYPES:weapon:ranged:bow:equipment
+	ATTRIBS:defense:5
+	
+[ITEM:Old Knight's Chestplate]
+	DESC:An iron chestplate, part of a full set of armor.
+	WEIGHT:3
+	SIZE:3
+	TYPES:armor:body armor:equipment
+	ATTRIBS:defense:13
+
+[ITEM:Old Knight's Boots]
+	DESC:Some iron boots. They don't look very comfortable.
+	WEIGHT:3
+	SIZE:3
+	TYPES:armor:body armor:equipment
+	ATTRIBS:defense:2
+
+[ITEM:Old Knight's Leggings]
+	DESC:Some dented iron leggings. Looks like they've taken a beating.
+	WEIGHT:3
+	SIZE:3
+	TYPES:armor:leg armor:equipment
+	ATTRIBS:defense:7
+	

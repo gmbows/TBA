@@ -172,6 +172,7 @@ class MapScreen: public Screen {
 
 		//to keep track of redrawn tiles each loop
 		std::unordered_set<char*> checked;
+		unsigned int active_tiles = 0;
 		
 
 		SDL_Texture* mapTexture;
@@ -182,6 +183,8 @@ class MapScreen: public Screen {
 		//void generateMapTexture();
 		void updateMap();
 		void redrawActiveTiles();
+		void redraw3x3(int,int,std::pair<int,int>);
+		void redrawTile(int,int,std::pair<int,int>);
 		void generateMapTiles();
 
 		int zoom = 1;

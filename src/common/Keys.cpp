@@ -34,7 +34,7 @@ std::map<int,int> shiftMap = {
 	{93,125}, //Right  bracket
 };
 
-	void Game::input() {
+void Game::input() {
 		
 	// bool shift = false;
 
@@ -43,7 +43,7 @@ std::map<int,int> shiftMap = {
 	int keycode;
 
 	while(SDL_PollEvent(&event)) {
-
+		
 		keycode = event.key.keysym.sym; 
 
 		switch(event.type) {

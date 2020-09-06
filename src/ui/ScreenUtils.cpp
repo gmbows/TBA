@@ -170,8 +170,7 @@ void MapScreen::generateMapTiles() {
 	this->lastMapY = centerY;
 }
 
-void MapScreen::redrawActiveTiles() {
-
+void MapScreen::redrawTile(int x,int y,std::pair<int,int> c) {
 	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
 	
 	//Source rectangle taken from screenFont->fontTexture
@@ -184,7 +183,7 @@ void MapScreen::redrawActiveTiles() {
 	Tile* thisTile;
 
 	//Cursor
-	int cursor[2] = {0,0};
+	int cursor[2] = {c.first,c.second};
 
 	int tileID;
 	int occupierTileID;
@@ -192,7 +191,133 @@ void MapScreen::redrawActiveTiles() {
 
 	int charSize;
 
-	this->checked.clear();
+	// this->checked.clear();
+
+	// thisTile = this->map.at(y).at(x);
+
+	//Criteria for activity:
+	//	Occcupied by character or object
+
+
+	//Update 3x3 area surrounding tiles occupied by characters
+
+	charSize = this->charW;
+	try {
+		thisTile = this->map.at(std::min(y,(int)this->map.size()-1)).at(std::min(x,(int)this->map.size()-1));
+	} catch(const std::exception &e) {
+		return;
+	}
+	// debug(thisTile->x);
+	// debug(-thisTile->y);
+	//Check if this tile has been updated already
+	if(this->checked.find((char*)thisTile) != this->checked.end()) {
+		return;
+	} else {
+		this->checked.insert((char*)thisTile);
+	}
+
+	tileID = thisTile->getDisplayID();
+
+	if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+		debug("ERROR: Missing charMap entry for tile "+tileID);
+		exit(0);
+	}
+
+	charInfo = this->screenFont->fontMap.at(tileID);
+
+	int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
+	int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
+
+	sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+	dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
+
+	// if(thisTile->planted) SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
+	SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+	// SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+
+
+}
+
+void MapScreen::redraw3x3(int x,int y,std::pair<int,int> c) {
+	SDL_SetRenderTarget(TBAGame->gameWindow->renderer,TBAGame->gameWorld->worldTexture);
+	
+	//Source rectangle taken from screenFont->fontTexture
+	SDL_Rect sRect;
+	fChar charInfo;
+
+	//Destination rectangle on screen
+	SDL_Rect dRect;
+
+	Tile* thisTile;
+
+	//Cursor
+	int cursor[2] = {c.first,c.second};
+
+	int tileID;
+	int occupierTileID;
+	int index = -1;
+
+	int charSize;
+
+	// this->checked.clear();
+
+	// thisTile = this->map.at(y).at(x);
+
+	//Criteria for activity:
+	//	Occcupied by character or object
+
+
+	//Update 3x3 area surrounding tiles occupied by characters
+
+	charSize = this->charW;
+	int tcursor[2] = {cursor[0],cursor[1]};
+	for(int k=-1;k<=1;k++) {
+		for(int n=-1;n<=1;n++) {
+			tcursor[0] = cursor[0]+(n*charW);
+			tcursor[1] = cursor[1]+k;
+			try {
+				thisTile = this->map.at(std::min(y+k,(int)this->map.size()-1)).at(std::min(x+n,(int)this->map.size()-1));
+			} catch(const std::exception &e) {
+				continue;
+			}
+			// debug(thisTile->x);
+			// debug(-thisTile->y);
+			//Check if this tile has been updated already
+			if(this->checked.find((char*)thisTile) != this->checked.end()) {
+				continue;
+			} else {
+				this->checked.insert((char*)thisTile);
+			}
+
+			tileID = thisTile->getDisplayID();
+
+			if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
+				debug("ERROR: Missing charMap entry for tile "+tileID);
+				exit(0);
+			}
+
+			charInfo = this->screenFont->fontMap.at(tileID);
+
+			int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
+			int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
+
+			sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
+			dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
+
+			// if(thisTile->planted) SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
+			SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
+			// SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
+
+		}
+	}
+}
+
+void MapScreen::redrawActiveTiles() {
+	
+	int cursor[2] = {0,0};
+	Tile* thisTile;
+	
+	std::unordered_set<char*>().swap(this->checked);
 	
 	for(int i=0;i<map.size();i++) {
 		for(int j=0;j<map.size();j++) {
@@ -203,50 +328,19 @@ void MapScreen::redrawActiveTiles() {
 
 
 			//Update 3x3 area surrounding tiles occupied by characters
-			if(thisTile->isOccupied() or thisTile->hasObjects() or thisTile->planted) {
-				charSize = this->charW;
-				int tcursor[2] = {cursor[0],cursor[1]};
-				for(int k=-1;k<=1;k++) {
-					for(int n=-1;n<=1;n++) {
-						tcursor[0] = cursor[0]+(n*charW);
-						tcursor[1] = cursor[1]+k;
-						try {
-							thisTile = this->map.at(std::min(i+k,(int)this->map.size()-1)).at(std::min(j+n,(int)this->map.size()-1));
-						} catch(const std::exception &e) {
-							continue;
-						}
-						//Check if this tile has been updated already
-						if(this->checked.find((char*)thisTile) != this->checked.end()) {
-							continue;
-						} else {
-							this->checked.insert((char*)thisTile);
-						}
-
-						tileID = thisTile->getDisplayID();
-
-						if(this->screenFont->fontMap.find(tileID) == this->screenFont->fontMap.end()) {
-							debug("ERROR: Missing charMap entry for tile "+tileID);
-							exit(0);
-						}
-
-						charInfo = this->screenFont->fontMap.at(tileID);
-
-						int windowOffsetX = ((TBAGame->gameWorld->size/2)+thisTile->x)*this->charW;
-						int windowOffsetY = ((TBAGame->gameWorld->size/2)-thisTile->y)*this->charH;
-
-						sRect = {charInfo.x,charInfo.y,charInfo.w,charInfo.h};
-						dRect = {windowOffsetX,windowOffsetY,charSize,charSize};
-
-						// if(thisTile->planted) SDL_SetTextureAlphaMod(this->screenFont->fontTexture,120);
-						SDL_RenderCopyEx(TBAGame->gameWindow->renderer,this->screenFont->fontTexture,&sRect,&dRect,thisTile->getRotation(),NULL,thisTile->getFlip());
-						// SDL_SetTextureAlphaMod(this->screenFont->fontTexture,255);
-
+			if((thisTile->isOccupied() and thisTile->hasLivingOccupants())) {
+				this->redraw3x3(j,i,{cursor[0],cursor[1]});
+			} else if(thisTile->hasObjects()) {
+				this->redraw3x3(j,i,{cursor[0],cursor[1]});
+				for(int i=0;i<thisTile->objects.size();i++) {
+					if(thisTile->objects.at(i)->type == OBJ_PROJECTILE) {
+						// Projectile *p = static_cast<Projectile*>(thisTile->objects.at(i));
+						// this->redrawTile(j-cos(p->angle)*1.5,i-sin(p->angle)*1.5,{(j-std::round(cos(p->angle)*1.5))*charW,i-std::round(sin(p->angle)*1.5)});
+						// this->redrawTile(j,i,{cursor[0],cursor[1]});
+						// this->redrawTile(j+cos(p->angle)*1.5,i+sin(p->angle)*1.5,{(j+std::round(cos(p->angle)*1.5))*charW,i+std::round(sin(p->angle)*1.5)});
 					}
 				}
 			}
-
-			
-
 			//Advance cursor for next character
 			cursor[0] += this->charW;
 		}
@@ -255,6 +349,7 @@ void MapScreen::redrawActiveTiles() {
 		cursor[0] = 0;
 
 	}
+	this->active_tiles = checked.size();
 }
 
 void MapScreen::updateMap() {

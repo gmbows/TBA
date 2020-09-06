@@ -27,6 +27,13 @@ struct Inventory {
 	int find(Item*);
 	int find(const std::string&);
 	int find(int);
+	Item* get(int id) {
+		if(id < 0 or id >= this->contents->size()) {
+			debug("Error (Inventory::get()): Returning nullptr");
+			return nullptr;
+		}
+		return this->contents->at(id);
+	}
 	
 	int getFirstInstance(const std::string&);
 

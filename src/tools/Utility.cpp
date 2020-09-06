@@ -7,6 +7,10 @@
 #include <algorithm>
 #include <map>
 
+void init_utility() {
+	// pthread_mutex_t printLock = PTHREAD_MUTEX_INITIALIZER;
+}
+
 int rfind(char c, const std::string& s) {
 
 	for(int i=s.length()-1;i>0;i--) {

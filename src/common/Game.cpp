@@ -8,6 +8,7 @@
 #include "../ui/Screen.h"
 
 #include "../tools/Utility.h"
+#include "../tools/Algorithm.h"
 
 #include "../game/GameObject.h"
 #include "../game/World.h"
@@ -24,7 +25,6 @@
 #include "../common/Keys.h"
 
 #include "../game/Projectile.h"
-
 
 //=============
 //	 	SETUP
@@ -60,6 +60,7 @@ void Game::setupUI() {
 	gameLog->writeln("Screen objects initialized");
 
 	this->gameWindow = new Window((borderSize*4)+tScreenW*2+mapScreenS,600);
+	// Window* debugWindow = new Window(400,200);
 	gameLog->writeln("Window object initialized");
 
 	//std::string a = "It was to have its service of the intellect, certainly; yet, it was never to accept any theory or system that would involve the sacrifice of any mode of passionate experience. Its aim, indeed, was to be experience itself, and not the fruits of experience, sweet or bitter as they might be. Of the asceticism that deadens the senses, of the vulgar profligacy that dulls them, it was to know nothing. But it was to teach man to concentrate himself upon the moments of a life that is itself but a moment.";
@@ -104,10 +105,17 @@ void Game::setupUI() {
 
 void Game::setupGame() {
 
+	//Verify that we have help entries for each command
+	checkHelp();
+	
+	//Import items from item file and make sure we have strings for each type
+	importItems();
+	checkItemTypes();
+
 	this->gameLog = new Log("Game.txt");
 	gameLog->writeln("Beginning game startup\n");
 	
-	pthread_mutex_init(&this->logicLock, NULL);
+	pthread_mutex_init(&this->graphicsLock, NULL);
 	
 	//this->maxWaitTime = 1000/std::max(this->logicTickRate,this->graphicsTickRate);
 	//this->minWaitTime = 1000/std::min(this->logicTickRate,this->graphicsTickRate);
@@ -233,32 +241,50 @@ void Game::setupGame() {
 	// this->createSquad("Player squad")->add(this->playerChar);
 // TBAGame->playerChar->squad->add(new Character("Archer",160,{-2+i,8},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
 	// new Character("Archer",160,{-2,9},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9});
-	for(int i=0;i<3;i++) {
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,2},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,1},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,0},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,-1},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		TBAGame->playerChar->addToSquad(new Character("Archer",160,{-10+i,-2},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}));
-		// LB->addToSquad(new Character("LB Archer",160,{-2+i,10},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
-		// LB->addToSquad(new Character("LB Archer",160,{-2+i,12},{13,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9}),true);
-	}
-
-	// GameObject *node = TBAGame->gameWorld->getTileAt(1,1)->objects.at(0);
+	
+	Character *archer;
+	Character *tamelia = new Character("Amelia",8,{-rand()%10-3,-rand()%20});
 	Character *amelia;
-	for(int i=0;i<00;i++) {
-		amelia = new Character("Amelia",8,{-rand()%10,-rand()%20});
+	
+	// for(int i=0;i<1;i++) {
+		// for(int j=-2;j<=2;j++) {
+			// archer = new Character("Archer",160,{-5+j,8+i});
+			// archer->inventory->add(9,80);
+			// archer->inventory->add(3,3);
+			// archer->inventory->add(13);
+			// archer->inventory->add(11);
+			// archer->setStatus(STATUS_COMBAT);
+			// TBAGame->playerChar->addToSquad(archer,true);
+			// archer->setStatus(STATUS_COMBAT);
+			// for(int k=0;k<2;k++) {
+				// amelia = new Character("Amelia",8,{-rand()%5+2,-rand()%20});
+				// amelia->inventory->add({14,15,16,17,10});
+				// amelia->inventory->add({10});
+				// amelia->inventory->add(3,3);
+				// amelia->setTarget(archer);
+				// amelia->setStatus(STATUS_COMBAT);
+				// amelia->evaluateEquipment();
+				// tamelia->addToSquad(amelia,true);
+			// }
+		// }
+	// }
+	
+	
+	
+	// TBAGame->playerChar->squad->alert(amelia);
+	// GameObject *node = TBAGame->gameWorld->getTileAt(1,1)->objects.at(0);
+	// Character *amelia;
+	// for(int i=0;i<00;i++) {
+		// amelia = new Character("Amelia",8,{-rand()%10,-rand()%20});
 		// amelia = new Character("Amelia",8,{-1,-1});
 		// amelia->maxMoveSpeed = 4;
-		amelia->turnSpeed = 4;
-		amelia->work(node);
-		playerChar->squad->alert(amelia);
-	}
+		// amelia->turnSpeed = 4;
+		// amelia->work(node);
+		// playerChar->squad->alert(amelia);
+	// }
 	
 	// playerChar->setTarget(LB);
 	// playerChar->setStatus(STATUS_COMBAT);
-	
-	checkHelp();
-	checkItemTypes();
 
 	debug("Total game objects: "+std::to_string(this->gameObjects.size()));
 	debug("Total UI objects: "+std::to_string(this->gameUIObjects.size()));
@@ -376,69 +402,82 @@ void logic_thread_routine(Game *game) {
 	int elapsed;
 	int real_wait = 0;
 	
-	int last_latency_notif = 0;
-	int latency_notif_interval = 100;//2 Second latency notif interval
+	TBA_Interval latencyNotif = TBA_Interval(game->latency_notif_interval);
 	
-	std::vector<int> times;
-	
+	game->logicEnabled = true;
 	debug("Game logic enabled");
-	
+		
 	while(game->gameRunning) {
-		// debug("Updating logic");
-		// pthread_mutex_lock(&game->updateLock);
-		//while(game->canUpdateLogic == false) pthread_cond_wait(&game->logic,&game->updateLock);
+
 		start = SDL_GetTicks();
-		if(!game->paused) game->update_logic();
-		// debug("Done updating logic");
+		game->update_logic();
+
 		elapsed = SDL_GetTicks()-start;
 
-		// pthread_mutex_unlock(&game->updateLock);
-
 		real_wait = (1000/game->logicTickRate)-elapsed;
-		if(last_latency_notif + latency_notif_interval <= SDL_GetTicks()) {
+		if(latencyNotif.check()) {
 			if(real_wait < 0) {
 				debug("Falling behind! (logic, "+std::to_string(-real_wait)+"ms.): "+std::to_string(game->logicTicks));
-			} else {
-				std::cout << "Frame times: " << elapsed << "ms. at " << game->logicTicks << ", avg: " << average(times) << "ms                          \r";
 			}
-			if(times.size() >= 100) times.clear();
-			// times.push_back(elapsed);
-			last_latency_notif = SDL_GetTicks();
 		}
-		// debug(real_wait);
+		game->logicPerf.push(elapsed);
+		game->lastLogicUpdateTime = elapsed;
+
+		pthread_cond_signal(&game->canUpdateGraphics);
 		std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
+	}
+}
+
+void graphics_thread_routine(Game *game) {
+	Uint32 start;
+	int elapsed;
+	int real_wait = 0;
+	
+	TBA_Interval latencyNotif = TBA_Interval(game->latency_notif_interval);
+	
+	game->graphicsEnabled = true;
+	debug("Graphics enabled");
+			
+	while(game->gameRunning) {
+		
+		pthread_cond_wait(&game->canUpdateGraphics,&game->graphicsLock);
+
+		start = SDL_GetTicks();
+		game->update_graphics();
+		elapsed = SDL_GetTicks()-start;
+
+		if(latencyNotif.check()) {
+			if(real_wait < 0) {
+				debug("Falling behind! (graphics, "+std::to_string(-real_wait)+"ms.): "+std::to_string(game->graphicsTicks));
+			}
+		}
+		game->graphicsPerf.push(elapsed);
+		game->lastGraphicsUpdateTime = elapsed;
+		
+	}
+}
+
+void input_thread_routine(Game* game) {
+	std::string s;
+	while(game->gameRunning) {
+		std::cin >> s;
+		debug("Received command "+s);
 	}
 }
 
 
 void Game::spawn_threads() {
 	if(pthread_create(&this->logic_thread,NULL,logic_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&this->graphics_thread,NULL,graphics_thread_routine,this) != 0) this->gameRunning = false;
+	if(pthread_create(&this->input_thread,NULL,input_thread_routine,this) != 0) this->gameRunning = false;
 }
 
 void Game::updateGameObjects() {
-
-	if(this->playerChar == nullptr) return;
-	std::vector<Tile*> nearbyTiles = this->gameWorld->getTilesInRadius(this->playerChar->x,this->playerChar->y,18);
-	Tile* thisTile;
 	
-	for(int i=0;i<nearbyTiles.size();i++) {
-		thisTile = nearbyTiles.at(i);
-		if(thisTile->isOccupied()) {
-			for(int j=0;j<thisTile->occupiers.size();j++) {
-				thisTile->occupiers.at(j)->update();
-			}
-			// debug("Done updating character");
-		}
-		
-		if(thisTile->hasObjects()) {
-			for(int j=0;j<thisTile->objects.size();j++) {
-				thisTile->objects.at(j)->update();
-			}
-			// debug("Done updating objects");
-		}
+	for(int i=0;i<this->gameObjects.size();i++) {
+		this->gameObjects.at(i)->update();
 	}
-	// debug("Finish");
-	// pthread_mutex_unlock(&this->logicLock);
+	
 }
 
 void Game::updateGameUIObjects() {
@@ -448,63 +487,30 @@ void Game::updateGameUIObjects() {
 }
 
 void Game::update_logic() {
-
-	//Suspend logic ticks if game is paused
-	//	if(SDL_GetTicks() >= this->lastLogicUpdate + (1000/this->logicTickRate)) {
-	//Update all active game objects
-	this->lastLogicUpdate = SDL_GetTicks();
-	int start = SDL_GetTicks();
 	if(!this->paused) {
+		this->lastLogicUpdate = SDL_GetTicks();
 		this->updateGameObjects();
 		this->logicTicks++;
 	}
-	// debug("Done updating graphics");
-	int elapsed = SDL_GetTicks()-start;
-	
-	// pthread_mutex_unlock(&game->updateLock);
-
-	int real_wait = (1000/this->logicTickRate)-elapsed;
-	// if(real_wait <= 0) debug("Falling behind! (logic)");
-	// SDL_Delay(real_wait);
-	
-	//this->timeToNextLogicUpdate = (this->lastLogicUpdate + (1000/this->logicTickRate)) - SDL_GetTicks();
-	//	}
-	
-
 }
 
 void Game::update_graphics() {
-	//if(SDL_GetTicks() >= this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) {
-		//Update game window and all screens
-	// int start = SDL_GetTicks();
 	this->gameWindow->update(this->debugMode);
 	this->graphicsTicks++;
-	// debug("Done updating graphics");
-	// int elapsed = SDL_GetTicks()-start;
-	
-	// pthread_mutex_unlock(&game->updateLock);
-
-	// int real_wait = (1000/this->graphicsTickRate)-elapsed;
-	// if(real_wait <= 0) debug("Falling behind! (graphics)");
-	// SDL_Delay(real_wait);
-		//this->timeToNextGraphicsUpdate = (this->lastGraphicsUpdate + (1000/this->graphicsTickRate)) - SDL_GetTicks();
-	//}
-
 }
 
 void Game::update() {
 	
-	// std::cout << "Game objects: " << this->gameObjects.size() << "\r" << std::flush;
-
-	int start = SDL_GetTicks();
-	this->update_graphics();
-
-	int elapsed = SDL_GetTicks()-start;
-
-	int real_wait = (1000/this->graphicsTickRate)-elapsed;
-	if(real_wait <= 0) debug("Falling behind! (graphics)");
-	// SDL_Delay(real_wait);
-	std::this_thread::sleep_for(std::chrono::milliseconds(real_wait));
-
+	// std::cout << "Active tiles: "<< this->gameWindow->mapScreen->active_tiles << "/"<< 1189 << ", " << "Frame times: " << this->lastGraphicsUpdateTime << "ms. at " << this->logicTicks << "T, " << graphicsPerf.size << "T avg: " << average(graphicsPerf.get_elements()) << "ms        \r";
+	this->input();
+	
+	if(this->last_perf_notif + this->perf_notif_interval <= SDL_GetTicks()) {
+		pthread_mutex_lock(&printLock);
+		std::cout << this->logicTicks << "T @ Logic: " << this->lastLogicUpdateTime << "ms (" << this->gameObjects.size() << " objs.)" << "; Avg " << average(this->logicPerf.get_elements()) << "<" << this->logicPerf.size << ">" << ", Graphics: " << this->lastGraphicsUpdateTime << "ms; Avg " << average(this->graphicsPerf.get_elements()) << "<" << this->graphicsPerf.size << ">" << "                  \r" << std::flush;
+		pthread_mutex_unlock(&printLock);
+		last_perf_notif = SDL_GetTicks();
+	}
+	
+	std::this_thread::sleep_for(std::chrono::milliseconds(36));
 
 }
