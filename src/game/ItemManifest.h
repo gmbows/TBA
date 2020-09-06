@@ -18,6 +18,7 @@ typedef unsigned long int flag;
 
 enum Action {
 	ACTION_CONSUME,
+	ACTION_END,
 };
 
 enum ItemAttribute {
@@ -27,6 +28,7 @@ enum ItemAttribute {
 	ATTRIB_CROP_GROWTH_TIME,
 	ATTRIB_CROP_YIELD_ID,
 	ATTRIB_CROP_YIELD_AMOUNT,
+	ATTRIB_END,
 };
 
 //==========

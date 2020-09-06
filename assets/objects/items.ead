@@ -36,7 +36,7 @@
 	WEIGHT:1
 	SIZE:4
 	TYPES:potion:consumable:ingredient
-	EFFECTS:consume:harm:27:5
+	EFFECTS:consume:harming:27:5
 	
 [ITEM:Wheat]
 	DESC:A bundle of dry, golden, wheat
@@ -49,7 +49,7 @@
 	WEIGHT:4
 	SIZE:1
 	TYPES:food:fruit:ingredient
-	ATTRIBS:growth_time:100:yield_id:2:yield_amt:3
+	ATTRIBS:growth time:100:yield:2:yield amount:3
 
 [ITEM:Copper Coin]
 	DESC:A scuffed, bent, copper coin. There is a ornate building printed on it.
@@ -93,7 +93,7 @@
 	DESC:An old iron helmet, probably used by a knight. Rusted around the hinges.
 	WEIGHT:3
 	SIZE:3
-	TYPES:weapon:ranged:bow:equipment
+	TYPES:armor:head armor:equipment
 	ATTRIBS:defense:5
 	
 [ITEM:Old Knight's Chestplate]
@@ -101,14 +101,7 @@
 	WEIGHT:3
 	SIZE:3
 	TYPES:armor:body armor:equipment
-	ATTRIBS:defense:13
-
-[ITEM:Old Knight's Boots]
-	DESC:Some iron boots. They don't look very comfortable.
-	WEIGHT:3
-	SIZE:3
-	TYPES:armor:body armor:equipment
-	ATTRIBS:defense:2
+	ATTRIBS:defense:13		
 
 [ITEM:Old Knight's Leggings]
 	DESC:Some dented iron leggings. Looks like they've taken a beating.
@@ -117,3 +110,9 @@
 	TYPES:armor:leg armor:equipment
 	ATTRIBS:defense:7
 	
+[ITEM:Old Knight's Boots]
+	DESC:Some iron boots. They don't look very comfortable.
+	WEIGHT:3
+	SIZE:3
+	TYPES:armor:foot armor:equipment
+	ATTRIBS:defense:2

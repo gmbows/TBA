@@ -35,6 +35,29 @@ std::map<ItemType,std::string> ItemTypeMap = {
 	{I_PLANTABLE,"Plantable"},
 };
 
+std::map<ItemAttribute,std::string> ItemAttributeMap = {
+	{ATTRIB_DAMAGE,"Damage"},
+	{ATTRIB_RANGE,"Range"},
+	{ATTRIB_DEFENSE,"Defense"},
+	{ATTRIB_CROP_GROWTH_TIME,"Growth time"},
+	{ATTRIB_CROP_YIELD_ID,"Yield"},
+	{ATTRIB_CROP_YIELD_AMOUNT,"Yield amount"},
+};
+
+std::map<Action,std::string> ItemActionMap = {
+	{ACTION_CONSUME,"Consume"},
+};
+
+std::map<EffectType,std::string> EffectMap = {
+	{EFFECT_HEALING,"Healing"},
+	{EFFECT_DAMAGE,"Harming"},
+	{EFFECT_BURN,"Burning"},
+};
+
+
+
+
+
 void checkItemTypes() {
 	for(flag i=0;i<log2((int)I_END);i++) {
 		if(ItemTypeMap.find((ItemType)pow(2,i)) == ItemTypeMap.end()) {
@@ -76,42 +99,116 @@ bool importItems() {
 			
 		}
 		for(int i=0;i<lines.size();i++) {
-			
-			name = name_default;
-			desc = desc_default;
-			weight = weight_default;
-			types = types_default;
-			attributes = attributes_default;
-			effects = effects_default;
-			
+						
 			line = lines.at(i);
 			
 
-			if(line.size() < 2) continue;
+			if(line.size() < 2) {
+				if(reading) {
+					// debug("Creating item "+name);
+					itemManifest.push_back({name,desc,weight,size,types,attributes,effects});
+					//Begin new item
+					name = name_default;
+					desc = desc_default;
+					weight = weight_default;
+					types = types_default;
+					attributes = attributes_default;
+					effects = effects_default;
+				}
+				reading = false;
+				continue;
+			}
 			
 			//ignore comments
 			if(line.substr(0,2) == "//") continue;
 			
 			//ignore non-items
 			if(line.substr(1,4) == "ITEM") {
+				if(reading) {
+					// debug("Creating item "+name);
+					itemManifest.push_back({name,desc,weight,size,types,attributes,effects});
+					//Begin new item
+					name = name_default;
+					desc = desc_default;
+					weight = weight_default;
+					types = types_default;
+					attributes = attributes_default;
+					effects = effects_default;
+				}
 				reading = true;
 				//Ignore brace closure and newline char
 				name = line.substr(6,line.size()-1);
 				name.erase(name.size()-1);
-				debug("Reading "+name);
+				// debug("Reading "+name);
 				continue;
 			}
 			
 			tline = split(':',line);
-			if(tline.at(0) == "DESC") {
-				name = tline.at(1);
-			} else if(tline.at(0) == "WEIGHT") {
-				weight = std::atoi(tline.at(1));
-			}else if(tline.at(0) == "SIZE") {
-				size = std::atoi(tline.at(1));
-			}else if(tline.at(0) == "TYPES") {
-				//Reverse lookup from attribute map
+			std::string trait = tline.at(0);
+			trait = replace(trait,'\t',"");
+			if(trait == "DESC") {
+				if(tline.size() > 1) {
+					desc = tline.at(1);
+				} else {
+					debug("Error reading item description for "+name);
+				}
+			} else if(trait == "WEIGHT") {
+				if(tline.size() > 1) {
+					weight = std::stoi(tline.at(1));
+				} else {
+					debug("Error reading item weight for "+name);
+				}
+			}else if(trait == "SIZE") {
+				if(tline.size() > 1) {
+					size = std::stoi(tline.at(1));
+				} else {
+					debug("Error reading item size for "+name);
+				}
+			}else if(trait == "TYPES") {
+				//Reverse lookup from type map
+				for(int j=0;j<tline.size();j++) {
+					for(int k=1;k != I_END;k = k<<1) {
+						if(tline.at(j) == toLower(ItemTypeMap.at((ItemType)k))) {
+							types = types | k;
+						}
+					}
+				}
+			}else if(trait == "ATTRIBS") {
+				//Reverse lookup from type map
+				for(int j=0;j<tline.size();j++) {
+					for(int k=0;k < ATTRIB_END;k++) {
+						if(tline.at(j) == toLower(ItemAttributeMap.at((ItemAttribute)k))) {
+							//UNSAFE INDEXING!!!!!!!!!!!
+							if(j+1 < tline.size()) {
+								attributes.insert({(ItemAttribute)k,std::stof(tline.at(j+1))});
+							} else {
+								debug("Error reading item attributes for "+name);
+							}
+						}
+					}
+				}
+			}else if(trait == "EFFECTS") {
+				//Reverse lookup from type map
+				for(int j=0;j<tline.size();j++) {
+					//Determine action
+					for(int k=0;k < ACTION_END;k++) {
+						if(tline.at(j) == toLower(ItemActionMap.at((Action)k))) {
+							//Determine effect and values
+							for(int b=0;b<EFFECT_END;b++) {
+								if(tline.at(j+1) == toLower(EffectMap.at((EffectType)b))) {
+									//UNSAFE INDEXING!!!!!!!!!!!
+									if(j+3 < tline.size()) {
+										effects.insert({(Action)k,{{(float)k,std::stof(tline.at(j+2)),std::stof(tline.at(j+3))}}});
+									} else {
+										debug("Error reading item effects for "+name);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
+			
 			
 			
 			
@@ -120,6 +217,7 @@ bool importItems() {
 		debug("Failed to open item file: "+itemFile);
 		return false;
 	}
+	debug("Done importing items");
 	return true;
 }
 

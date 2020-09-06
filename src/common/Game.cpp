@@ -109,6 +109,8 @@ void Game::setupGame() {
 	checkHelp();
 	
 	//Import items from item file and make sure we have strings for each type
+	debug("Importing items...");
+	
 	importItems();
 	checkItemTypes();
 
@@ -125,8 +127,8 @@ void Game::setupGame() {
 			//				name,alias,argc,commandFunc,ECfunc=nullptr
 			//COMMANDSTART
 			new		Command({"help","?"},helpFunc,helpEC),
-			new 		Command({"clear","clr"},clearFunc),
-			new 		Command({"inventory"},inventoryFunc),
+			new 	Command({"clear","clr"},clearFunc),
+			new 	Command({"inventory"},inventoryFunc),
 			new		Command({"move","mv"},moveFunc,moveEC),
 			new		Command({"pause"},pauseFunc),
 			new		Command({"stop"},stopFunc),

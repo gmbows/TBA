@@ -23,9 +23,9 @@ class Item {
 	
 		//item index in manifest vector
 		int id;
-		
+
 		int UUID;
-		
+
 		std::string name;
 		std::string description;
 		int weight;
