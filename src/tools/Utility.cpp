@@ -2,13 +2,34 @@
 #include "../common/Common.h"
 
 #include <iostream>
-
+#include <fstream>
 #include <string>
 #include <algorithm>
 #include <map>
 
 void init_utility() {
 	// pthread_mutex_t printLock = PTHREAD_MUTEX_INITIALIZER;
+}
+
+bool TBA_stoi(const std::string &s,int &i) {
+	try {
+		i = std::stoi(s);
+		return true;
+	} catch(const std::exception &e) {
+		return false;
+	}
+	
+}
+
+bool clear_file(const std::string &filename) {
+	std::ofstream f(filename);
+	
+	if(!f.is_open()) {
+		return false;
+	}
+	
+	f.close();
+	return true;
 }
 
 int rfind(char c, const std::string& s) {
@@ -336,7 +357,7 @@ bool contains(const std::string &s,const std::string &token) {
 }
 
 bool isdigit(const std::string& s) {
-    std::vector<char> digits = {'-','0','1','2','3','4','5','6','7','8','9'};
+    std::vector<char> digits = {'.','-','0','1','2','3','4','5','6','7','8','9'};
 	if(s.size() == 0) return false;
     for(int i=0;i<s.size();i++) {
         if(find(s[i], digits) == -1) {

@@ -8,7 +8,7 @@ class Limb;
 // enum ApplicationType {
 	// APP_INSTANT,		//Ignores duration, applies magnitude once
 	// APP_OT,				//Applies magnitude spread evenly over duration
-	// APP_PERIODIC,	//Applies magnitude spread periodically over duration
+	// APP_PERIODIC,	//Applies magnitude spread periodically over (duration) applications
 // };
 
 enum EffectType {
@@ -40,7 +40,7 @@ struct StatusEffect {
 		return this->active;
 	}
 	
-	StatusEffect(EffectType _type, int mag,int dur,int per=0): type(_type), magnitude(mag), duration(dur), period(per)  {
+	StatusEffect(EffectType _type, float mag,int dur,int per=0): type(_type), magnitude(mag), duration(dur), period(per)  {
 		this->active = true;
 		this->remaining = duration;
 	}

@@ -240,10 +240,8 @@ void Character::setStatus(StatusIndicator newStatus) {
 	//remove all other statuses and replace with newStatus
 	// really only used for death
 	if(newStatus == STATUS_IDLE) {
-		// this->direction = {0,0};
 	} else if(newStatus == STATUS_COMBAT and !this->hasStatus(STATUS_COMBAT)) {
 		// Character must be stationary to enter combat
-		// this->direction = {0,0};
 		this->resetCombatTimer();// - (this->attackRate/2);
 	}
 	this->status = newStatus;

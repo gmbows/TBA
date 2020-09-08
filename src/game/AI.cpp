@@ -269,7 +269,7 @@ GoalType decide(Character *c,const std::vector<GoalType> &goals) {
 	return best_option;
 }
 
-std::map<GoalType,std::pair<std::vector<Precond>,std::vector<std::pair<ObjectiveType,std::vector<Instruction>>>>> goalMap = {
+std::map<GoalType,TBA_Goal> goalMap = {
 	
 			{GOAL_TARGET_ENEMY,
 				{

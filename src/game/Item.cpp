@@ -14,7 +14,7 @@ std::map<ItemType,std::string> ItemTypeMap = {
 	{I_FRUIT,"Fruit"},
 	{I_POTION,"Potion"},
 	{I_CONSUMABLE,"Consumable"},
-	{I_AMMO,"Ammunition"},
+	{I_AMMO,"Ammo"},
 	{I_VEGETABLE,"Vegetable"},
 	{I_WEAPON,"Weapon"},
 	{I_EQUIPMENT,"Equipment"},
@@ -23,11 +23,11 @@ std::map<ItemType,std::string> ItemTypeMap = {
 	{I_WEAPON_SWORD,"Sword"},
 	{I_WEAPON_BOW,"Bow"},
 	{I_ARMOR,"Armor"},	
-	{I_ARMOR_HEAD,"Armor"},	
+	{I_ARMOR_HEAD,"Head armor"},	
 	{I_ARMOR_BODY,"Body armor"},	
 	{I_ARMOR_LEGS,"Leg armor"},	
 	{I_ARMOR_FEET,"Foot armor"},
-	{I_CRAFTING,"Crafting item"},
+	{I_CRAFTING,"Crafting"},
 	{I_METAL,"Metal"},
 	{I_INGREDIENT,"Ingredient"},
 	{I_CURRENCY,"Currency"},
@@ -48,22 +48,68 @@ std::map<Action,std::string> ItemActionMap = {
 	{ACTION_CONSUME,"Consume"},
 };
 
-std::map<EffectType,std::string> EffectMap = {
+std::map<EffectType,std::string> ItemEffectMap = {
 	{EFFECT_HEALING,"Healing"},
 	{EFFECT_DAMAGE,"Harming"},
 	{EFFECT_BURN,"Burning"},
 };
 
-
-
-
-
 void checkItemTypes() {
-	for(flag i=0;i<log2((int)I_END);i++) {
-		if(ItemTypeMap.find((ItemType)pow(2,i)) == ItemTypeMap.end()) {
-			debug("WARNING Item type string not found for type: "+std::to_string(i));
+	//Verifies that all item traits have string mappings
+	//Logs all enum values and string mappings for each mapped trait
+	std::string typeLogFile = "assets/objects/item_traits.txt";
+	clear_file(typeLogFile);
+	std::ofstream types(typeLogFile);
+	types << "Types:" << std::endl;
+	flag i;
+	int good = 0;
+	for(i=1;i<I_END;i = i<<1) {
+		if(ItemTypeMap.find((ItemType)i) == ItemTypeMap.end()) {
+			debug("WARNING Item type string not found for type "+std::to_string((int)log2(i)));
+			types << log2(i) << ": " << "Type string not found" << std::endl;
+		} else {
+			good++;
+			types << log2(i) << ": " << ItemTypeMap.at((ItemType)i) << std::endl;
 		}
 	}
+	debug("Found "+std::to_string(good)+" item type(s)");
+	good = 0;
+	types << std::endl << "Attributes: " << std::endl;
+	for(i=0;i<ATTRIB_END;i++) {
+		if(ItemAttributeMap.find((ItemAttribute)i) == ItemAttributeMap.end()) {
+			debug("WARNING Item attribute string not found for attribute "+std::to_string(i));
+			types << i << ": " << "Attribute string not found" << std::endl;
+		} else {
+			good++;
+			types << i << ": " << ItemAttributeMap.at((ItemAttribute)i) << std::endl;
+		}
+	}
+	debug("Found "+std::to_string(good)+" item attribute(s)");
+	good = 0;
+	types << std::endl << "Actions: " << std::endl;
+	for(i=0;i<ACTION_END;i++) {
+		if(ItemActionMap.find((Action)i) == ItemActionMap.end()) {
+			debug("WARNING Item action string not found for action "+std::to_string(i));
+			types << i << ": " << "Action string not found" << std::endl;
+		} else {
+			good++;
+			types << i << ": " << ItemActionMap.at((Action)i) << std::endl;
+		}
+	}
+	debug("Found "+std::to_string(good)+" action(s)");
+	good = 0;
+	types << std::endl << "Effects: " << std::endl;
+	for(i=0;i<EFFECT_END;i++) {
+		if(ItemEffectMap.find((EffectType)i) == ItemEffectMap.end()) {
+			debug("WARNING Item Effect string not found for Effect "+std::to_string(i));
+			types << i << ": " << "Effect string not found" << std::endl;
+		} else {
+			good++;
+			types << i << ": " << ItemEffectMap.at((EffectType)i) << std::endl;
+		}
+	}
+	debug("Found "+std::to_string(good)+" status effect(s)");
+	types.close();
 }
 
 bool importItems() {
@@ -105,6 +151,7 @@ bool importItems() {
 
 			if(line.size() < 2) {
 				if(reading) {
+					//Empty lines while reading means items is done
 					// debug("Creating item "+name);
 					itemManifest.push_back({name,desc,weight,size,types,attributes,effects});
 					//Begin new item
@@ -119,11 +166,15 @@ bool importItems() {
 				continue;
 			}
 			
+			//Ignore whitespace
+			line = replace(line,'\t',"");
+			line = replace(line,'\n',"");
+			
 			//ignore comments
 			if(line.substr(0,2) == "//") continue;
 			
 			//ignore non-items
-			if(line.substr(1,4) == "ITEM") {
+			if(line.substr(0,5) == "[ITEM") {
 				if(reading) {
 					// debug("Creating item "+name);
 					itemManifest.push_back({name,desc,weight,size,types,attributes,effects});
@@ -143,73 +194,167 @@ bool importItems() {
 				continue;
 			}
 			
+			if(!reading and line[0] == '[') {
+				debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Ignoring malformed definition \""+line+"\"");
+				continue;
+			}
+			
+			if(!reading) continue;
+			
 			tline = split(':',line);
 			std::string trait = tline.at(0);
-			trait = replace(trait,'\t',"");
 			if(trait == "DESC") {
 				if(tline.size() > 1) {
 					desc = tline.at(1);
 				} else {
-					debug("Error reading item description for "+name);
+					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing description \""+name+"\"");
 				}
 			} else if(trait == "WEIGHT") {
 				if(tline.size() > 1) {
-					weight = std::stoi(tline.at(1));
-				} else {
-					debug("Error reading item weight for "+name);
+						if(!TBA_stoi(tline.at(1),weight)) {
+							debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Non-integral weight value \""+tline.at(1)+"\" for item \""+name+"\"");
+							continue;
+						}
+					} else {
+					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing weight value \""+name+"\"");
 				}
 			}else if(trait == "SIZE") {
 				if(tline.size() > 1) {
-					size = std::stoi(tline.at(1));
+					if(!TBA_stoi(tline.at(1),size)) {
+							debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Non-integral size value \""+tline.at(1)+"\" for item \""+name+"\"");
+							continue;
+						}
 				} else {
-					debug("Error reading item size for "+name);
+					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing size value \""+name+"\"");
 				}
 			}else if(trait == "TYPES") {
+				bool found_type;
 				//Reverse lookup from type map
-				for(int j=0;j<tline.size();j++) {
-					for(int k=1;k != I_END;k = k<<1) {
+				for(int j=1;j<tline.size();j++) {
+					//If we determined a type for this string
+					found_type = false;
+					for(flag k=1;k < I_END;k = k<<1) {
+						//Skip item types with no string lookup
+						if(ItemTypeMap.find((ItemType)k) == ItemTypeMap.end()) continue;
 						if(tline.at(j) == toLower(ItemTypeMap.at((ItemType)k))) {
 							types = types | k;
+							found_type = true;
+							break;
 						}
 					}
+					if(!found_type) debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown type token \""+tline.at(j)+"\"");
 				}
 			}else if(trait == "ATTRIBS") {
+				if(tline.size() <= 1) {
+					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing attribute definition for item \""+name+"\"");
+					continue;
+				}
+				bool found_attrib;
 				//Reverse lookup from type map
-				for(int j=0;j<tline.size();j++) {
+				for(int j=1;j<tline.size();j++) {
+					//Skip attribute values
+					if(isdigit(tline.at(j))) continue;
+					
+					//If we don't have any attribute strings that match this attribute
+					found_attrib = false;
+					
 					for(int k=0;k < ATTRIB_END;k++) {
+						if(ItemAttributeMap.find((ItemAttribute)k) == ItemAttributeMap.end()) continue;
 						if(tline.at(j) == toLower(ItemAttributeMap.at((ItemAttribute)k))) {
 							//UNSAFE INDEXING!!!!!!!!!!!
+							found_attrib = true;
 							if(j+1 < tline.size()) {
 								attributes.insert({(ItemAttribute)k,std::stof(tline.at(j+1))});
+								break;
 							} else {
-								debug("Error reading item attributes for "+name);
+								debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing attribute value for attribute \""+tline.at(j)+"\"");
 							}
 						}
 					}
+					if(!found_attrib) debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown attribute token \""+tline.at(j)+"\"");
 				}
 			}else if(trait == "EFFECTS") {
+
+				if(tline.size() <= 1) {
+					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing effect definition for item \""+name+"\"");
+					continue;
+				}
+				
+				//In order to apply multiple effects from one action
+				//We need to add another loop that catches ALL effects not just the one immediately after an action 
+
+				bool found_action = false;
+				bool found_effect = false;
+				Action action = ACTION_END;
+				EffectType effect = EFFECT_END;
+				std::vector<std::vector<float>> new_effects = {};
 				//Reverse lookup from type map
-				for(int j=0;j<tline.size();j++) {
-					//Determine action
-					for(int k=0;k < ACTION_END;k++) {
+				for(int j=1;j<tline.size();j++) {
+					for(int k=0;k<ACTION_END;k++) {
+						if(ItemActionMap.find((Action)k) == ItemActionMap.end()) continue;
 						if(tline.at(j) == toLower(ItemActionMap.at((Action)k))) {
-							//Determine effect and values
-							for(int b=0;b<EFFECT_END;b++) {
-								if(tline.at(j+1) == toLower(EffectMap.at((EffectType)b))) {
-									//UNSAFE INDEXING!!!!!!!!!!!
-									if(j+3 < tline.size()) {
-										effects.insert({(Action)k,{{(float)k,std::stof(tline.at(j+2)),std::stof(tline.at(j+3))}}});
-									} else {
-										debug("Error reading item effects for "+name);
+							if(found_action) {
+								if(action != (Action)k) {
+									//If we were reading an action when we found a new action, insert our current effect and start a new one
+									if(effects.find(action) != effects.end()) {
+										for(int n=0;n<effects.at(action).size();n++) {
+											new_effects.push_back(effects.at(action).at(n));
+										}
+										effects.erase(effects.find(action));
 									}
+									effects.insert({action,new_effects});
+									new_effects = {};
 								}
+							}
+							//This is an action
+							found_action = true;
+							action = (Action)k;
+							break;
+						}
+					}
+					for(int k=0;k<EFFECT_END;k++) {
+						if(ItemEffectMap.find((EffectType)k) == ItemEffectMap.end()) continue;
+						if(tline.at(j) == toLower(ItemEffectMap.at((EffectType)k))) {
+							if(!found_action) {
+								debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected effect, expected action for effect \""+tline.at(j)+"\", ignoring");
+								break;
+							}
+							//This is an Effect
+							found_effect = true;
+							effect = (EffectType)k;
+							if(j+2 < tline.size()) {
+								float magnitude = std::stof(tline.at(j+1));
+								float duration = std::stof(tline.at(j+2));
+								float period = 0;
+								try {
+									period = std::stof(tline.at(j+3));
+								} catch(const std::exception &e) {
+									
+								}
+								new_effects.push_back({(float)effect,magnitude,duration,period});
+							} else {
+								debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing effect values for effect \""+tline.at(j)+"\"");
 							}
 						}
 					}
+					if(!found_action and !found_effect) {
+						debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown attribute or effect token \""+tline.at(j)+"\"");
+						break;
+					}
+				}
+				//End of line reached
+				if(effects.find(action) != effects.end()) {
+					for(int n=0;n<effects.at(action).size();n++) {
+						new_effects.push_back(effects.at(action).at(n));
+					}
+					effects.erase(effects.find(action));
+				}
+				if(found_action) {
+					effects.insert({action,new_effects});
+				} else {
+					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, expected action token for \""+name+"\"");
 				}
 			}
-			
-			
 			
 			
 		}
@@ -260,10 +405,25 @@ std::vector<StatusEffect*> Item::getEffectsOnAction(Action action) {
 		for(int i=0;i<this->effects.at(action).size();i++) {
 			std::vector<float> effectValues = this->effects.at(action).at(i);
 			EffectType type = (EffectType)effectValues.at(0);
-			float magnitude = effectValues.at(1);
-			float duration = TBAGame->convert(1000*effectValues.at(2));
-			float period = 0;
-			if(effectValues.size() == 4) period = TBAGame->convert(1000*effectValues.at(3));
+			float magnitude;
+			float duration;
+			float period;
+			
+			if(effectValues.size() == 4) {
+				period = TBAGame->convert(1000*effectValues.at(3));
+				duration = TBAGame->convert(1000*effectValues.at(2)*effectValues.at(3));
+				if(effectValues.at(2) == 0) {
+					debug("ERROR (Item::getEffectsOnAction()): Divide by zero");
+					return {};
+				}
+				magnitude = effectValues.at(1)/effectValues.at(2);
+			} else {
+				magnitude = effectValues.at(1);
+				period = 0;
+				duration = TBAGame->convert(1000*effectValues.at(2));
+			}
+
+		
 			effectsOnAction.push_back(new StatusEffect(type,magnitude,duration,period));
 		}
 	}

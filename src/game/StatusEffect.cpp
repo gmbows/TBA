@@ -35,8 +35,10 @@ void StatusEffect::determineEffect(Character *target,void (Limb::*func)(float)) 
 			(target->body->getLimbs().at(i)->*func)((float)this->magnitude);
 		} else if(this->period > 0) {
 			//Periodic
+			if(this->remaining == this->duration) continue;
 			if((this->duration-this->remaining)%this->period != 0) return;
-			(target->body->getLimbs().at(i)->*func)((float)this->period*(this->magnitude/this->duration));
+			float amt = (float)(this->magnitude);
+			(target->body->getLimbs().at(i)->*func)(amt);
 		} else {
 			//Constant over duration
 			(target->body->getLimbs().at(i)->*func)((float)this->magnitude/this->duration);
@@ -56,6 +58,12 @@ bool StatusEffect::applyEffect(Character *target) {
 			break;
 		}
 		case EFFECT_DAMAGE: {
+			// for(int i=0;i<target->limbs.size();i++) {
+				this->determineEffect(target,target->body->getLimbs().at(0)->applyDamage);
+			// }
+				break;
+		}
+		case EFFECT_BURN: {
 			// for(int i=0;i<target->limbs.size();i++) {
 				this->determineEffect(target,target->body->getLimbs().at(0)->applyDamage);
 			// }

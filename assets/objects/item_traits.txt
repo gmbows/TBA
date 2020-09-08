@@ -1,0 +1,40 @@
+Types:
+0: Food
+1: Fruit
+2: Vegetable
+3: Weapon
+4: Type string not found
+5: Melee
+6: Sword
+7: Ranged
+8: Bow
+9: Armor
+10: Head armor
+11: Body armor
+12: Leg armor
+13: Foot armor
+14: Crafting
+15: Metal
+16: Ingredient
+17: Currency
+18: Plantable
+19: Ammo
+20: Container
+21: Potion
+22: Consumable
+
+Attributes: 
+0: Damage
+1: Range
+2: Defense
+3: Growth time
+4: Yield
+5: Yield amount
+
+Actions: 
+0: Consume
+
+Effects: 
+0: Healing
+1: Harming
+2: Burning

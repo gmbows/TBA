@@ -1,5 +1,63 @@
 //items.ead
 
+Objects
+// [ITEM itemname]
+ITEM 
+
+Traits
+DESC
+WEIGHT
+SIZE
+TYPES
+EFFECTS
+ATTRIBS
+
+Types
+// TYPES:type1:type2:type3
+crafting
+weapon
+melee
+sword
+equipment
+consumable
+potion
+ingredient
+food
+fruit
+currency
+plantable
+metal
+ranged
+ammo
+bow
+container
+armor 
+armor body
+armor leg
+armor foot
+armor head
+
+Attribs
+// ATTRIBS:attrib:value
+damage
+range
+growth
+time
+yield
+amount
+defense
+
+Actions
+// EFFECTS:action:effect:magnitude:duration
+consume
+
+Effects
+// EFFECTS:action:effect:magnitude:duration
+// EFFECTS:action:effect:magnitude:# of applications:interval
+healing
+harming
+burning
+
 [ITEM:ITEM_INVALID]
 	DESC:ITEM_INVALID_DESC
 	WEIGHT:0
@@ -24,13 +82,27 @@
 	SIZE:1
 	TYPES:crafting:ingredient:currency
 
+[ITEM:Rough Onyx]
+	DESC:A rough looking black stone.
+	WEIGHT:1
+	SIZE:1
+	TYPES:crafting:ingredient
+
 [ITEM:Healing Potion]
-	DESC:A bright red, glowing, liquid in a small glass vial. It glistens in sunlight.
+	DESC:A dull, red, liquid in a small glass bottle. 
 	WEIGHT:1
 	SIZE:4
 	TYPES:potion:consumable:ingredient
 	EFFECTS:consume:healing:27:5
-	
+
+[ITEM:Bottled Flame]
+	DESC:A bright orange, glowing liquid in a small glass vial. A small flame glistens within it
+	WEIGHT:1
+	SIZE:4
+	TYPES:potion:consumable:ingredient
+	EFFECTS:consume:burning:27:13:0.4
+
+
 [ITEM:Poison]
 	DESC:A black liquid in a small glass vial.
 	WEIGHT:1
@@ -59,7 +131,7 @@
 
 [ITEM:Iron Ore]
 	DESC:A smooth looking grey rock. Quite heavy.
-	WEIGHT:1
+	WEIGHT:6
 	SIZE:1
 	TYPES:crafting:metal:ingredient
 
@@ -101,8 +173,8 @@
 	WEIGHT:3
 	SIZE:3
 	TYPES:armor:body armor:equipment
-	ATTRIBS:defense:13		
-
+	ATTRIBS:defense:13
+	
 [ITEM:Old Knight's Leggings]
 	DESC:Some dented iron leggings. Looks like they've taken a beating.
 	WEIGHT:3

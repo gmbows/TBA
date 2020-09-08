@@ -245,9 +245,9 @@ bool Character::giveItems(std::vector<int> ids) {
 // Add status effects determined by action to character
 void Character::triggerItemEffects(Item* item,Action action) {
 	std::vector<StatusEffect*> effectsOnAction = item->getEffectsOnAction(action);
-	for(int i=0;i<item->effects.size();i++) {
+	for(int i=0;i<effectsOnAction.size();i++) {
 		this->effects.push_back(effectsOnAction.at(i));
-		// debug("Added effect to "+this->getName()+" with magnitude "+std::to_string(item->effects.at(i)->magnitude));
+		// debug("Added effect to "+this->getName()+" with magnitude "+std::to_string(effectsOnAction.at(i)->magnitude));
 	}
 }
 // Process all status effects currently applied to character
@@ -390,7 +390,7 @@ bool Character::isPlayer() {
 // Get detailed info about character
 std::string Character::getInfo() {
 	
-	bool debug = true;
+	bool debug = false;
 	
 	std::string info = " Name:\t"+this->getEntityName() + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" ;
@@ -429,10 +429,11 @@ std::string Character::getInfo() {
 				info += this->body->getInfo();
 					
 				if(this->hasEffects()) {
-					info += "\n\n\tStatus Effects:";
+					info += "\n\tStatus Effects:";
 					for(int i=0;i<this->effects.size();i++) {
 						info += "\n "+this->effects.at(i)->getTypeString()+" ("+this->effects.at(i)->getDurationString()+")";
 					}
+					info += "\n";
 				}
 				if(this->hasSquad()) {
 					info += "\n\n\tSquad:\t";

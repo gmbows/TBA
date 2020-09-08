@@ -59,16 +59,16 @@ When a repeat flag is returned from executing an objective, the goal will reinit
 
 class Character;
 
-//Precondition check function
-typedef bool (*Precond)(Character*);
 
 enum AIFlag: int {
 
 	AI_GOAL_COMPLETE,
 	AI_GOAL_INCOMPLETE,
 	AI_GOAL_PRECOND_FAIL,
+	
 	AI_INSTRUCTION_COMPLETE,
 	AI_INSTRUCTION_INCOMPLETE,
+	
 	AI_OBJECTIVE_COMPLETE,
 	AI_OBJECTIVE_INCOMPLETE,
 	
@@ -78,6 +78,8 @@ enum AIFlag: int {
 	
 };
 
+//Precondition check function
+typedef bool (*Precond)(Character*);
 
 //Instruction function
 // Structure should be:
@@ -85,7 +87,6 @@ enum AIFlag: int {
 // -Should have some checking interval like pathfinding
 // -When returns true, remove from instruction queue
 typedef AIFlag (*Instruction)(Character*);
-// typedef std::pair<instructionFunction,int> Instruction;
 
 enum GoalType: int {
 	GOAL_IDLE =							1 << 0,
@@ -109,6 +110,8 @@ enum ObjectiveType: int {
 	OBJECTIVE_WORK,
 	OBJECTIVE_USE_HEALING_POTION,
 };
+
+typedef std::pair<std::vector<Precond>,std::vector<std::pair<ObjectiveType,std::vector<Instruction>>>> TBA_Goal;
 
 struct Objective {
 	
@@ -241,5 +244,5 @@ int determine_priority(Character*, GoalType);
 //Decides on a single course of action based on available options
 GoalType decide(Character*,const std::vector<GoalType>&);
 
-extern std::map<GoalType,std::pair<std::vector<Precond>,std::vector<std::pair<ObjectiveType,std::vector<Instruction>>>>> goalMap;
+extern std::map<GoalType,TBA_Goal> goalMap;
 extern std::map<GoalType,std::vector<GoalType>> decisionMap;

@@ -16,6 +16,8 @@ class GameObject;
 
 typedef std::tuple<float,float> point;
 
+bool clear_file(const std::string&);
+bool TBA_stoi(const std::string&,int&);
 
 //=========
 //--VECTORS--
