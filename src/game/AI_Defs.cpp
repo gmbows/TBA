@@ -9,6 +9,7 @@
 #include "ResourceNode.h"
 
 #include "../tools/Algorithm.h"
+#include "../tools/Error.h"
 
 //=======================================
 //	-Preconds should return true if satisfied
@@ -50,7 +51,6 @@ bool precondHasLivingTarget(Character *c) {
 }
 
 bool precondCanReachWorkTarget(Character *c) {
-	// debug("CHECKING");
 	return c->canReach(c->getWorkTarget());
 }
 
@@ -278,7 +278,7 @@ AIFlag instructionTargetNearestEnemy(Character *c) {
 	std::vector<Character*> targets = c->getCharactersInRadius();
 		
 	if(targets.size() == 0) {
-		debug("Error (instructionTargetNearestEnemy()): This shouldn't happen (precondition check returned a false-positive)");
+		TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Precondition check returned a false-positive");
 		return AI_FATAL_ERROR;
 	}
 	
@@ -305,7 +305,7 @@ AIFlag instructionTargetNearestVisibleEnemy(Character *c) {
 	std::vector<Character*> targets = c->getCharactersInRadius();
 		
 	if(targets.size() == 0) {
-		debug("Error (instructionTargetNearestVisibleEnemy()): This shouldn't happen (precondition check returned a false-positive)");
+		TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Precondition check returned a false-positive");
 		return AI_FATAL_ERROR;
 	}
 	
@@ -343,7 +343,7 @@ AIFlag instructionTargetEnemy(Character *c) {
 		c->setTarget(targets.at(0));
 		return AI_INSTRUCTION_COMPLETE;
 	} else {
-		debug("Error (instructionTargetEnemy()): This shouldn't happen (precondition check returned a false-positive)");
+		TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Precondition check returned a false-positive");
 		return AI_FATAL_ERROR;
 	}
 	

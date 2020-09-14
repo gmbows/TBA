@@ -464,6 +464,7 @@ void input_thread_routine(Game* game) {
 	while(game->gameRunning) {
 		std::cin >> s;
 		debug("Received command "+s);
+		//Do something with command...
 	}
 }
 
@@ -506,13 +507,14 @@ void Game::update() {
 	// std::cout << "Active tiles: "<< this->gameWindow->mapScreen->active_tiles << "/"<< 1189 << ", " << "Frame times: " << this->lastGraphicsUpdateTime << "ms. at " << this->logicTicks << "T, " << graphicsPerf.size << "T avg: " << average(graphicsPerf.get_elements()) << "ms        \r";
 	this->input();
 	
-	if(this->last_perf_notif + this->perf_notif_interval <= SDL_GetTicks()) {
+	if(this->perfNotifInterval.check()) {
 		pthread_mutex_lock(&printLock);
 		std::cout << this->logicTicks << "T @ Logic: " << this->lastLogicUpdateTime << "ms (" << this->gameObjects.size() << " objs.)" << "; Avg " << average(this->logicPerf.get_elements()) << "<" << this->logicPerf.size << ">" << ", Graphics: " << this->lastGraphicsUpdateTime << "ms; Avg " << average(this->graphicsPerf.get_elements()) << "<" << this->graphicsPerf.size << ">" << "                  \r" << std::flush;
 		pthread_mutex_unlock(&printLock);
 		last_perf_notif = SDL_GetTicks();
 	}
 	
-	std::this_thread::sleep_for(std::chrono::milliseconds(36));
+	//Rate(ms.) at which we process inputs
+	std::this_thread::sleep_for(std::chrono::milliseconds(16));
 
 }

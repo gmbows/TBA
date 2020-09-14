@@ -1,6 +1,7 @@
 #include "Tile.h"
 
 #include "../tools/Utility.h"
+#include "../tools/Error.h"
 #include "../game/Character.h"
 
 #include <iostream>
@@ -108,7 +109,7 @@ Tile::Tile(int tid, int _x, int _y): id(tid), x(_x), y(_y) {
 
 void Tile::occupyWith(Character* c) {
 	if(contains(this->occupiers,c)) {
-		debug("ERROR (Tile::occupyWith()): Adding existing occupant to tile");
+		TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Skipping adding existing occupant "+c->getEntityName()+" to tile");
 		return;
 	}
 	this->occupiers.push_back(c);
@@ -125,7 +126,6 @@ void Tile::addBlock(Block* block) {
 }
 
 void Tile::evict(Character* occupant) {
-	// debug("Evicting");
 	int i = find(occupant, this->occupiers);
 	if(i >= 0) {
 		this->occupiers.erase(this->occupiers.begin() + i);
@@ -133,7 +133,6 @@ void Tile::evict(Character* occupant) {
 			// this->occupiers.shrink_to_fit();
 		}
 	}
-	// debug("Done evicting");
 }
 
 void Tile::removeObject(GameObject* generic) {

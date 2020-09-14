@@ -14,6 +14,7 @@ std::map<ItemType,std::string> ItemTypeMap = {
 	{I_FRUIT,"Fruit"},
 	{I_POTION,"Potion"},
 	{I_CONSUMABLE,"Consumable"},
+	{I_MINERAL,"Mineral"},
 	{I_AMMO,"Ammo"},
 	{I_VEGETABLE,"Vegetable"},
 	{I_WEAPON,"Weapon"},
@@ -55,6 +56,7 @@ std::map<EffectType,std::string> ItemEffectMap = {
 };
 
 void checkItemTypes() {
+	debug("Checking item types...");
 	//Verifies that all item traits have string mappings
 	//Logs all enum values and string mappings for each mapped trait
 	std::string typeLogFile = "assets/objects/item_traits.txt";
@@ -65,7 +67,7 @@ void checkItemTypes() {
 	int good = 0;
 	for(i=1;i<I_END;i = i<<1) {
 		if(ItemTypeMap.find((ItemType)i) == ItemTypeMap.end()) {
-			debug("WARNING Item type string not found for type "+std::to_string((int)log2(i)));
+			TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Item type string not found for type "+std::to_string((int)log2(i)));
 			types << log2(i) << ": " << "Type string not found" << std::endl;
 		} else {
 			good++;
@@ -77,7 +79,7 @@ void checkItemTypes() {
 	types << std::endl << "Attributes: " << std::endl;
 	for(i=0;i<ATTRIB_END;i++) {
 		if(ItemAttributeMap.find((ItemAttribute)i) == ItemAttributeMap.end()) {
-			debug("WARNING Item attribute string not found for attribute "+std::to_string(i));
+			TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Item attribute string not found for attribute "+std::to_string(i));
 			types << i << ": " << "Attribute string not found" << std::endl;
 		} else {
 			good++;
@@ -89,7 +91,7 @@ void checkItemTypes() {
 	types << std::endl << "Actions: " << std::endl;
 	for(i=0;i<ACTION_END;i++) {
 		if(ItemActionMap.find((Action)i) == ItemActionMap.end()) {
-			debug("WARNING Item action string not found for action "+std::to_string(i));
+			TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Item action string not found for action "+std::to_string(i));
 			types << i << ": " << "Action string not found" << std::endl;
 		} else {
 			good++;
@@ -101,7 +103,7 @@ void checkItemTypes() {
 	types << std::endl << "Effects: " << std::endl;
 	for(i=0;i<EFFECT_END;i++) {
 		if(ItemEffectMap.find((EffectType)i) == ItemEffectMap.end()) {
-			debug("WARNING Item Effect string not found for Effect "+std::to_string(i));
+			TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Item effect string not found for effect "+std::to_string(i));
 			types << i << ": " << "Effect string not found" << std::endl;
 		} else {
 			good++;
@@ -110,9 +112,11 @@ void checkItemTypes() {
 	}
 	debug("Found "+std::to_string(good)+" status effect(s)");
 	types.close();
+	debug("Done checking item types");
 }
 
 bool importItems() {
+	int itemCount = 0;
 	const std::string itemFile = "assets/objects/items.ead";
 	std::string line;
 	std::ifstream itemRaw(itemFile);
@@ -195,7 +199,8 @@ bool importItems() {
 			}
 			
 			if(!reading and line[0] == '[') {
-				debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Ignoring malformed definition \""+line+"\"");
+				// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Ignoring malformed definition \""+line+"\"");
+				TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Ignoring malformed definition \""+line+"\"");
 				continue;
 			}
 			
@@ -207,25 +212,30 @@ bool importItems() {
 				if(tline.size() > 1) {
 					desc = tline.at(1);
 				} else {
-					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing description \""+name+"\"");
+					// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing description \""+name+"\"");
+					TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing description \""+name+"\"");
 				}
 			} else if(trait == "WEIGHT") {
 				if(tline.size() > 1) {
 						if(!TBA_stoi(tline.at(1),weight)) {
-							debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Non-integral weight value \""+tline.at(1)+"\" for item \""+name+"\"");
+							// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Non-integral weight value \""+tline.at(1)+"\" for item \""+name+"\"");
+							TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Non-integral weight value \""+tline.at(1)+"\" for item \""+name+"\"");
 							continue;
 						}
 					} else {
-					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing weight value \""+name+"\"");
+					// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing weight value \""+name+"\"");
+					TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing weight value \""+name+"\"");
 				}
 			}else if(trait == "SIZE") {
 				if(tline.size() > 1) {
 					if(!TBA_stoi(tline.at(1),size)) {
-							debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Non-integral size value \""+tline.at(1)+"\" for item \""+name+"\"");
+							// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Non-integral size value \""+tline.at(1)+"\" for item \""+name+"\"");
+							TBA_throw(ERR_DEFAULT,itemFile,"Non-integral size value \""+tline.at(1)+"\" for item \""+name+"\"");
 							continue;
 						}
 				} else {
-					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing size value \""+name+"\"");
+					// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing size value \""+name+"\"");
+					TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing size value \""+name+"\"");
 				}
 			}else if(trait == "TYPES") {
 				bool found_type;
@@ -242,11 +252,13 @@ bool importItems() {
 							break;
 						}
 					}
-					if(!found_type) debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown type token \""+tline.at(j)+"\"");
+					// if(!found_type) debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown type token \""+tline.at(j)+"\"");
+					if(!found_type) TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unknown type token \""+tline.at(j)+"\"");
 				}
 			}else if(trait == "ATTRIBS") {
 				if(tline.size() <= 1) {
-					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing attribute definition for item \""+name+"\"");
+					// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing attribute definition for item \""+name+"\"");
+					TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing attribute definition for item \""+name+"\"");
 					continue;
 				}
 				bool found_attrib;
@@ -267,16 +279,19 @@ bool importItems() {
 								attributes.insert({(ItemAttribute)k,std::stof(tline.at(j+1))});
 								break;
 							} else {
-								debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing attribute value for attribute \""+tline.at(j)+"\"");
+								// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing attribute value for attribute \""+tline.at(j)+"\"");
+								TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing attribute value for attribute \""+tline.at(j)+"\"");
 							}
 						}
 					}
-					if(!found_attrib) debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown attribute token \""+tline.at(j)+"\"");
+					// if(!found_attrib) debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown attribute token \""+tline.at(j)+"\"");
+					if(!found_attrib) TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unknown attribute token \""+tline.at(j)+"\"");
 				}
 			}else if(trait == "EFFECTS") {
 
 				if(tline.size() <= 1) {
-					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing effect definition for item \""+name+"\"");
+					// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing effect definition for item \""+name+"\"");
+					TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing effect definition for item \""+name+"\"");
 					continue;
 				}
 				
@@ -316,7 +331,8 @@ bool importItems() {
 						if(ItemEffectMap.find((EffectType)k) == ItemEffectMap.end()) continue;
 						if(tline.at(j) == toLower(ItemEffectMap.at((EffectType)k))) {
 							if(!found_action) {
-								debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected effect, expected action for effect \""+tline.at(j)+"\", ignoring");
+								// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected effect, expected action for effect \""+tline.at(j)+"\", ignoring");
+								TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected effect, expected action for effect \""+tline.at(j)+"\", ignoring");
 								break;
 							}
 							//This is an Effect
@@ -333,12 +349,14 @@ bool importItems() {
 								}
 								new_effects.push_back({(float)effect,magnitude,duration,period});
 							} else {
-								debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing effect values for effect \""+tline.at(j)+"\"");
+								// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, missing effect values for effect \""+tline.at(j)+"\"");
+								TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, missing effect values for effect \""+tline.at(j)+"\"");
 							}
 						}
 					}
 					if(!found_action and !found_effect) {
-						debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown attribute or effect token \""+tline.at(j)+"\"");
+						// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unknown attribute or effect token \""+tline.at(j)+"\"");
+						TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unknown attribute or effect token \""+tline.at(j)+"\"");
 						break;
 					}
 				}
@@ -352,8 +370,11 @@ bool importItems() {
 				if(found_action) {
 					effects.insert({action,new_effects});
 				} else {
-					debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, expected action token for \""+name+"\"");
+					// debug("Error ("+itemFile+", line "+std::to_string(i+1)+"): Unexpected EOL, expected action token for \""+name+"\"");
+					TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unexpected EOL, expected action token for \""+name+"\"");
 				}
+			} else {
+				TBA_throw(ERR_DEFAULT,itemFile+", line "+std::to_string(i+1),"Unknown trait \""+trait+"\"");
 			}
 			
 			
@@ -362,6 +383,7 @@ bool importItems() {
 		debug("Failed to open item file: "+itemFile);
 		return false;
 	}
+	debug("Found "+std::to_string(itemManifest.size())+" items");
 	debug("Done importing items");
 	return true;
 }
@@ -369,7 +391,8 @@ bool importItems() {
 Item::Item(int _id): id(_id) {
 
 	if(id >= itemManifest.size()) {
-		debug("ERROR: Adding invalid item with id "+std::to_string(id)+", using invalid item");
+		// debug("ERROR: Adding invalid item with id "+std::to_string(id)+", using invalid item");
+		TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Adding invalid item with id "+std::to_string(id)+", using invalid item");
 		id = 0;
 	}
 	
@@ -413,7 +436,8 @@ std::vector<StatusEffect*> Item::getEffectsOnAction(Action action) {
 				period = TBAGame->convert(1000*effectValues.at(3));
 				duration = TBAGame->convert(1000*effectValues.at(2)*effectValues.at(3));
 				if(effectValues.at(2) == 0) {
-					debug("ERROR (Item::getEffectsOnAction()): Divide by zero");
+					// debug("ERROR (Item::getEffectsOnAction()): Divide by zero");
+					TBA_throw(ERR_DIV_BY_ZERO,__PRETTY_FUNCTION__);
 					return {};
 				}
 				magnitude = effectValues.at(1)/effectValues.at(2);
@@ -511,7 +535,8 @@ using namespace ItemUtils;
 
 bool ItemUtils::hasType(int id,ItemType type) {
 	if(id >= itemManifest.size()) {
-		debug("ERROR (ItemUtils::hasType()): Checking type of invalid item");
+		// debug("ERROR (ItemUtils::hasType()): Checking type of invalid item");
+		TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Checking type of invalid item");
 		return false;
 	}
 

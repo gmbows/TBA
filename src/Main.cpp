@@ -8,9 +8,7 @@ pthread_mutex_t printLock = PTHREAD_MUTEX_INITIALIZER;
 
 
 int main(int argc, char** argv) {
-	// std::cout << "BLACK" << std::endl;
-	// return 0;
-	
+
 	if(argc > 1) {
 		TBAGame->debugMode = true;
 		std::cout << "Debug mode enabled" << std::endl;

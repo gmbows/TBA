@@ -266,7 +266,7 @@ class Character: public GameObject {
 		
 		inline bool hasGoals() { return !this->goals.empty(); }
 		inline void addGoal(GoalType t) { this->goals.addGoal(this,t); }
-		inline Goal* currentGoal() {return this->goals.currentGoal();}
+		inline Goal currentGoal() {return this->goals.currentGoal();}
 
 		
 		bool simple = false;

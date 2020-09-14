@@ -5,6 +5,7 @@
 #include "Character.h"
 
 #include "../tools/Utility.h"
+#include "../tools/Error.h"
 
 bool is_complex(GoalType type) {
 	return decisionMap.find(type) != decisionMap.end();
@@ -36,7 +37,7 @@ bool check_preconditions(Character *c, GoalType t) {
 	// debug(c->getEntityName()+ ": Executing goal "+std::to_string(t));
 	if(goalMap.find(t) == goalMap.end()) {
 		if(decisionMap.find(t) == decisionMap.end()) {
-			debug("ERROR (check_preconditions()): Invalid goal type "+std::to_string((int)t));
+			TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Invalid goal type "+std::to_string((int)t));
 			return false;
 		} else {
 			//This is a complex goal
@@ -95,7 +96,7 @@ void Goal::initialize_type() {
 	// debug("Initializing goal");
 	
 	if(goalMap.find(this->type) == goalMap.end()) {
-		debug("ERROR (Goal::initialize_type()): Invalid goal type "+std::to_string(this->type));
+		TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Invalid goal type "+std::to_string(this->type));
 		return;
 	}
 
@@ -115,7 +116,7 @@ Goal::Goal(Character *c,GoalType t): type_default(t), type(t) {
 
 	if(goalMap.find(t) == goalMap.end()) {
 		if(decisionMap.find(t) == decisionMap.end()) {
-			debug("ERROR (Goal::Goal()): Invalid goal type");
+			TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Invalid goal type");
 			return;
 		} else {
 			this->complex = true;
@@ -127,7 +128,7 @@ Goal::Goal(Character *c,GoalType t): type_default(t), type(t) {
 	
 }
 
-bool operator<(Goal g1, Goal g2) {
+bool operator<(const Goal &g1, const Goal &g2) {
 	return (int)g1.type < (int)g2.type;
 }
 
@@ -197,7 +198,7 @@ AIFlag Goal::execute(Character* c) {
 			this->initialize_type();
 			return AI_GOAL_INCOMPLETE;
 		default:
-			debug("Error: Goal::execute()): Received unexpected objective exit value");
+			TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Received unexpected objective return value");
 			return AI_FATAL_ERROR;
 	}
 }
@@ -231,7 +232,7 @@ AIFlag Objective::execute(Character* c) {
 		default:
 			//If case defaults, we received a chain goal
 			// Return to goal to be reinitialized with the chain
-			debug("Error: Objective::execute()): Received unexpected objective exit value");
+			TBA_throw(ERR_DEFAULT,__PRETTY_FUNCTION__,"Received unexpected instruction return value");
 			return AI_FATAL_ERROR;
 	}
 
@@ -249,7 +250,7 @@ int determine_priority(Character* c, GoalType t) {
 		case GOAL_COMBAT_KILL_ENEMY:
 			return 2;
 		default:
-			debug("Warning (determine_priority()): Returning undefined priority for goal "+std::to_string(t));
+			TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Returning undefined priority for goal "+std::to_string(t));
 			return -1;
 	}
 }

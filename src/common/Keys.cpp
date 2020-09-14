@@ -41,6 +41,8 @@ void Game::input() {
 	SDL_Event event;
 
 	int keycode;
+	
+	SDL_PumpEvents();
 
 	while(SDL_PollEvent(&event)) {
 		

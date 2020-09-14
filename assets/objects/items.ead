@@ -109,7 +109,7 @@ burning
 	SIZE:4
 	TYPES:potion:consumable:ingredient
 	EFFECTS:consume:harming:27:5
-	
+
 [ITEM:Wheat]
 	DESC:A bundle of dry, golden, wheat
 	WEIGHT:4

@@ -61,7 +61,7 @@ Character::Character(const std::string& _name, int capacity, std::tuple<float,fl
 	
 	this->checkAI = TBA_Interval(this->AICheckInterval + (-100+(rand()%200)));
 	
-	// this->addGoal(GOAL_IDLE);
+	this->addGoal(GOAL_IDLE);
 	
 	this->complete = true;
 }
@@ -390,7 +390,7 @@ bool Character::isPlayer() {
 // Get detailed info about character
 std::string Character::getInfo() {
 	
-	bool debug = false;
+	bool debug = true;
 	
 	std::string info = " Name:\t"+this->getEntityName() + "\n" +
 				"\tStatus:"+this->getStatusString() + "\n" ;

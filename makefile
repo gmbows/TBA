@@ -1,5 +1,5 @@
-TBAGame.exe: bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Algorithm.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/AI.o bin/AI_Defs.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o
-	g++ -std=c++11 bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Algorithm.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/AI.o bin/AI_Defs.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive -O3 -o TBAGame.exe
+TBAGame.exe: bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Algorithm.o bin/Error.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/AI.o bin/AI_Defs.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o
+	g++ -std=c++11 bin/Font.o bin/Screen.o bin/ScreenUtils.o bin/Window.o bin/Algorithm.o bin/Error.o bin/Log.o bin/Utility.o bin/Clock.o bin/Common.o bin/Game.o bin/KeyFuncs.o bin/Keys.o bin/Tile.o bin/AI.o bin/AI_Defs.o bin/Behavior.o bin/Block.o bin/Character.o bin/Command.o bin/CommandFuncs.o bin/CommandUtils.o bin/Container.o bin/Equipment.o bin/FloatingText.o bin/GameObject.o bin/Input.o bin/Inventory.o bin/Item.o bin/ItemManifest.o bin/Limb.o bin/LootTable.o bin/Projectile.o bin/ResourceNode.o bin/Squad.o bin/Statistics.o bin/StatusEffect.o bin/Structure.o bin/World.o bin/Main.o -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image src/resource/icon.rs -lpthread -fpermissive -O3 -o TBAGame.exe
 
 bin/Font.o: src/ui/Font.cpp src/ui/Font.h src/tools/Log.h src/tools/Log.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/ui/Font.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Font.o
@@ -15,6 +15,9 @@ bin/Window.o: src/ui/Window.cpp src/ui/Window.h src/tools/Log.h src/tools/Log.cp
 
 bin/Algorithm.o: src/tools/Algorithm.cpp src/tools/Algorithm.h  src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/tools/Algorithm.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Algorithm.o
+
+bin/Error.o: src/tools/Error.cpp src/tools/Error.h  
+	g++ -std=c++11 -c src/tools/Error.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Error.o
 
 bin/Log.o: src/tools/Log.cpp src/tools/Log.h  
 	g++ -std=c++11 -c src/tools/Log.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Log.o
@@ -40,7 +43,7 @@ bin/Keys.o: src/common/Keys.cpp src/common/Keys.h
 bin/Tile.o: src/common/Tile.cpp src/common/Tile.h src/game/Character.h src/game/Character.cpp src/game/Block.h src/game/Block.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/common/Tile.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Tile.o
 
-bin/AI.o: src/game/AI.cpp src/game/AI.h src/tools/Utility.h src/tools/Utility.cpp  
+bin/AI.o: src/game/AI.cpp src/game/AI.h src/tools/Utility.h src/tools/Utility.cpp src/tools/Error.h src/tools/Error.cpp  
 	g++ -std=c++11 -c src/game/AI.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/AI.o
 
 bin/AI_Defs.o: src/game/AI_Defs.cpp src/game/AI_Defs.h  src/game/AI.h src/game/AI.cpp  
@@ -79,7 +82,7 @@ bin/GameObject.o: src/game/GameObject.cpp src/game/GameObject.h src/tools/Utilit
 bin/Input.o: src/game/Input.cpp src/game/Input.h  
 	g++ -std=c++11 -c src/game/Input.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Input.o
 
-bin/Inventory.o: src/game/Inventory.cpp src/game/Inventory.h  src/game/Item.h src/game/Item.cpp src/tools/Utility.h src/tools/Utility.cpp  
+bin/Inventory.o: src/game/Inventory.cpp src/game/Inventory.h  src/game/Item.h src/game/Item.cpp src/tools/Error.h src/tools/Error.cpp src/tools/Utility.h src/tools/Utility.cpp  
 	g++ -std=c++11 -c src/game/Inventory.cpp -I /include/SDL2 -L /lib -lmingw32 -lSDL2main -lSDL2 -lSDL2_image -lpthread -fpermissive -O3 -o bin/Inventory.o
 
 bin/Item.o: src/game/Item.cpp src/game/Item.h  src/game/ItemManifest.h src/game/ItemManifest.cpp  src/game/StatusEffect.h src/game/StatusEffect.cpp src/tools/Utility.h src/tools/Utility.cpp  

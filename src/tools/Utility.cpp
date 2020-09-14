@@ -12,6 +12,7 @@ void init_utility() {
 }
 
 bool TBA_stoi(const std::string &s,int &i) {
+	if(!isdigit(s)) return false;
 	try {
 		i = std::stoi(s);
 		return true;

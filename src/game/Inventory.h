@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Item.h"
+#include "../tools/Error.h"
 #include "../tools/Utility.h"
 
 #include <vector>
@@ -29,7 +30,7 @@ struct Inventory {
 	int find(int);
 	Item* get(int id) {
 		if(id < 0 or id >= this->contents->size()) {
-			debug("Error (Inventory::get()): Returning nullptr");
+			TBA_throw(WARN_RET_NULLPTR,__PRETTY_FUNCTION__);
 			return nullptr;
 		}
 		return this->contents->at(id);

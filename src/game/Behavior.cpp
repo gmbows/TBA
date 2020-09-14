@@ -842,10 +842,10 @@ void Character::think() {
 	}
 	
 	if(this->hasGoals()) {
-		switch(this->goals.top()->execute(this)) {
+		switch(this->goals.top().execute(this)) {
 			case AI_GOAL_PRECOND_FAIL:
 				if(this->getName() == "Archer" or true) {
-					debug(this->getEntityName()+" precondition check failed for goal "+std::to_string(this->currentGoal()->type)+", removing goal");
+					debug(this->getEntityName()+" precondition check failed for goal "+std::to_string(this->currentGoal().type)+", removing goal");
 				}
 				// free(this->goals.top());
 				this->goals.pop();
@@ -854,7 +854,7 @@ void Character::think() {
 				// debug(this->getEntityName()+" is still working on "+std::to_string(this->goals.top()->type));
 				break;
 			case AI_GOAL_COMPLETE:
-				debug(this->getEntityName()+" completed goal "+std::to_string(this->currentGoal()->type)+", removing");
+				debug(this->getEntityName()+" completed goal "+std::to_string(this->currentGoal().type)+", removing");
 				// free(this->goals.top());
 				this->goals.pop();
 				break;

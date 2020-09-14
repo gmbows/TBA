@@ -175,7 +175,7 @@ struct Game {
 	
 	unsigned int last_perf_notif = 0;
 	int perf_notif_interval = 250; //Interval at which update routines will notify that they are falling behind
-	TBA_Interval perfNotifInterval = TBA_Interval(2000);
+	TBA_Interval perfNotifInterval = TBA_Interval(perf_notif_interval);
 	
 	//Size limited queues to keep track of last 100 updates times
 	TBA_LimitedQueue<int> logicPerf = TBA_LimitedQueue<int>(100);

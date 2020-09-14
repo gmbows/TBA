@@ -70,7 +70,8 @@ enum ItemType: flag {
 	I_AMMO = 			1 << 19,
 	
 	I_CONTAINER =	1 << 20,
-	I_END =				1 << 23,
+	I_MINERAL = 1 << 23,
+	I_END =				1 << 24,
 
 };
 

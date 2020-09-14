@@ -50,8 +50,6 @@ struct ResourceNode : public GameObject {
 	}
 	
 	ResourceNode(const std::string &_name,std::tuple<float,float> loc,lootTable t,int _did, int time): name(_name), duration(TBAGame->convert(time*1000)), displayID(_did), GameObject(OBJ_INTERACTIVE) {
-		// std::cout << this->duration << std::endl;
-		// std::cout << "NIGGERS" << std::endl;
 		this->x = std::get<0>(loc);
 		this->y = std::get<1>(loc);
 		this->location = TBAGame->gameWorld->getTileAt(this->x,this->y);
@@ -60,6 +58,9 @@ struct ResourceNode : public GameObject {
 		this->primaryResource = t.begin()->second.first;
 		for(lootTable::iterator it=t.begin();it!=t.end();it++) {
 			if(it->first == 100) this->primaryResource = it->second.first;
+		}
+		if(!ItemUtils::hasType(this->primaryResource,I_MINERAL)) {
+			TBA_throw(WARN_DEFAULT,__func__,"Using non-mineral primary resource with id "+std::to_string(this->primaryResource));
 		}
 		this->progress = 0;
 	}

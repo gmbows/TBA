@@ -7,6 +7,7 @@
 #include <set>
 
 #include "../tools/Utility.h"
+#include "../tools/Error.h"
 /*
 =========
   Overview
@@ -141,7 +142,7 @@ struct Goal {
 	std::vector<Precond> preconditions;
 	
 	std::queue<Objective> objectives;
-	
+		
 	bool inline isComplete() {return this->objectives.empty();}
 	void initialize_type();
 	void clear();
@@ -170,9 +171,10 @@ inline bool operator!=(GoalType f1,GoalType f2) {
 	return (f1 ^ f2) > 0;
 }
 
+bool operator<(const Goal &g1, const Goal &g2);
 
 struct TBA_GoalQueue {
-	std::priority_queue<Goal*> goals;
+	std::priority_queue<Goal> goals;
 	
 	int status = 0;
 	
@@ -183,11 +185,11 @@ struct TBA_GoalQueue {
 	inline bool hasGoals() { return !this->goals.empty(); }
 	
 	inline bool empty() { return this->goals.empty();}
-	inline Goal* top() { return this->goals.top();}
+	inline Goal top() { return this->goals.top();}
 	
-	Goal* currentGoal() { 
+	Goal currentGoal() { 
 		if(!this->hasGoals()) {
-			// debug("Error (Character::currentGoal()): Returning nullpointer");
+			TBA_throw(WARN_RET_NULLPTR,__PRETTY_FUNCTION__);
 		}
 		return this->goals.top();
 	}
@@ -196,28 +198,27 @@ struct TBA_GoalQueue {
 		// debug("Adding goal "+std::to_string(t));
 	if(!this->hasGoal(t)) {
 			this->status = (this->status | t);
-			this->goals.push(new Goal(c,t));	
+			this->goals.push(Goal(c,t));
 		} else {
-			debug("Error (addGoal()): Skipping existing goal "+std::to_string(t));
-			// debug(this->goals.size());
+			TBA_throw(WARN_DEFAULT,__PRETTY_FUNCTION__,"Skipping adding existing goal "+std::to_string(t));
 		}
 	}
 	
-	Goal* pop() {
-		Goal *g = this->goals.top();
+	Goal pop() {
+		Goal g = this->goals.top();
 		this->goals.pop();
-		this->status = (this->status & ~g->type_default);
+		this->status = (this->status & ~g.type_default);
 		return g;
 	}
 	
 	bool remove(GoalType g) {
-		std::vector<Goal*> tgoals;
+		std::vector<Goal> tgoals;
 		while(!this->goals.empty()) {
 			tgoals.push_back(this->goals.top());
 			this->goals.pop();
 		}
 		for(int i=0;i<tgoals.size();i++) {
-			if(tgoals.at(i)->type != g) {
+			if(tgoals.at(i).type != g) {
 				this->goals.push(tgoals.at(i));
 			}
 		}
@@ -226,9 +227,9 @@ struct TBA_GoalQueue {
 	
 	std::vector<GoalType> get_elements() {
 		std::vector<GoalType> tgoals;
-		std::priority_queue<Goal*> g = this->goals;
+		std::priority_queue<Goal> g = this->goals;
 		while(!g.empty()) {
-			tgoals.push_back(g.top()->type);
+			tgoals.push_back(g.top().type);
 			g.pop();
 		}
 		return tgoals;

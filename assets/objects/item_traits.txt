@@ -3,7 +3,7 @@ Types:
 1: Fruit
 2: Vegetable
 3: Weapon
-4: Type string not found
+4: Equipment
 5: Melee
 6: Sword
 7: Ranged
@@ -22,6 +22,7 @@ Types:
 20: Container
 21: Potion
 22: Consumable
+23: Mineral
 
 Attributes: 
 0: Damage
