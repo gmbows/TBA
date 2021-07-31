@@ -1,5 +1,5 @@
 # TBA
-A multiplatform text based rpg engine written in c++
+A multiplatform 2D rpg engine written in c++
 
 ## Branches
 [Singleplayer](https://github.com/garrbows/TBA/tree/singleplayer/) <br>
